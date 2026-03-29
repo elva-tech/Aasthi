@@ -1,0 +1,17 @@
+# Logs
+*.log
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+venv/
+.env
+
+# Outputs and Data
+*.pdf
+*.xlsx
+output/
+khata_output/
+reports/
+screenshots/
