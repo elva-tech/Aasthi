@@ -1,0 +1,59 @@
+{
+  "document_type": "BBMP_PROPERTY_TAX",
+  "excel_path": "bbmp_property_details.xlsx",
+  "facts": {
+    "latest_year": 2024,
+    "years_present": [
+      2021,
+      2022,
+      2023,
+      2024
+    ],
+    "paid_years": [
+      2021,
+      2022,
+      2023,
+      2024
+    ],
+    "expired_challan_years": [],
+    "sas_app_numbers": [
+      "1000829555"
+    ],
+    "tax_amount_variance": "LOW",
+    "tax_trend": "GRADUAL_INCREASE",
+    "has_bulk_payments": false,
+    "has_suspicious_drops": false,
+    "assessment_type": "SAS",
+    "property_id_consistency": "CONSISTENT",
+    "owner_name_match": "MATCHED",
+    "usage_match": "MATCHED"
+  },
+  "python": {
+    "score": 92,
+    "risk_score": 8,
+    "risk_level": "LOW",
+    "risk_level_from_risk_score": "LOW",
+    "report": "======================================================================\nPROPERTY TAX RISK ASSESSMENT REPORT\n======================================================================\n1️⃣ Tax Payment Status (30 / 30)\n  ✅ Latest year 2024 paid\n  ✅ No expired challans\n\n2️⃣ Assessment Type (15 / 15)\n  ✅ Official BBMP SAS Forms (2 / 4 / 5)\n\n3️⃣ Property Identification Consistency (20 / 20)\n  ✅ Same SAS number across all years\n\n4️⃣ Ownership Continuity (7 / 15)\n  ⚠️ Short tax history\n  ✅ Stable ownership signal\n\n5️⃣ Tax Variance (10 / 10)\n  Tax variance: LOW\n\n6️⃣ Tax Trend Behaviour (10 / 10)\n  Trend: GRADUAL_INCREASE\n\n======================================================================\n🟢 FINAL SCORE: 92 / 100\nRISK LEVEL: LOW\n======================================================================"
+  },
+  "gemini": {
+    "enabled": true,
+    "output": null,
+    "error": "Missing GEMINI_API_KEY3 env var."
+  },
+  "final": {
+    "score": 92,
+    "risk_score": 8,
+    "risk_level": "LOW",
+    "risk_level_from_risk_score": "LOW",
+    "weights": {
+      "python": 1.0,
+      "llm": 0.0
+    },
+    "components": {
+      "python_score": 92,
+      "python_risk_score": 8,
+      "llm_score": null,
+      "llm_risk_score": null
+    }
+  }
+}

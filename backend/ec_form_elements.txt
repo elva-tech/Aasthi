@@ -1,0 +1,52 @@
+INPUTS:
+<input id=":r1:" aria-required="false" aria-invalid="false" class="h-11 w-full flex-shrink rounded-radius bg-transparent focus:outline-none placeholder:text-soft-foreground disabled:text-soft-foreground disabled:placeholder:text-weak-foreground text-base" autocomplete="off" placeholder="Find SRO ..." value="">
+<input aria-hidden="true" tabindex="-1" type="radio" value="Non Agricultural" checked="" style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 16px; height: 16px;">
+<input aria-hidden="true" tabindex="-1" type="radio" value="Agricultural" style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 16px; height: 16px;">
+<input id=":rb:" aria-required="true" aria-invalid="false" class="h-11 w-full flex-shrink rounded-radius bg-transparent focus:outline-none placeholder:text-soft-foreground disabled:text-soft-foreground disabled:placeholder:text-weak-foreground text-base" autocomplete="off" placeholder="Eg: Devanahalli, Bangalore Rural" aria-haspopup="dialog" aria-expanded="false" aria-controls="radix-:ra:" data-state="closed" type="text" value="">
+<input aria-hidden="true" tabindex="-1" type="radio" value="1" checked="" style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 16px; height: 16px;">
+<input aria-hidden="true" tabindex="-1" type="radio" value="14" style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 16px; height: 16px;">
+<input aria-hidden="true" tabindex="-1" type="radio" value="16" style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 16px; height: 16px;">
+<input aria-hidden="true" tabindex="-1" type="radio" value="2" style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 16px; height: 16px;">
+<input aria-hidden="true" tabindex="-1" type="radio" value="3" style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 16px; height: 16px;">
+<input id=":ro:" aria-required="true" aria-invalid="false" class="h-11 w-full flex-shrink rounded-radius bg-transparent focus:outline-none placeholder:text-soft-foreground disabled:text-soft-foreground disabled:placeholder:text-weak-foreground text-base" autocomplete="off" placeholder="Click to Enter" value="">
+<input aria-hidden="true" tabindex="-1" type="radio" value="5" checked="" style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 16px; height: 16px;">
+<input aria-hidden="true" tabindex="-1" type="radio" value="13" style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 16px; height: 16px;">
+<input aria-hidden="true" tabindex="-1" type="radio" value="20" style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 16px; height: 16px;">
+<input aria-hidden="true" tabindex="-1" type="radio" value="-1" style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 16px; height: 16px;">
+
+SELECTS:
+<select aria-hidden="true" tabindex="-1" style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden...
+
+BUTTON TEXTS:
+[
+  'Orders',
+  'Get Support',
+  'Create Document',
+  'Bill Payments',
+  'Locker',
+  'En',
+  'Login/Signup',
+  'Help',
+  'More Options',
+  'Bookmark',
+  'Reset',
+  'Search',
+  'Ownership check',
+  'Legal due diligence',
+  'Pre-sale verification',
+  'Mortgage and lien tracking',
+  'Bank loan application',
+  'Land history check'
+]
+
+LABEL TEXTS:
+[
+  'Property Type*', 'Non Agricultural',
+  'Agricultural',   'Village/Division*',
+  'Search by*',     'Survey No',
+  'Party Name',     'Flat No',
+  'Khata No',       'Site No',
+  'Survey No*',     'Duration*',
+  '5 Year',         '13 Year',
+  '20 Year',        'Custom'
+]

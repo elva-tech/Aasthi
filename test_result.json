@@ -1,0 +1,1876 @@
+Starting test run of Python wrappers...
+No real EC PDF found (looked for ec_test_session_1773153554452.pdf). EC wrapper will likely skip or use defaults.
+Running real wrappers with config: {
+  bescom: {
+    pdf: '/home/ravella/landed/7220755000.pdf',
+    user_name: 'TEST USER',
+    user_address: 'TEST PROJECT'
+  },
+  water: {
+    rr: 'N-435608',
+    user_name: 'TEST USER',
+    user_address: '1266 BEL LAYOUT VIDYARANYAPURA'
+  },
+  bbmp: { excel: '/home/ravella/landed/bbmp_property_details.xlsx' },
+  khata: { pid_number: '1500082907', owner_name_prefix: 'TES' },
+  oc: {
+    pdf: '/home/ravella/landed/OC-PLH-C.pdf',
+    tesseract_cmd: 'tesseract'
+  },
+  noc: {
+    pdfs: [ '/home/ravella/landed/NOC.pdf' ],
+    tesseract_cmd: 'tesseract'
+  },
+  parking: {
+    agreement: '/home/ravella/landed/Agreement to Sell.pdf',
+    siteplan: '/home/ravella/landed/Site Plan.PDF',
+    tesseract_cmd: 'tesseract'
+  },
+  bylaws: { input: '/home/ravella/landed/574798807-By-Laws-Kaoa.txt' },
+  builder: { builder_name: 'Prestige Group' },
+  bankloan: {
+    pdf: '/home/ravella/landed/CERSAI_Search_Report_200417498632_For_Debtor_Based_Search_10_02_2026_18_03_08_480.pdf',
+    out: '/home/ravella/landed/riskwrapper/output/bankloan_result.json'
+  }
+}
+Test execution finished.
+Result: {
+  "success": true,
+  "pdfUrl": "/reports/deep_verification_1773153884623.pdf",
+  "mergedReport": {
+    "bescom": {
+      "document_type": "BESCOM",
+      "pdf_path": "/home/ravella/landed/7220755000.pdf",
+      "system_data": {
+        "name": "G KRISHNA REDDY",
+        "address": "KAGADASPURAKAGADASPURA, -, KAR -560016"
+      },
+      "user_data": {
+        "name": "TEST USER",
+        "address": "TEST ADDRESS"
+      },
+      "match_score": 17.22,
+      "risk_score": 82.78
+    },
+    "water": {
+      "document_type": "WATER_BILL",
+      "rr_number": "N-435608",
+      "system_data": {
+        "RR Number": "N-435608",
+        "Consumer Name": "A.UMESH CHANDRA",
+        "Consumer Address": "1266,1ST BLOCK,BEL LAYOUT,,VIDYARANYAPURA.,Bangalore",
+        "Bill Number": "N-435608030",
+        "Bill Date": "1/3/2026",
+        "Bill Amount": "391"
+      },
+      "user_data": {
+        "Consumer Name": "UMESH CHANDRA",
+        "Consumer Address": "1266 BEL LAYOUT VIDYARANYAPURA"
+      },
+      "match_score": 83.93,
+      "risk_score": 16.07
+    },
+    "bbmp_property_tax": {
+      "error": "[Errno 2] No such file or directory: 'riskwrapper/bbmp_property_details.xlsx'",
+      "traceback": "Traceback (most recent call last):\n  File \"/home/ravella/landed/riskwrapper/main.py\", line 289, in run_and_store\n    res = fn()\n  File \"/home/ravella/landed/riskwrapper/main.py\", line 187, in run_bbmp\n    return run_bbmp_propertytax_wrapper(excel_path=cfg[\"excel\"])\n  File \"/home/ravella/landed/riskwrapper/bbmp_propertytax_wrapper.py\", line 433, in run_bbmp_propertytax_wrapper\n    facts = extract_facts_from_excel(excel_path)\n  File \"/home/ravella/landed/riskwrapper/bbmp_propertytax_wrapper.py\", line 16, in extract_facts_from_excel\n    df = pd.read_excel(excel_path)\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pandas/io/excel/_base.py\", line 495, in read_excel\n    io = ExcelFile(\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pandas/io/excel/_base.py\", line 1550, in __init__\n    ext = inspect_excel_format(\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pandas/io/excel/_base.py\", line 1402, in inspect_excel_format\n    with get_handle(\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pandas/io/common.py\", line 882, in get_handle\n    handle = open(handle, ioargs.mode)\nFileNotFoundError: [Errno 2] No such file or directory: 'riskwrapper/bbmp_property_details.xlsx'\n"
+    },
+    "khata": {
+      "document_type": "KHATA",
+      "status": "OK",
+      "report_metadata": {
+        "generated_date": "2026-02-11T21:55:01.776425",
+        "source": "https://bbmptax.karnataka.gov.in/",
+        "ai_used": true
+      },
+      "input": {
+        "pid_number": "1500082907",
+        "owner_name_prefix": "RAM",
+        "expected_owner_name": "RAM KUMAR",
+        "application_number": "1500082907"
+      },
+      "property_data": {
+        "PID": "1500082907",
+        "Application_Number": "1500082907",
+        "Owner_Name_Search": "RAM",
+        "Expected_Owner_Name": "RAM KUMAR",
+        "Extraction_Date": "2026-02-11 21:54:45",
+        "Owner_Name_Portal": "A.RAMAKRISHNA",
+        "Address": "Not found",
+        "Khata_Info": "Not found on portal (Manual verification required)",
+        "Khata_Type": "Not found"
+      },
+      "signals": {
+        "pid_valid": true,
+        "total_payment_records": 12,
+        "years_present": [
+          "2025",
+          "2022",
+          "2020",
+          "2020",
+          "2020",
+          "2019",
+          "2018",
+          "2017",
+          "2016",
+          "2016",
+          "2016",
+          "2015"
+        ],
+        "latest_assessment_year": "2025",
+        "unpaid_years": 4,
+        "payment_consistency": 1,
+        "recent_payment": "2025",
+        "khata_type": "Not found",
+        "khata_info": "Not found on portal (Manual verification required)",
+        "owner_name_match": 1,
+        "owner_match_mode": "PARTIAL_SUBSTRING",
+        "owner_match_reason": "High score is likely from substring/prefix match (e.g., 'RAM' found inside portal name). Not a strict full-name equality check.",
+        "owner_search_prefix": "RAM",
+        "owner_expected": "RAM KUMAR",
+        "owner_portal": "A.RAMAKRISHNA",
+        "khata_info_available": false,
+        "address_available": false,
+        "pid_verified": false
+      },
+      "rule_based_risk": {
+        "safety_score": 60,
+        "risk_score": 40,
+        "risk_level": "MEDIUM",
+        "reasons": [
+          "✅ PID exists in BBMP records",
+          "⚠️  Khata type not found on portal - Manual verification required",
+          "✅ Owner name matches exactly",
+          "❌ 4 unpaid tax records found",
+          "✅ Recent tax payment: 2025"
+        ],
+        "breakdown": {
+          "PID_Valid": 25,
+          "Khata_Type": 0,
+          "Owner_Match": 20,
+          "Payment_Compliance": 5,
+          "Recent_Activity": 10
+        }
+      },
+      "ai_analysis": {
+        "ai_safety_score": 60,
+        "ai_risk_level": "MEDIUM",
+        "ai_explanation": "The property's PID exists in BBMP records, but the Khata type is not found on the portal and requires immediate manual verification. While the owner match score is 100%, it's based on a partial substring match and not a full name equality, raising significant ownership concerns. Additionally, there are multiple unpaid tax records despite a recent payment.",
+        "khata_verification_status": "FAILED",
+        "ownership_concerns": [
+          "Owner name mismatch: Expected 'RAM KUMAR' does not strictly match portal owner 'A.RAMAKRISHNA', despite a 100% partial substring match score.",
+          "Khata type not found on portal, requiring manual verification."
+        ],
+        "recommended_actions": [
+          "Conduct manual verification of Khata type and status directly with BBMP authorities.",
+          "Verify the exact ownership details and identity of 'RAM KUMAR' against 'A.RAMAKRISHNA' using official property documents.",
+          "Investigate and resolve the 4 outstanding unpaid property tax records.",
+          "Obtain and verify the full property address, as it is currently unavailable."
+        ],
+        "ai_risk_score": 40,
+        "ai_used": true,
+        "final_safety_score": 60,
+        "final_risk_score": 40,
+        "final_risk_level": "MEDIUM"
+      },
+      "final_assessment": {
+        "final_safety_score": 60,
+        "final_risk_score": 40,
+        "final_risk_level": "MEDIUM"
+      },
+      "exports": {
+        "excel_report_path": "khata_output\\khata_report.xlsx"
+      }
+    },
+    "oc": {
+      "document_type": "OC",
+      "pdf_path": "/home/ravella/landed/OC-PLH-C.pdf",
+      "important_data": {
+        "issuing_authority": "Joint Director of Town Planning (North), Bruhat Bengaluru Mahanagara Palike",
+        "oc_number": "JD NORTH/ 0254/2014-15",
+        "issue_date": "2018-07-24",
+        "project_name": null,
+        "property_address": "Katha No. 617, Municipal No. 52, Sy No. 176/1, 178/2, 178/3, 179, 180/1, 180/2, 181/1, 181/2, 181/3, 181/4, 182, 183/1, 183/2, 183/3, 183/4, 184/1, 184/2, 7186/1, 187/2, 188/2, 188/5J, 188/5©, 189/1, 190/1, 190/2, 1914/1, 1914/3, 192/3, 192/4, 195/1, 196, 197/1, 197/2, 197/3, 198/1 198/2, 199, 200/2, 203/1, 203/2, 204/1, 204/2, 204/3, 204/4, 204/5, 204/6, 204/7J, 204/7©, 205/1, 205/2, 205/3, 205/4, 205/5, 207/1, 207/2, 207/3, 207/4, 207/5, 207/6, 208, 2710/1, 210/3, 210/4, 210/5, 210/6A, 210/6B, 210/7A, 7B, 210/8, 210/9, 210/10, 210/11, 210/12, 210/134, 210/13B, 210/15A, 210/15B, 210/16, 210/17, 210/18, 211/1, 2114/2, 211/6A, 211/7, 220/1 of Gunjuru Village and Sy No. 28/11, 28/14, 28/5, 28/13, 28/16 of Balagere Village Varthur Hobli, Ward No. 149, Mahadevapura Zone, Bengaluru",
+        "builtup_area": "814075.93 Sqm",
+        "usage_type": "Residential Apartment Building, Villas, Club House, Car Parking",
+        "required_clearances": [
+          "Fire Clearance for the Occupancy Certificate vide No. GBC(1)/388/2013 dated: 16-03-2018 & 16-05-2018",
+          "CFO issued by KSPCB vide No. PCB/ 357/CNP/13 dated: 10-07-2017"
+        ],
+        "noted_deviations": [
+          "Deviation in construction with reference to the sanctioned plan which is within the limits of regularization as per Building Bye-laws - 2003. The deviations effected in the building are condoned and regularized accordingly."
+        ],
+        "conditions_top": [
+          "The car parking at 2 Basement Floors and Ground Floor area shall have adequate safety measures. It shall be done entirely at the risk and cost of the owner. BBMP will not be responsible for any kind of damage, losses, risks etc., arising out of the same.",
+          "The structural safety of building will be entirely at the risk and cost of owner / Architect / Engineer / Structural Engineer and BBMP will not be responsible for structural safety.",
+          "Owner shall not add or alter materially, the structure or a part of the structure there off without specific permission from BBMP. In the event of the applicant violating, the BBMP has the right to demolish the deviated / altered / additional portion without any prior notice.",
+          "2 Basement Floors and Ground Floor area should be used for car parking purpose only and the additional area if any available in, 2 Basement Floors and Ground Floor area shall be used exclusively for car parking purpose only.",
+          "Footpath and road side drain in front of the building should be maintained in good condition.",
+          "Rain water harvesting structure shall be maintained in good condition for storage of water and shall be used for non potable purpose or recharge of ground water at all times as per Building Bye-laws-2003 clause No. 32 (b).",
+          "Since, deviations have been done from the sanctioned plan while constructing the building, the security deposit is here with forfeited",
+          "Owner shall make his own arrangements to dispose off the debris/garbage after segregating it into organic and inorganic waste generated from the building. Suitable arrangements shall be made by the owner himself to transport and dump these segregated wastes in consultation with the BBMP Zonal Health Officer."
+        ]
+      },
+      "scores": {
+        "rule_score": 78,
+        "rule_risk_score": 22,
+        "llm_suggested_score": 45,
+        "llm_risk_score": 55,
+        "blended_score": 68,
+        "blended_risk_score": 32,
+        "overall_risk_level": "HIGH"
+      },
+      "reasons": {
+        "rule_deductions": [
+          "-8 : Deviations/exclusions noted in OC",
+          "-3 : Unknown: Fire NOC validity",
+          "-2 : Unknown: structural condition",
+          "-1 : Unknown: lift certificate",
+          "-2 : Unknown: basement usage compliance",
+          "-1 : Unknown: basement flooding history",
+          "-2 : Unknown: STP status",
+          "-1 : Unknown: RWH status"
+        ],
+        "llm_risk_summary": "The primary risks identified pertain to the lack of documented evidence for ongoing fire safety compliance, specifically the biennial Fire Clearance renewals and annual fire equipment inspections, which are critical for a high-rise residential complex. The Occupancy Certificate (OC) was issued in 2018, and the document does not provide proof of these subsequent mandatory renewals or inspections. Additionally, a history of construction deviations, though regularized, indicates past non-adherence to sanctioned plans. The OC also places significant liability on the owner for structural and car parking safety.",
+        "top_llm_risks": [
+          {
+            "severity": "HIGH",
+            "category": "Regulatory Compliance / Life Safety",
+            "issue": "Lack of documented evidence for biennial Fire Clearance renewals."
+          },
+          {
+            "severity": "HIGH",
+            "category": "Regulatory Compliance / Life Safety",
+            "issue": "Lack of documented evidence for annual fire equipment inspections and affidavit submissions."
+          },
+          {
+            "severity": "MODERATE",
+            "category": "Regulatory Compliance / Construction Quality",
+            "issue": "History of construction deviations from sanctioned plans."
+          },
+          {
+            "severity": "LOW",
+            "category": "Operational Safety / Liability",
+            "issue": "Owner bears full risk and cost for car parking safety."
+          },
+          {
+            "severity": "LOW",
+            "category": "Operational Safety / Liability",
+            "issue": "Owner bears full risk and cost for structural safety."
+          }
+        ]
+      },
+      "errors": {
+        "ocr": null,
+        "extraction": null,
+        "llm_risk": null
+      }
+    },
+    "parking": {
+      "error": "D:\\ocr\\tesseract.exe is not installed or it's not in your PATH. See README file for more information.",
+      "traceback": "Traceback (most recent call last):\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 255, in run_tesseract\n    proc = subprocess.Popen(cmd_args, **subprocess_args())\n  File \"/usr/lib/python3.10/subprocess.py\", line 971, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/usr/lib/python3.10/subprocess.py\", line 1863, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\ocr\\\\tesseract.exe'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/ravella/landed/riskwrapper/main.py\", line 289, in run_and_store\n    res = fn()\n  File \"/home/ravella/landed/riskwrapper/main.py\", line 228, in run_parking\n    return run_parking_wrapper(\n  File \"/home/ravella/landed/riskwrapper/parking_wrapper.py\", line 435, in run_parking_wrapper\n    agreement_ocr = ocr_images(agreement_imgs)\n  File \"/home/ravella/landed/riskwrapper/parking_wrapper.py\", line 94, in ocr_images\n    txt = pytesseract.image_to_string(enhanced, config=OCR_CONFIG)\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 423, in image_to_string\n    return {\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 426, in <lambda>\n    Output.STRING: lambda: run_and_get_output(*args),\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 288, in run_and_get_output\n    run_tesseract(**kwargs)\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 260, in run_tesseract\n    raise TesseractNotFoundError()\npytesseract.pytesseract.TesseractNotFoundError: D:\\ocr\\tesseract.exe is not installed or it's not in your PATH. See README file for more information.\n"
+    },
+    "bylaws": {
+      "document_type": "BYLAWS",
+      "raw_output": "{\"property\": {\"city\": \"Bengaluru\", \"state\": \"Karnataka\"}, \"formation\": {\"entity_type\": \"Association of Apartment Owners\", \"is_registered\": true, \"registration_number_present\": false, \"registration_date_present\": false}, \"declaration_deed\": {\"dod_present\": true, \"dod_registered\": true, \"dod_date_present\": false}, \"bylaws\": {\"bylaws_present\": true, \"bylaws_registered_or_filed\": true, \"mentions_kaoa_act_or_rules\": true, \"core_sections_present\": {\"membership\": true, \"governance_committee\": true, \"meetings_quorum_voting\": true, \"maintenance_charges\": true, \"funds_audit_accounts\": true, \"penalties_dispute_resolution\": true, \"amendment_process\": true}}, \"governance\": {\"agm_required\": true, \"agm_frequency_yearly\": true, \"elections_defined\": true, \"minutes_and_records_access\": true}, \"financials\": {\"audit_required\": true, \"audit_frequency_yearly\": true, \"corpus_or_sinking_fund_mentioned\": true, \"collection_enforcement_defined\": true}, \"property_compliance\": {\"insurance_mentioned\": true, \"fire_safety_compliance_mentioned\": false, \"common_areas_transfer_mentioned\": false, \"litigation_or_disputes_mentioned\": false}, \"confidence\": 0.9, \"notes\": [\"Entity type identified as 'Association of Apartment Owners' based on definitions and objects.\", \"Registration status for the entity is inferred from its formation 'in accordance with the provisions of the Karnataka Apartment Ownership Act, 1972' and the bylaws being 'as per proforma... prescribed by Rule 3'.\", \"Specific registration number or date for the Association's formation is not present.\", \"Specific date for the Declaration Deed is not present.\", \"Bylaws are considered 'registered or filed' due to being 'as per proforma... prescribed by Rule 3 of the Karnataka Apartment Ownership Rules, 1974'.\", \"Penalties/dispute resolution includes disqualification for arrears, recovery of sums due, and hearing complaints.\", \"Fire safety compliance is not explicitly mentioned, only 'fire' as an insurable hazard.\", \"Transfer of common areas (e.g., to the association) is not explicitly mentioned; the text discusses ownership of undivided share in land and use of common areas.\"]}",
+      "extract": {
+        "property": {
+          "city": "Bengaluru",
+          "state": "Karnataka"
+        },
+        "formation": {
+          "entity_type": "Association of Apartment Owners",
+          "is_registered": true,
+          "registration_number_present": false,
+          "registration_date_present": false
+        },
+        "declaration_deed": {
+          "dod_present": true,
+          "dod_registered": true,
+          "dod_date_present": false
+        },
+        "bylaws": {
+          "bylaws_present": true,
+          "bylaws_registered_or_filed": true,
+          "mentions_kaoa_act_or_rules": true,
+          "core_sections_present": {
+            "membership": true,
+            "governance_committee": true,
+            "meetings_quorum_voting": true,
+            "maintenance_charges": true,
+            "funds_audit_accounts": true,
+            "penalties_dispute_resolution": true,
+            "amendment_process": true
+          }
+        },
+        "governance": {
+          "agm_required": true,
+          "agm_frequency_yearly": true,
+          "elections_defined": true,
+          "minutes_and_records_access": true
+        },
+        "financials": {
+          "audit_required": true,
+          "audit_frequency_yearly": true,
+          "corpus_or_sinking_fund_mentioned": true,
+          "collection_enforcement_defined": true
+        },
+        "property_compliance": {
+          "insurance_mentioned": true,
+          "fire_safety_compliance_mentioned": false,
+          "common_areas_transfer_mentioned": false,
+          "litigation_or_disputes_mentioned": false
+        },
+        "confidence": 0.9,
+        "notes": [
+          "Entity type identified as 'Association of Apartment Owners' based on definitions and objects.",
+          "Registration status for the entity is inferred from its formation 'in accordance with the provisions of the Karnataka Apartment Ownership Act, 1972' and the bylaws being 'as per proforma... prescribed by Rule 3'.",
+          "Specific registration number or date for the Association's formation is not present.",
+          "Specific date for the Declaration Deed is not present.",
+          "Bylaws are considered 'registered or filed' due to being 'as per proforma... prescribed by Rule 3 of the Karnataka Apartment Ownership Rules, 1974'.",
+          "Penalties/dispute resolution includes disqualification for arrears, recovery of sums due, and hearing complaints.",
+          "Fire safety compliance is not explicitly mentioned, only 'fire' as an insurable hazard.",
+          "Transfer of common areas (e.g., to the association) is not explicitly mentioned; the text discusses ownership of undivided share in land and use of common areas."
+        ]
+      },
+      "score": 84,
+      "risk_score": 16,
+      "risk_level": "MEDIUM-LOW",
+      "breakdown": {
+        "dimension_scores": {
+          "legal_formation_registration": {
+            "score": 15,
+            "max": 25
+          },
+          "bylaws_coverage_quality": {
+            "score": 15,
+            "max": 15
+          },
+          "governance_transparency": {
+            "score": 15,
+            "max": 15
+          },
+          "financial_discipline": {
+            "score": 20,
+            "max": 20
+          },
+          "property_compliance": {
+            "score": 5,
+            "max": 10
+          },
+          "evidence_confidence": {
+            "score": 14,
+            "max": 15
+          }
+        },
+        "notes": [
+          "Entity type identified as 'Association of Apartment Owners' based on definitions and objects.",
+          "Registration status for the entity is inferred from its formation 'in accordance with the provisions of the Karnataka Apartment Ownership Act, 1972' and the bylaws being 'as per proforma... prescribed by Rule 3'.",
+          "Specific registration number or date for the Association's formation is not present.",
+          "Specific date for the Declaration Deed is not present.",
+          "Bylaws are considered 'registered or filed' due to being 'as per proforma... prescribed by Rule 3 of the Karnataka Apartment Ownership Rules, 1974'.",
+          "Penalties/dispute resolution includes disqualification for arrears, recovery of sums due, and hearing complaints.",
+          "Fire safety compliance is not explicitly mentioned, only 'fire' as an insurable hazard.",
+          "Transfer of common areas (e.g., to the association) is not explicitly mentioned; the text discusses ownership of undivided share in land and use of common areas."
+        ]
+      },
+      "artifacts": null
+    },
+    "builder": {
+      "document_type": "BUILDER",
+      "db_path": "/home/ravella/landed/riskwrapper/db/builder.db",
+      "seeded": false,
+      "builder": {
+        "name": "Prestige Group",
+        "city": "Bangalore",
+        "years_active": 25,
+        "projects": [
+          {
+            "name": "Prestige Falcon City",
+            "status": "completed",
+            "delay_months": 3
+          },
+          {
+            "name": "Prestige Lakeside Habitat",
+            "status": "completed",
+            "delay_months": 6
+          }
+        ],
+        "issues": [
+          {
+            "type": "delay",
+            "count": 1
+          }
+        ]
+      },
+      "rule_based": {
+        "risk_score": 27,
+        "risk_level": "LOW",
+        "reasons": [
+          "RERA compliance: no revoked/suspended signals in DB (placeholder)",
+          "Delivery: 2 delayed out of 2 projects",
+          "Professionals: avg projects completed ≈ 214.0",
+          "Experience: active for 25 years",
+          "Issues: total issue count=1 (penalty applied)"
+        ]
+      },
+      "llm": {
+        "enabled": true,
+        "output": {
+          "score": 75,
+          "risk_level": "HIGH",
+          "confidence": 0.4,
+          "reasons": [
+            "All reported projects (2 out of 2) have experienced significant delays, indicating a 100% delay rate.",
+            "The average delay of 4.5 months per project is substantial.",
+            "Despite 25 years of activity and experienced professionals, the builder's recent project delivery performance is extremely poor.",
+            "The very low total project count (2 projects in 25 years) limits the overall data reliability and raises concerns about the builder's operational scale or consistency."
+          ]
+        }
+      },
+      "final": {
+        "rule_weight": 0.7,
+        "llm_weight": 0.30000000000000004,
+        "risk_score": 41,
+        "risk_level": "MEDIUM"
+      }
+    },
+    "ec": {
+      "ai_analysis": {
+        "confidence": "HIGH",
+        "method": "Google Gemini AI Analysis",
+        "pattern_analysis": "The data shows two 'AGREEMENT_TO_SELL' transactions executed on the same date (2016-12-06) with the identical, complex seller. The striking pattern is the 'consideration_value' being exactly 1.0 in both cases. The buyers, Sri.G.V.Ananda and Sri.G.V.Srinivasa Reddy, are identified as sons of the same late individual, indicating they are brothers. They are acquiring property for their respective families. This coordinated activity, coupled with the highly suspicious nominal consideration for agreements to sell, strongly suggests an attempt to either undervalue the asset for tax purposes, conceal the true financial transaction (undeclared funds), or utilize a shell transaction for some other illicit purpose, rather than a transparent, fair-value commercial agreement. The 'AGREEMENT_TO_SELL' type implies a future full sale, making the nominal agreement value a prime indicator of potential future non-declaration of actual consideration.",
+        "recommendation": "Flag these transactions for immediate, high-priority manual investigation. The investigation should focus on:\n1.  **Verification of True Consideration:** Determine the actual market value of the property/asset involved and compare it against the declared 1.0 consideration.\n2.  **Buyer & Seller Due Diligence:** Conduct enhanced due diligence on all parties involved, particularly the source of funds for the buyers and the legitimacy of the seller entities and their representatives.\n3.  **Future Transactions Monitoring:** Monitor for subsequent 'SALE DEED' transactions related to these agreements and scrutinize their declared consideration values and payment methods.\n4.  **Tax Evasion Assessment:** Refer the case to relevant tax authorities for potential tax evasion or money laundering inquiries.\n5.  **Legal Review:** Assess if the nominal value for an 'AGREEMENT_TO_SELL' is legally permissible and if there are any specific local regulations or common practices that might explain this (though it's highly unlikely to be benign for property transactions).",
+        "risk_indicators": [
+          "Nominal Consideration Value: Both transactions list a 'consideration_value' of 1.0, which is highly unusual and suspicious for an 'AGREEMENT_TO_SELL' involving what appears to be real estate or high-value assets. This is the primary and most significant red flag.",
+          "Transaction Type 'AGREEMENT_TO_SELL' with Nominal Value: While an agreement precedes a sale, a nominal value for a formal, registered agreement to sell suggests either a preparatory step for tax evasion (undeclared consideration) or an attempt to block a property with minimal cost, possibly for future illicit transfer.",
+          "Potential for Undervaluation/Tax Evasion: A consideration value of 1.0 strongly indicates that the true value of the underlying asset is being misrepresented, likely to avoid stamp duty, registration fees, or capital gains taxes.",
+          "Related Buyers from Same Seller on Same Date: Two transactions occurred on the same date from the same complex seller to buyers who are confirmed to be brothers (G.V.Ananda and G.V.Srinivasa Reddy), acquiring property for their respective families (including minors). While family transactions can happen, combined with the nominal value, it raises questions about the true nature and intent.",
+          "Complexity of Seller Name: The seller's name is exceptionally long and involves multiple entities and representatives, which while potentially legitimate for large developers, can also be a tactic to obscure ownership or responsibility in fraudulent schemes."
+        ],
+        "risk_level": "HIGH",
+        "score": 85
+      },
+      "detailed_findings": {
+        "sample_transactions": [
+          {
+            "buyer_name": "Sri.G.V.Ananda S/o Late Venkatappa Reddy @ Abbaiah, Kum. Yashaswi Anand D/o G V Ananda and Master Harshanand S/o G V Ananda Since Minors are represented by their Father and Natural Guardian Sri G V Ananda",
+            "consideration_value": 1,
+            "registration_number": "INR-1-06640-2016-17",
+            "seller_name": "M/s Trishul Buildtech & Infrastructures Private Limited (Formerly Known as M/s Trishul Developers, a Partnership Firm) represented by its Managing Director Mr. K. Prakash Shetty, M/s Prestige Habitat Ventures represented by its Managing Partner Mr. Irfan Razack represented by his PA Holder Mr. M.S. Sanjeeva Kumar",
+            "transaction_date": "2016-12-06",
+            "transaction_type": "AGREEMENT_TO_SELL"
+          },
+          {
+            "buyer_name": "Sri.G.V.Srinivasa Reddy S/o Late Venkatappa Reddy @ Abbaiah, Sri.S.Pradeep S/o Sri.G.V.Srinivasa Reddy, Sri.S.Somashekar S/o Sri.G.V.Srinivasa Reddy, Sri.S.Vishwanath S/o Sri.G.V.Srinivasa Reddy",
+            "consideration_value": 1,
+            "registration_number": "INR-1-06642-2016-17",
+            "seller_name": "M/s Trishul Buildtech & Infrastructures Private Limited (Formerly Known as M/s Trishul Developers, a Partnership Firm) represented by its Managing Director Mr. K. Prakash Shetty, M/s Prestige Habitat Ventures represented by its Managing Partner Mr. Irfan Razack represented by his PA Holder Mr. M.S. Sanjeeva Kumar",
+            "transaction_date": "2016-12-06",
+            "transaction_type": "AGREEMENT_TO_SELL"
+          }
+        ],
+        "transaction_count": 2
+      },
+      "document_analysis": {
+        "duplicate_pages_removed": 0,
+        "total_pages_processed": 24,
+        "unique_pages_after_deduplication": 24
+      },
+      "document_type": "EC",
+      "executive_summary": {
+        "confidence": "HIGH",
+        "recommendation": "Flag these transactions for immediate, high-priority manual investigation. The investigation should focus on:\n1.  **Verification of True Consideration:** Determine the actual market value of the property/asset involved and compare it against the declared 1.0 consideration.\n2.  **Buyer & Seller Due Diligence:** Conduct enhanced due diligence on all parties involved, particularly the source of funds for the buyers and the legitimacy of the seller entities and their representatives.\n3.  **Future Transactions Monitoring:** Monitor for subsequent 'SALE DEED' transactions related to these agreements and scrutinize their declared consideration values and payment methods.\n4.  **Tax Evasion Assessment:** Refer the case to relevant tax authorities for potential tax evasion or money laundering inquiries.\n5.  **Legal Review:** Assess if the nominal value for an 'AGREEMENT_TO_SELL' is legally permissible and if there are any specific local regulations or common practices that might explain this (though it's highly unlikely to be benign for property transactions).",
+        "risk_level": "HIGH",
+        "risk_score": 77,
+        "summary": "Based on analysis of 2 validated transactions, the document shows HIGH fraud risk."
+      },
+      "final_assessment": {
+        "action_required": "YES",
+        "combined_score": 77,
+        "next_steps": [
+          "Escalate to compliance team immediately",
+          "Conduct detailed manual review of all transactions",
+          "Verify seller and buyer identities",
+          "Check for signs of money laundering",
+          "Flag these transactions for immediate, high-priority manual investigation. The investigation should focus on:\n1.  **Verification of True Consideration:** Determine the actual market value of the property/asset involved and compare it against the declared 1.0 consideration.\n2.  **Buyer & Seller Due Diligence:** Conduct enhanced due diligence on all parties involved, particularly the source of funds for the buyers and the legitimacy of the seller entities and their representatives.\n3.  **Future Transactions Monitoring:** Monitor for subsequent 'SALE DEED' transactions related to these agreements and scrutinize their declared consideration values and payment methods.\n4.  **Tax Evasion Assessment:** Refer the case to relevant tax authorities for potential tax evasion or money laundering inquiries.\n5.  **Legal Review:** Assess if the nominal value for an 'AGREEMENT_TO_SELL' is legally permissible and if there are any specific local regulations or common practices that might explain this (though it's highly unlikely to be benign for property transactions)."
+        ],
+        "risk_classification": "HIGH",
+        "risk_range": {
+          "high": "70-100",
+          "low": "0-39",
+          "medium": "40-69"
+        },
+        "scoring_methodology": {
+          "ai_weight": 0.8,
+          "formula": "Final = (AI_Score × 0.8) + (Rule_Score × 0.2) when AI >= 70, else (AI_Score × 0.6) + (Rule_Score × 0.4)",
+          "note": "Higher AI weight applied when AI detects high-risk patterns",
+          "rule_based_weight": 0.2
+        }
+      },
+      "report_metadata": {
+        "analysis_system": "EC Multiple Sales LLM Analysis",
+        "api_provider": "Google Gemini 2.5 Flash",
+        "generated_date": "2026-02-11T19:40:24.143744",
+        "report_type": "EC Fraud Detection Report"
+      },
+      "rule_based_analysis": {
+        "flags_detected": [
+          "Repeated seller detected: M/s Trishul Buildtech & Infrastructures Private Li...",
+          "Multiple transactions with suspiciously low consideration values (2 transactions)",
+          "Transactions involving minors detected (1 transactions)"
+        ],
+        "method": "Pattern Detection (3 rules)",
+        "rules": {
+          "multiple_sales": "3+ sales: +30 points",
+          "rapid_resale": "Sale within 365 days: +25 points",
+          "repeated_seller": "Same seller multiple times: +20 points"
+        },
+        "score": 45
+      },
+      "transaction_analysis": {
+        "breakdown_by_type": {
+          "agreements_to_sell": 2,
+          "gifts": 0,
+          "leases": 0,
+          "mortgages": 0,
+          "others": 0,
+          "releases": 0,
+          "sales": 0
+        },
+        "invalid_transactions": 23,
+        "total_consideration_value": 2,
+        "total_transactions_extracted": 25,
+        "valid_transactions": 2
+      }
+    },
+    "bankloan": {
+      "document_type": "BANK_LOAN",
+      "models": {
+        "extract": "gemini-2.5-flash",
+        "risk": "gemini-2.5-flash"
+      },
+      "input": {
+        "pdf_path": "/home/ravella/landed/CERSAI_Search_Report_200417498632_For_Debtor_Based_Search_10_02_2026_18_03_08_480.pdf"
+      },
+      "loan_details": {
+        "debtor_name": "Gopinatha B M",
+        "loan_amount": "6934403.00",
+        "land_type": "Residential",
+        "mortgaged_property": "BUNGALOW, SITE NO 5, Survey No. 44 1B 1B2, Plot PID 92595, Area 100.66 Square Metre, BADDIHALLI 05 TUMKUR, Tumkur, District Tumkur, Karnataka, Pin 572102",
+        "security_details": "Equitable Mortgage with First Charge",
+        "registration_status": "Not Satisfied",
+        "ltv_ratio": null,
+        "property_value": null,
+        "no_of_charges": 1,
+        "charge_status": "Not Satisfied",
+        "property_age_years": null,
+        "occupancy_type": null,
+        "title_disputes": null
+      },
+      "risk": {
+        "overall_risk_score": 100,
+        "risk_level": "DO_NOT_BUY",
+        "land_type_risk": 0,
+        "security_risk": 100,
+        "registration_risk": 100,
+        "ltv_risk": 100,
+        "cersai_charges_risk": 100,
+        "title_quality_risk": 0,
+        "occupancy_risk": 0,
+        "key_findings": [
+          "❌ DEAL BREAKER: CERSAI shows 'Not Satisfied' (active charge) – property is encumbered.",
+          "❌ DEAL BREAKER: Active loan/charge exists with 'Not Satisfied' status.",
+          "Property is encumbered; clear title transfer is not possible until charge is satisfied.",
+          "High fraud risk if seller asks for payment before clearance.",
+          "Buyer should treat this as automatic rejection unless updated proof is provided."
+        ],
+        "recommendations": [
+          "Reject unless seller clears the loan and CERSAI updates to 'Satisfied'.",
+          "Reject the property unless the seller clears the charge and updates CERSAI.",
+          "Ask for lender NOC + Letter of Satisfaction.",
+          "Re-check fresh CERSAI report after clearance (same debtor/property).",
+          "Proceed only after advocate confirms charge removal and title is clear."
+        ],
+        "risk_factor_breakdown": {
+          "charge_status": "CRITICAL: Not Satisfied",
+          "buyer_rule": "Active charge => DO_NOT_BUY",
+          "deterministic_breakdown": {
+            "normalized_status": "Not Satisfied",
+            "no_of_charges": 1,
+            "title_disputes": false
+          }
+        },
+        "deterministic_overall": 100,
+        "llm_overall": 100,
+        "blend_weights": {
+          "deterministic": 0.55,
+          "llm": 0.45
+        }
+      }
+    },
+    "noc": {
+      "error": "D:\\ocr\\tesseract.exe is not installed or it's not in your PATH. See README file for more information.",
+      "traceback": "Traceback (most recent call last):\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 255, in run_tesseract\n    proc = subprocess.Popen(cmd_args, **subprocess_args())\n  File \"/usr/lib/python3.10/subprocess.py\", line 971, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/usr/lib/python3.10/subprocess.py\", line 1863, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\ocr\\\\tesseract.exe'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/ravella/landed/riskwrapper/main.py\", line 289, in run_and_store\n    res = fn()\n  File \"/home/ravella/landed/riskwrapper/main.py\", line 222, in run_noc\n    return run_noc_wrapper(pdf_paths=cfg[\"pdfs\"])\n  File \"/home/ravella/landed/riskwrapper/noc_wrapper.py\", line 636, in run_noc_wrapper\n    results = process_pdfs(pdf_paths, extract_client, risk_client)\n  File \"/home/ravella/landed/riskwrapper/noc_wrapper.py\", line 491, in process_pdfs\n    pages = ocr_pdf_pages(pdf)\n  File \"/home/ravella/landed/riskwrapper/noc_wrapper.py\", line 171, in ocr_pdf_pages\n    txt = pytesseract.image_to_string(img, lang=\"eng\", config=\"--psm 6\") or \"\"\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 423, in image_to_string\n    return {\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 426, in <lambda>\n    Output.STRING: lambda: run_and_get_output(*args),\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 288, in run_and_get_output\n    run_tesseract(**kwargs)\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 260, in run_tesseract\n    raise TesseractNotFoundError()\npytesseract.pytesseract.TesseractNotFoundError: D:\\ocr\\tesseract.exe is not installed or it's not in your PATH. See README file for more information.\n"
+    },
+    "riskScore": 0,
+    "riskLevel": "Pass",
+    "checks": [
+      {
+        "id": 101,
+        "category": "Utilities",
+        "title": "BESCOM Verification",
+        "original_module": "bescom",
+        "status": "Fail",
+        "score": 17.22,
+        "findings": "Utility bill records verified.",
+        "extracted_data": {
+          "document_type": "BESCOM",
+          "pdf_path": "/home/ravella/landed/7220755000.pdf",
+          "system_data": {
+            "name": "G KRISHNA REDDY",
+            "address": "KAGADASPURAKAGADASPURA, -, KAR -560016"
+          },
+          "user_data": {
+            "name": "TEST USER",
+            "address": "TEST ADDRESS"
+          },
+          "match_score": 17.22,
+          "risk_score": 82.78
+        }
+      },
+      {
+        "id": 102,
+        "category": "Utilities",
+        "title": "Water Board (BWSSB)",
+        "original_module": "water",
+        "status": "Pass",
+        "score": 83.93,
+        "findings": "Water connection records verified.",
+        "extracted_data": {
+          "document_type": "WATER_BILL",
+          "rr_number": "N-435608",
+          "system_data": {
+            "RR Number": "N-435608",
+            "Consumer Name": "A.UMESH CHANDRA",
+            "Consumer Address": "1266,1ST BLOCK,BEL LAYOUT,,VIDYARANYAPURA.,Bangalore",
+            "Bill Number": "N-435608030",
+            "Bill Date": "1/3/2026",
+            "Bill Amount": "391"
+          },
+          "user_data": {
+            "Consumer Name": "UMESH CHANDRA",
+            "Consumer Address": "1266 BEL LAYOUT VIDYARANYAPURA"
+          },
+          "match_score": 83.93,
+          "risk_score": 16.07
+        }
+      },
+      {
+        "id": 103,
+        "category": "Revenue Records",
+        "title": "Khata (PID) Check",
+        "original_module": "khata",
+        "status": "Pass",
+        "score": 100,
+        "findings": "Property ID and Khata records verified.",
+        "extracted_data": {
+          "document_type": "KHATA",
+          "status": "OK",
+          "report_metadata": {
+            "generated_date": "2026-02-11T21:55:01.776425",
+            "source": "https://bbmptax.karnataka.gov.in/",
+            "ai_used": true
+          },
+          "input": {
+            "pid_number": "1500082907",
+            "owner_name_prefix": "RAM",
+            "expected_owner_name": "RAM KUMAR",
+            "application_number": "1500082907"
+          },
+          "property_data": {
+            "PID": "1500082907",
+            "Application_Number": "1500082907",
+            "Owner_Name_Search": "RAM",
+            "Expected_Owner_Name": "RAM KUMAR",
+            "Extraction_Date": "2026-02-11 21:54:45",
+            "Owner_Name_Portal": "A.RAMAKRISHNA",
+            "Address": "Not found",
+            "Khata_Info": "Not found on portal (Manual verification required)",
+            "Khata_Type": "Not found"
+          },
+          "signals": {
+            "pid_valid": true,
+            "total_payment_records": 12,
+            "years_present": [
+              "2025",
+              "2022",
+              "2020",
+              "2020",
+              "2020",
+              "2019",
+              "2018",
+              "2017",
+              "2016",
+              "2016",
+              "2016",
+              "2015"
+            ],
+            "latest_assessment_year": "2025",
+            "unpaid_years": 4,
+            "payment_consistency": 1,
+            "recent_payment": "2025",
+            "khata_type": "Not found",
+            "khata_info": "Not found on portal (Manual verification required)",
+            "owner_name_match": 1,
+            "owner_match_mode": "PARTIAL_SUBSTRING",
+            "owner_match_reason": "High score is likely from substring/prefix match (e.g., 'RAM' found inside portal name). Not a strict full-name equality check.",
+            "owner_search_prefix": "RAM",
+            "owner_expected": "RAM KUMAR",
+            "owner_portal": "A.RAMAKRISHNA",
+            "khata_info_available": false,
+            "address_available": false,
+            "pid_verified": false
+          },
+          "rule_based_risk": {
+            "safety_score": 60,
+            "risk_score": 40,
+            "risk_level": "MEDIUM",
+            "reasons": [
+              "✅ PID exists in BBMP records",
+              "⚠️  Khata type not found on portal - Manual verification required",
+              "✅ Owner name matches exactly",
+              "❌ 4 unpaid tax records found",
+              "✅ Recent tax payment: 2025"
+            ],
+            "breakdown": {
+              "PID_Valid": 25,
+              "Khata_Type": 0,
+              "Owner_Match": 20,
+              "Payment_Compliance": 5,
+              "Recent_Activity": 10
+            }
+          },
+          "ai_analysis": {
+            "ai_safety_score": 60,
+            "ai_risk_level": "MEDIUM",
+            "ai_explanation": "The property's PID exists in BBMP records, but the Khata type is not found on the portal and requires immediate manual verification. While the owner match score is 100%, it's based on a partial substring match and not a full name equality, raising significant ownership concerns. Additionally, there are multiple unpaid tax records despite a recent payment.",
+            "khata_verification_status": "FAILED",
+            "ownership_concerns": [
+              "Owner name mismatch: Expected 'RAM KUMAR' does not strictly match portal owner 'A.RAMAKRISHNA', despite a 100% partial substring match score.",
+              "Khata type not found on portal, requiring manual verification."
+            ],
+            "recommended_actions": [
+              "Conduct manual verification of Khata type and status directly with BBMP authorities.",
+              "Verify the exact ownership details and identity of 'RAM KUMAR' against 'A.RAMAKRISHNA' using official property documents.",
+              "Investigate and resolve the 4 outstanding unpaid property tax records.",
+              "Obtain and verify the full property address, as it is currently unavailable."
+            ],
+            "ai_risk_score": 40,
+            "ai_used": true,
+            "final_safety_score": 60,
+            "final_risk_score": 40,
+            "final_risk_level": "MEDIUM"
+          },
+          "final_assessment": {
+            "final_safety_score": 60,
+            "final_risk_score": 40,
+            "final_risk_level": "MEDIUM"
+          },
+          "exports": {
+            "excel_report_path": "khata_output\\khata_report.xlsx"
+          }
+        }
+      },
+      {
+        "id": 104,
+        "category": "Tax Payments",
+        "title": "BBMP Property Tax",
+        "original_module": "bbmp_property_tax",
+        "status": "Pass",
+        "score": 100,
+        "findings": "Risk Level: undefined. Verified across multiple years.",
+        "extracted_data": {
+          "error": "[Errno 2] No such file or directory: 'riskwrapper/bbmp_property_details.xlsx'",
+          "traceback": "Traceback (most recent call last):\n  File \"/home/ravella/landed/riskwrapper/main.py\", line 289, in run_and_store\n    res = fn()\n  File \"/home/ravella/landed/riskwrapper/main.py\", line 187, in run_bbmp\n    return run_bbmp_propertytax_wrapper(excel_path=cfg[\"excel\"])\n  File \"/home/ravella/landed/riskwrapper/bbmp_propertytax_wrapper.py\", line 433, in run_bbmp_propertytax_wrapper\n    facts = extract_facts_from_excel(excel_path)\n  File \"/home/ravella/landed/riskwrapper/bbmp_propertytax_wrapper.py\", line 16, in extract_facts_from_excel\n    df = pd.read_excel(excel_path)\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pandas/io/excel/_base.py\", line 495, in read_excel\n    io = ExcelFile(\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pandas/io/excel/_base.py\", line 1550, in __init__\n    ext = inspect_excel_format(\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pandas/io/excel/_base.py\", line 1402, in inspect_excel_format\n    with get_handle(\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pandas/io/common.py\", line 882, in get_handle\n    handle = open(handle, ioargs.mode)\nFileNotFoundError: [Errno 2] No such file or directory: 'riskwrapper/bbmp_property_details.xlsx'\n"
+        }
+      },
+      {
+        "id": 105,
+        "category": "Legal History",
+        "title": "Deep EC Verification",
+        "original_module": "ec",
+        "status": "Fail",
+        "score": 23,
+        "findings": "Based on analysis of 2 validated transactions, the document shows HIGH fraud risk.",
+        "extracted_data": {
+          "ai_analysis": {
+            "confidence": "HIGH",
+            "method": "Google Gemini AI Analysis",
+            "pattern_analysis": "The data shows two 'AGREEMENT_TO_SELL' transactions executed on the same date (2016-12-06) with the identical, complex seller. The striking pattern is the 'consideration_value' being exactly 1.0 in both cases. The buyers, Sri.G.V.Ananda and Sri.G.V.Srinivasa Reddy, are identified as sons of the same late individual, indicating they are brothers. They are acquiring property for their respective families. This coordinated activity, coupled with the highly suspicious nominal consideration for agreements to sell, strongly suggests an attempt to either undervalue the asset for tax purposes, conceal the true financial transaction (undeclared funds), or utilize a shell transaction for some other illicit purpose, rather than a transparent, fair-value commercial agreement. The 'AGREEMENT_TO_SELL' type implies a future full sale, making the nominal agreement value a prime indicator of potential future non-declaration of actual consideration.",
+            "recommendation": "Flag these transactions for immediate, high-priority manual investigation. The investigation should focus on:\n1.  **Verification of True Consideration:** Determine the actual market value of the property/asset involved and compare it against the declared 1.0 consideration.\n2.  **Buyer & Seller Due Diligence:** Conduct enhanced due diligence on all parties involved, particularly the source of funds for the buyers and the legitimacy of the seller entities and their representatives.\n3.  **Future Transactions Monitoring:** Monitor for subsequent 'SALE DEED' transactions related to these agreements and scrutinize their declared consideration values and payment methods.\n4.  **Tax Evasion Assessment:** Refer the case to relevant tax authorities for potential tax evasion or money laundering inquiries.\n5.  **Legal Review:** Assess if the nominal value for an 'AGREEMENT_TO_SELL' is legally permissible and if there are any specific local regulations or common practices that might explain this (though it's highly unlikely to be benign for property transactions).",
+            "risk_indicators": [
+              "Nominal Consideration Value: Both transactions list a 'consideration_value' of 1.0, which is highly unusual and suspicious for an 'AGREEMENT_TO_SELL' involving what appears to be real estate or high-value assets. This is the primary and most significant red flag.",
+              "Transaction Type 'AGREEMENT_TO_SELL' with Nominal Value: While an agreement precedes a sale, a nominal value for a formal, registered agreement to sell suggests either a preparatory step for tax evasion (undeclared consideration) or an attempt to block a property with minimal cost, possibly for future illicit transfer.",
+              "Potential for Undervaluation/Tax Evasion: A consideration value of 1.0 strongly indicates that the true value of the underlying asset is being misrepresented, likely to avoid stamp duty, registration fees, or capital gains taxes.",
+              "Related Buyers from Same Seller on Same Date: Two transactions occurred on the same date from the same complex seller to buyers who are confirmed to be brothers (G.V.Ananda and G.V.Srinivasa Reddy), acquiring property for their respective families (including minors). While family transactions can happen, combined with the nominal value, it raises questions about the true nature and intent.",
+              "Complexity of Seller Name: The seller's name is exceptionally long and involves multiple entities and representatives, which while potentially legitimate for large developers, can also be a tactic to obscure ownership or responsibility in fraudulent schemes."
+            ],
+            "risk_level": "HIGH",
+            "score": 85
+          },
+          "detailed_findings": {
+            "sample_transactions": [
+              {
+                "buyer_name": "Sri.G.V.Ananda S/o Late Venkatappa Reddy @ Abbaiah, Kum. Yashaswi Anand D/o G V Ananda and Master Harshanand S/o G V Ananda Since Minors are represented by their Father and Natural Guardian Sri G V Ananda",
+                "consideration_value": 1,
+                "registration_number": "INR-1-06640-2016-17",
+                "seller_name": "M/s Trishul Buildtech & Infrastructures Private Limited (Formerly Known as M/s Trishul Developers, a Partnership Firm) represented by its Managing Director Mr. K. Prakash Shetty, M/s Prestige Habitat Ventures represented by its Managing Partner Mr. Irfan Razack represented by his PA Holder Mr. M.S. Sanjeeva Kumar",
+                "transaction_date": "2016-12-06",
+                "transaction_type": "AGREEMENT_TO_SELL"
+              },
+              {
+                "buyer_name": "Sri.G.V.Srinivasa Reddy S/o Late Venkatappa Reddy @ Abbaiah, Sri.S.Pradeep S/o Sri.G.V.Srinivasa Reddy, Sri.S.Somashekar S/o Sri.G.V.Srinivasa Reddy, Sri.S.Vishwanath S/o Sri.G.V.Srinivasa Reddy",
+                "consideration_value": 1,
+                "registration_number": "INR-1-06642-2016-17",
+                "seller_name": "M/s Trishul Buildtech & Infrastructures Private Limited (Formerly Known as M/s Trishul Developers, a Partnership Firm) represented by its Managing Director Mr. K. Prakash Shetty, M/s Prestige Habitat Ventures represented by its Managing Partner Mr. Irfan Razack represented by his PA Holder Mr. M.S. Sanjeeva Kumar",
+                "transaction_date": "2016-12-06",
+                "transaction_type": "AGREEMENT_TO_SELL"
+              }
+            ],
+            "transaction_count": 2
+          },
+          "document_analysis": {
+            "duplicate_pages_removed": 0,
+            "total_pages_processed": 24,
+            "unique_pages_after_deduplication": 24
+          },
+          "document_type": "EC",
+          "executive_summary": {
+            "confidence": "HIGH",
+            "recommendation": "Flag these transactions for immediate, high-priority manual investigation. The investigation should focus on:\n1.  **Verification of True Consideration:** Determine the actual market value of the property/asset involved and compare it against the declared 1.0 consideration.\n2.  **Buyer & Seller Due Diligence:** Conduct enhanced due diligence on all parties involved, particularly the source of funds for the buyers and the legitimacy of the seller entities and their representatives.\n3.  **Future Transactions Monitoring:** Monitor for subsequent 'SALE DEED' transactions related to these agreements and scrutinize their declared consideration values and payment methods.\n4.  **Tax Evasion Assessment:** Refer the case to relevant tax authorities for potential tax evasion or money laundering inquiries.\n5.  **Legal Review:** Assess if the nominal value for an 'AGREEMENT_TO_SELL' is legally permissible and if there are any specific local regulations or common practices that might explain this (though it's highly unlikely to be benign for property transactions).",
+            "risk_level": "HIGH",
+            "risk_score": 77,
+            "summary": "Based on analysis of 2 validated transactions, the document shows HIGH fraud risk."
+          },
+          "final_assessment": {
+            "action_required": "YES",
+            "combined_score": 77,
+            "next_steps": [
+              "Escalate to compliance team immediately",
+              "Conduct detailed manual review of all transactions",
+              "Verify seller and buyer identities",
+              "Check for signs of money laundering",
+              "Flag these transactions for immediate, high-priority manual investigation. The investigation should focus on:\n1.  **Verification of True Consideration:** Determine the actual market value of the property/asset involved and compare it against the declared 1.0 consideration.\n2.  **Buyer & Seller Due Diligence:** Conduct enhanced due diligence on all parties involved, particularly the source of funds for the buyers and the legitimacy of the seller entities and their representatives.\n3.  **Future Transactions Monitoring:** Monitor for subsequent 'SALE DEED' transactions related to these agreements and scrutinize their declared consideration values and payment methods.\n4.  **Tax Evasion Assessment:** Refer the case to relevant tax authorities for potential tax evasion or money laundering inquiries.\n5.  **Legal Review:** Assess if the nominal value for an 'AGREEMENT_TO_SELL' is legally permissible and if there are any specific local regulations or common practices that might explain this (though it's highly unlikely to be benign for property transactions)."
+            ],
+            "risk_classification": "HIGH",
+            "risk_range": {
+              "high": "70-100",
+              "low": "0-39",
+              "medium": "40-69"
+            },
+            "scoring_methodology": {
+              "ai_weight": 0.8,
+              "formula": "Final = (AI_Score × 0.8) + (Rule_Score × 0.2) when AI >= 70, else (AI_Score × 0.6) + (Rule_Score × 0.4)",
+              "note": "Higher AI weight applied when AI detects high-risk patterns",
+              "rule_based_weight": 0.2
+            }
+          },
+          "report_metadata": {
+            "analysis_system": "EC Multiple Sales LLM Analysis",
+            "api_provider": "Google Gemini 2.5 Flash",
+            "generated_date": "2026-02-11T19:40:24.143744",
+            "report_type": "EC Fraud Detection Report"
+          },
+          "rule_based_analysis": {
+            "flags_detected": [
+              "Repeated seller detected: M/s Trishul Buildtech & Infrastructures Private Li...",
+              "Multiple transactions with suspiciously low consideration values (2 transactions)",
+              "Transactions involving minors detected (1 transactions)"
+            ],
+            "method": "Pattern Detection (3 rules)",
+            "rules": {
+              "multiple_sales": "3+ sales: +30 points",
+              "rapid_resale": "Sale within 365 days: +25 points",
+              "repeated_seller": "Same seller multiple times: +20 points"
+            },
+            "score": 45
+          },
+          "transaction_analysis": {
+            "breakdown_by_type": {
+              "agreements_to_sell": 2,
+              "gifts": 0,
+              "leases": 0,
+              "mortgages": 0,
+              "others": 0,
+              "releases": 0,
+              "sales": 0
+            },
+            "invalid_transactions": 23,
+            "total_consideration_value": 2,
+            "total_transactions_extracted": 25,
+            "valid_transactions": 2
+          }
+        }
+      },
+      {
+        "id": 106,
+        "category": "Building Legal",
+        "title": "Occupancy Certificate (OC)",
+        "original_module": "oc",
+        "status": "Pass",
+        "score": 68,
+        "findings": "OC documents verified against project status.",
+        "extracted_data": {
+          "document_type": "OC",
+          "pdf_path": "/home/ravella/landed/OC-PLH-C.pdf",
+          "important_data": {
+            "issuing_authority": "Joint Director of Town Planning (North), Bruhat Bengaluru Mahanagara Palike",
+            "oc_number": "JD NORTH/ 0254/2014-15",
+            "issue_date": "2018-07-24",
+            "project_name": null,
+            "property_address": "Katha No. 617, Municipal No. 52, Sy No. 176/1, 178/2, 178/3, 179, 180/1, 180/2, 181/1, 181/2, 181/3, 181/4, 182, 183/1, 183/2, 183/3, 183/4, 184/1, 184/2, 7186/1, 187/2, 188/2, 188/5J, 188/5©, 189/1, 190/1, 190/2, 1914/1, 1914/3, 192/3, 192/4, 195/1, 196, 197/1, 197/2, 197/3, 198/1 198/2, 199, 200/2, 203/1, 203/2, 204/1, 204/2, 204/3, 204/4, 204/5, 204/6, 204/7J, 204/7©, 205/1, 205/2, 205/3, 205/4, 205/5, 207/1, 207/2, 207/3, 207/4, 207/5, 207/6, 208, 2710/1, 210/3, 210/4, 210/5, 210/6A, 210/6B, 210/7A, 7B, 210/8, 210/9, 210/10, 210/11, 210/12, 210/134, 210/13B, 210/15A, 210/15B, 210/16, 210/17, 210/18, 211/1, 2114/2, 211/6A, 211/7, 220/1 of Gunjuru Village and Sy No. 28/11, 28/14, 28/5, 28/13, 28/16 of Balagere Village Varthur Hobli, Ward No. 149, Mahadevapura Zone, Bengaluru",
+            "builtup_area": "814075.93 Sqm",
+            "usage_type": "Residential Apartment Building, Villas, Club House, Car Parking",
+            "required_clearances": [
+              "Fire Clearance for the Occupancy Certificate vide No. GBC(1)/388/2013 dated: 16-03-2018 & 16-05-2018",
+              "CFO issued by KSPCB vide No. PCB/ 357/CNP/13 dated: 10-07-2017"
+            ],
+            "noted_deviations": [
+              "Deviation in construction with reference to the sanctioned plan which is within the limits of regularization as per Building Bye-laws - 2003. The deviations effected in the building are condoned and regularized accordingly."
+            ],
+            "conditions_top": [
+              "The car parking at 2 Basement Floors and Ground Floor area shall have adequate safety measures. It shall be done entirely at the risk and cost of the owner. BBMP will not be responsible for any kind of damage, losses, risks etc., arising out of the same.",
+              "The structural safety of building will be entirely at the risk and cost of owner / Architect / Engineer / Structural Engineer and BBMP will not be responsible for structural safety.",
+              "Owner shall not add or alter materially, the structure or a part of the structure there off without specific permission from BBMP. In the event of the applicant violating, the BBMP has the right to demolish the deviated / altered / additional portion without any prior notice.",
+              "2 Basement Floors and Ground Floor area should be used for car parking purpose only and the additional area if any available in, 2 Basement Floors and Ground Floor area shall be used exclusively for car parking purpose only.",
+              "Footpath and road side drain in front of the building should be maintained in good condition.",
+              "Rain water harvesting structure shall be maintained in good condition for storage of water and shall be used for non potable purpose or recharge of ground water at all times as per Building Bye-laws-2003 clause No. 32 (b).",
+              "Since, deviations have been done from the sanctioned plan while constructing the building, the security deposit is here with forfeited",
+              "Owner shall make his own arrangements to dispose off the debris/garbage after segregating it into organic and inorganic waste generated from the building. Suitable arrangements shall be made by the owner himself to transport and dump these segregated wastes in consultation with the BBMP Zonal Health Officer."
+            ]
+          },
+          "scores": {
+            "rule_score": 78,
+            "rule_risk_score": 22,
+            "llm_suggested_score": 45,
+            "llm_risk_score": 55,
+            "blended_score": 68,
+            "blended_risk_score": 32,
+            "overall_risk_level": "HIGH"
+          },
+          "reasons": {
+            "rule_deductions": [
+              "-8 : Deviations/exclusions noted in OC",
+              "-3 : Unknown: Fire NOC validity",
+              "-2 : Unknown: structural condition",
+              "-1 : Unknown: lift certificate",
+              "-2 : Unknown: basement usage compliance",
+              "-1 : Unknown: basement flooding history",
+              "-2 : Unknown: STP status",
+              "-1 : Unknown: RWH status"
+            ],
+            "llm_risk_summary": "The primary risks identified pertain to the lack of documented evidence for ongoing fire safety compliance, specifically the biennial Fire Clearance renewals and annual fire equipment inspections, which are critical for a high-rise residential complex. The Occupancy Certificate (OC) was issued in 2018, and the document does not provide proof of these subsequent mandatory renewals or inspections. Additionally, a history of construction deviations, though regularized, indicates past non-adherence to sanctioned plans. The OC also places significant liability on the owner for structural and car parking safety.",
+            "top_llm_risks": [
+              {
+                "severity": "HIGH",
+                "category": "Regulatory Compliance / Life Safety",
+                "issue": "Lack of documented evidence for biennial Fire Clearance renewals."
+              },
+              {
+                "severity": "HIGH",
+                "category": "Regulatory Compliance / Life Safety",
+                "issue": "Lack of documented evidence for annual fire equipment inspections and affidavit submissions."
+              },
+              {
+                "severity": "MODERATE",
+                "category": "Regulatory Compliance / Construction Quality",
+                "issue": "History of construction deviations from sanctioned plans."
+              },
+              {
+                "severity": "LOW",
+                "category": "Operational Safety / Liability",
+                "issue": "Owner bears full risk and cost for car parking safety."
+              },
+              {
+                "severity": "LOW",
+                "category": "Operational Safety / Liability",
+                "issue": "Owner bears full risk and cost for structural safety."
+              }
+            ]
+          },
+          "errors": {
+            "ocr": null,
+            "extraction": null,
+            "llm_risk": null
+          }
+        }
+      },
+      {
+        "id": 107,
+        "category": "Building Legal",
+        "title": "Fire/Aviation NOCs",
+        "original_module": "noc",
+        "status": "Pass",
+        "score": 100,
+        "findings": "Safety clearances and NOCs verified.",
+        "extracted_data": {
+          "error": "D:\\ocr\\tesseract.exe is not installed or it's not in your PATH. See README file for more information.",
+          "traceback": "Traceback (most recent call last):\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 255, in run_tesseract\n    proc = subprocess.Popen(cmd_args, **subprocess_args())\n  File \"/usr/lib/python3.10/subprocess.py\", line 971, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/usr/lib/python3.10/subprocess.py\", line 1863, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\ocr\\\\tesseract.exe'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/ravella/landed/riskwrapper/main.py\", line 289, in run_and_store\n    res = fn()\n  File \"/home/ravella/landed/riskwrapper/main.py\", line 222, in run_noc\n    return run_noc_wrapper(pdf_paths=cfg[\"pdfs\"])\n  File \"/home/ravella/landed/riskwrapper/noc_wrapper.py\", line 636, in run_noc_wrapper\n    results = process_pdfs(pdf_paths, extract_client, risk_client)\n  File \"/home/ravella/landed/riskwrapper/noc_wrapper.py\", line 491, in process_pdfs\n    pages = ocr_pdf_pages(pdf)\n  File \"/home/ravella/landed/riskwrapper/noc_wrapper.py\", line 171, in ocr_pdf_pages\n    txt = pytesseract.image_to_string(img, lang=\"eng\", config=\"--psm 6\") or \"\"\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 423, in image_to_string\n    return {\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 426, in <lambda>\n    Output.STRING: lambda: run_and_get_output(*args),\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 288, in run_and_get_output\n    run_tesseract(**kwargs)\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 260, in run_tesseract\n    raise TesseractNotFoundError()\npytesseract.pytesseract.TesseractNotFoundError: D:\\ocr\\tesseract.exe is not installed or it's not in your PATH. See README file for more information.\n"
+        }
+      },
+      {
+        "id": 108,
+        "category": "Project Legal",
+        "title": "Parking Allocation",
+        "original_module": "parking",
+        "status": "Pass",
+        "score": 100,
+        "findings": "Parking slots verified in allotment letter.",
+        "extracted_data": {
+          "error": "D:\\ocr\\tesseract.exe is not installed or it's not in your PATH. See README file for more information.",
+          "traceback": "Traceback (most recent call last):\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 255, in run_tesseract\n    proc = subprocess.Popen(cmd_args, **subprocess_args())\n  File \"/usr/lib/python3.10/subprocess.py\", line 971, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/usr/lib/python3.10/subprocess.py\", line 1863, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\ocr\\\\tesseract.exe'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/ravella/landed/riskwrapper/main.py\", line 289, in run_and_store\n    res = fn()\n  File \"/home/ravella/landed/riskwrapper/main.py\", line 228, in run_parking\n    return run_parking_wrapper(\n  File \"/home/ravella/landed/riskwrapper/parking_wrapper.py\", line 435, in run_parking_wrapper\n    agreement_ocr = ocr_images(agreement_imgs)\n  File \"/home/ravella/landed/riskwrapper/parking_wrapper.py\", line 94, in ocr_images\n    txt = pytesseract.image_to_string(enhanced, config=OCR_CONFIG)\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 423, in image_to_string\n    return {\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 426, in <lambda>\n    Output.STRING: lambda: run_and_get_output(*args),\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 288, in run_and_get_output\n    run_tesseract(**kwargs)\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 260, in run_tesseract\n    raise TesseractNotFoundError()\npytesseract.pytesseract.TesseractNotFoundError: D:\\ocr\\tesseract.exe is not installed or it's not in your PATH. See README file for more information.\n"
+        }
+      },
+      {
+        "id": 109,
+        "category": "Project Legal",
+        "title": "Society Bylaws",
+        "original_module": "bylaws",
+        "status": "Pass",
+        "score": 100,
+        "findings": "Apartment association rules analyzed.",
+        "extracted_data": {
+          "document_type": "BYLAWS",
+          "raw_output": "{\"property\": {\"city\": \"Bengaluru\", \"state\": \"Karnataka\"}, \"formation\": {\"entity_type\": \"Association of Apartment Owners\", \"is_registered\": true, \"registration_number_present\": false, \"registration_date_present\": false}, \"declaration_deed\": {\"dod_present\": true, \"dod_registered\": true, \"dod_date_present\": false}, \"bylaws\": {\"bylaws_present\": true, \"bylaws_registered_or_filed\": true, \"mentions_kaoa_act_or_rules\": true, \"core_sections_present\": {\"membership\": true, \"governance_committee\": true, \"meetings_quorum_voting\": true, \"maintenance_charges\": true, \"funds_audit_accounts\": true, \"penalties_dispute_resolution\": true, \"amendment_process\": true}}, \"governance\": {\"agm_required\": true, \"agm_frequency_yearly\": true, \"elections_defined\": true, \"minutes_and_records_access\": true}, \"financials\": {\"audit_required\": true, \"audit_frequency_yearly\": true, \"corpus_or_sinking_fund_mentioned\": true, \"collection_enforcement_defined\": true}, \"property_compliance\": {\"insurance_mentioned\": true, \"fire_safety_compliance_mentioned\": false, \"common_areas_transfer_mentioned\": false, \"litigation_or_disputes_mentioned\": false}, \"confidence\": 0.9, \"notes\": [\"Entity type identified as 'Association of Apartment Owners' based on definitions and objects.\", \"Registration status for the entity is inferred from its formation 'in accordance with the provisions of the Karnataka Apartment Ownership Act, 1972' and the bylaws being 'as per proforma... prescribed by Rule 3'.\", \"Specific registration number or date for the Association's formation is not present.\", \"Specific date for the Declaration Deed is not present.\", \"Bylaws are considered 'registered or filed' due to being 'as per proforma... prescribed by Rule 3 of the Karnataka Apartment Ownership Rules, 1974'.\", \"Penalties/dispute resolution includes disqualification for arrears, recovery of sums due, and hearing complaints.\", \"Fire safety compliance is not explicitly mentioned, only 'fire' as an insurable hazard.\", \"Transfer of common areas (e.g., to the association) is not explicitly mentioned; the text discusses ownership of undivided share in land and use of common areas.\"]}",
+          "extract": {
+            "property": {
+              "city": "Bengaluru",
+              "state": "Karnataka"
+            },
+            "formation": {
+              "entity_type": "Association of Apartment Owners",
+              "is_registered": true,
+              "registration_number_present": false,
+              "registration_date_present": false
+            },
+            "declaration_deed": {
+              "dod_present": true,
+              "dod_registered": true,
+              "dod_date_present": false
+            },
+            "bylaws": {
+              "bylaws_present": true,
+              "bylaws_registered_or_filed": true,
+              "mentions_kaoa_act_or_rules": true,
+              "core_sections_present": {
+                "membership": true,
+                "governance_committee": true,
+                "meetings_quorum_voting": true,
+                "maintenance_charges": true,
+                "funds_audit_accounts": true,
+                "penalties_dispute_resolution": true,
+                "amendment_process": true
+              }
+            },
+            "governance": {
+              "agm_required": true,
+              "agm_frequency_yearly": true,
+              "elections_defined": true,
+              "minutes_and_records_access": true
+            },
+            "financials": {
+              "audit_required": true,
+              "audit_frequency_yearly": true,
+              "corpus_or_sinking_fund_mentioned": true,
+              "collection_enforcement_defined": true
+            },
+            "property_compliance": {
+              "insurance_mentioned": true,
+              "fire_safety_compliance_mentioned": false,
+              "common_areas_transfer_mentioned": false,
+              "litigation_or_disputes_mentioned": false
+            },
+            "confidence": 0.9,
+            "notes": [
+              "Entity type identified as 'Association of Apartment Owners' based on definitions and objects.",
+              "Registration status for the entity is inferred from its formation 'in accordance with the provisions of the Karnataka Apartment Ownership Act, 1972' and the bylaws being 'as per proforma... prescribed by Rule 3'.",
+              "Specific registration number or date for the Association's formation is not present.",
+              "Specific date for the Declaration Deed is not present.",
+              "Bylaws are considered 'registered or filed' due to being 'as per proforma... prescribed by Rule 3 of the Karnataka Apartment Ownership Rules, 1974'.",
+              "Penalties/dispute resolution includes disqualification for arrears, recovery of sums due, and hearing complaints.",
+              "Fire safety compliance is not explicitly mentioned, only 'fire' as an insurable hazard.",
+              "Transfer of common areas (e.g., to the association) is not explicitly mentioned; the text discusses ownership of undivided share in land and use of common areas."
+            ]
+          },
+          "score": 84,
+          "risk_score": 16,
+          "risk_level": "MEDIUM-LOW",
+          "breakdown": {
+            "dimension_scores": {
+              "legal_formation_registration": {
+                "score": 15,
+                "max": 25
+              },
+              "bylaws_coverage_quality": {
+                "score": 15,
+                "max": 15
+              },
+              "governance_transparency": {
+                "score": 15,
+                "max": 15
+              },
+              "financial_discipline": {
+                "score": 20,
+                "max": 20
+              },
+              "property_compliance": {
+                "score": 5,
+                "max": 10
+              },
+              "evidence_confidence": {
+                "score": 14,
+                "max": 15
+              }
+            },
+            "notes": [
+              "Entity type identified as 'Association of Apartment Owners' based on definitions and objects.",
+              "Registration status for the entity is inferred from its formation 'in accordance with the provisions of the Karnataka Apartment Ownership Act, 1972' and the bylaws being 'as per proforma... prescribed by Rule 3'.",
+              "Specific registration number or date for the Association's formation is not present.",
+              "Specific date for the Declaration Deed is not present.",
+              "Bylaws are considered 'registered or filed' due to being 'as per proforma... prescribed by Rule 3 of the Karnataka Apartment Ownership Rules, 1974'.",
+              "Penalties/dispute resolution includes disqualification for arrears, recovery of sums due, and hearing complaints.",
+              "Fire safety compliance is not explicitly mentioned, only 'fire' as an insurable hazard.",
+              "Transfer of common areas (e.g., to the association) is not explicitly mentioned; the text discusses ownership of undivided share in land and use of common areas."
+            ]
+          },
+          "artifacts": null
+        }
+      },
+      {
+        "id": 110,
+        "category": "Project Legal",
+        "title": "Builder Track Record",
+        "original_module": "builder",
+        "status": "Warning",
+        "score": 59,
+        "findings": "Builder's historical delivery checked.",
+        "extracted_data": {
+          "document_type": "BUILDER",
+          "db_path": "/home/ravella/landed/riskwrapper/db/builder.db",
+          "seeded": false,
+          "builder": {
+            "name": "Prestige Group",
+            "city": "Bangalore",
+            "years_active": 25,
+            "projects": [
+              {
+                "name": "Prestige Falcon City",
+                "status": "completed",
+                "delay_months": 3
+              },
+              {
+                "name": "Prestige Lakeside Habitat",
+                "status": "completed",
+                "delay_months": 6
+              }
+            ],
+            "issues": [
+              {
+                "type": "delay",
+                "count": 1
+              }
+            ]
+          },
+          "rule_based": {
+            "risk_score": 27,
+            "risk_level": "LOW",
+            "reasons": [
+              "RERA compliance: no revoked/suspended signals in DB (placeholder)",
+              "Delivery: 2 delayed out of 2 projects",
+              "Professionals: avg projects completed ≈ 214.0",
+              "Experience: active for 25 years",
+              "Issues: total issue count=1 (penalty applied)"
+            ]
+          },
+          "llm": {
+            "enabled": true,
+            "output": {
+              "score": 75,
+              "risk_level": "HIGH",
+              "confidence": 0.4,
+              "reasons": [
+                "All reported projects (2 out of 2) have experienced significant delays, indicating a 100% delay rate.",
+                "The average delay of 4.5 months per project is substantial.",
+                "Despite 25 years of activity and experienced professionals, the builder's recent project delivery performance is extremely poor.",
+                "The very low total project count (2 projects in 25 years) limits the overall data reliability and raises concerns about the builder's operational scale or consistency."
+              ]
+            }
+          },
+          "final": {
+            "rule_weight": 0.7,
+            "llm_weight": 0.30000000000000004,
+            "risk_score": 41,
+            "risk_level": "MEDIUM"
+          }
+        }
+      },
+      {
+        "id": 111,
+        "category": "Financial",
+        "title": "CERSAI/Bank Loan Check",
+        "original_module": "bankloan",
+        "status": "Fail",
+        "score": 0,
+        "findings": "Property mortgage status checked via CERSAI.",
+        "extracted_data": {
+          "document_type": "BANK_LOAN",
+          "models": {
+            "extract": "gemini-2.5-flash",
+            "risk": "gemini-2.5-flash"
+          },
+          "input": {
+            "pdf_path": "/home/ravella/landed/CERSAI_Search_Report_200417498632_For_Debtor_Based_Search_10_02_2026_18_03_08_480.pdf"
+          },
+          "loan_details": {
+            "debtor_name": "Gopinatha B M",
+            "loan_amount": "6934403.00",
+            "land_type": "Residential",
+            "mortgaged_property": "BUNGALOW, SITE NO 5, Survey No. 44 1B 1B2, Plot PID 92595, Area 100.66 Square Metre, BADDIHALLI 05 TUMKUR, Tumkur, District Tumkur, Karnataka, Pin 572102",
+            "security_details": "Equitable Mortgage with First Charge",
+            "registration_status": "Not Satisfied",
+            "ltv_ratio": null,
+            "property_value": null,
+            "no_of_charges": 1,
+            "charge_status": "Not Satisfied",
+            "property_age_years": null,
+            "occupancy_type": null,
+            "title_disputes": null
+          },
+          "risk": {
+            "overall_risk_score": 100,
+            "risk_level": "DO_NOT_BUY",
+            "land_type_risk": 0,
+            "security_risk": 100,
+            "registration_risk": 100,
+            "ltv_risk": 100,
+            "cersai_charges_risk": 100,
+            "title_quality_risk": 0,
+            "occupancy_risk": 0,
+            "key_findings": [
+              "❌ DEAL BREAKER: CERSAI shows 'Not Satisfied' (active charge) – property is encumbered.",
+              "❌ DEAL BREAKER: Active loan/charge exists with 'Not Satisfied' status.",
+              "Property is encumbered; clear title transfer is not possible until charge is satisfied.",
+              "High fraud risk if seller asks for payment before clearance.",
+              "Buyer should treat this as automatic rejection unless updated proof is provided."
+            ],
+            "recommendations": [
+              "Reject unless seller clears the loan and CERSAI updates to 'Satisfied'.",
+              "Reject the property unless the seller clears the charge and updates CERSAI.",
+              "Ask for lender NOC + Letter of Satisfaction.",
+              "Re-check fresh CERSAI report after clearance (same debtor/property).",
+              "Proceed only after advocate confirms charge removal and title is clear."
+            ],
+            "risk_factor_breakdown": {
+              "charge_status": "CRITICAL: Not Satisfied",
+              "buyer_rule": "Active charge => DO_NOT_BUY",
+              "deterministic_breakdown": {
+                "normalized_status": "Not Satisfied",
+                "no_of_charges": 1,
+                "title_disputes": false
+              }
+            },
+            "deterministic_overall": 100,
+            "llm_overall": 100,
+            "blend_weights": {
+              "deterministic": 0.55,
+              "llm": 0.45
+            }
+          }
+        }
+      }
+    ],
+    "summary": " Full deep verification (Utilities, Revenue, Tax, Building Legal, Project Legal, Financial) completed.",
+    "dashboard_checks": {
+      "riskScore": 0,
+      "riskLevel": "Pass",
+      "checks": [],
+      "summary": ""
+    },
+    "risk_engine": {
+      "bescom": {
+        "document_type": "BESCOM",
+        "pdf_path": "/home/ravella/landed/7220755000.pdf",
+        "system_data": {
+          "name": "G KRISHNA REDDY",
+          "address": "KAGADASPURAKAGADASPURA, -, KAR -560016"
+        },
+        "user_data": {
+          "name": "TEST USER",
+          "address": "TEST ADDRESS"
+        },
+        "match_score": 17.22,
+        "risk_score": 82.78
+      },
+      "water": {
+        "document_type": "WATER_BILL",
+        "rr_number": "N-435608",
+        "system_data": {
+          "RR Number": "N-435608",
+          "Consumer Name": "A.UMESH CHANDRA",
+          "Consumer Address": "1266,1ST BLOCK,BEL LAYOUT,,VIDYARANYAPURA.,Bangalore",
+          "Bill Number": "N-435608030",
+          "Bill Date": "1/3/2026",
+          "Bill Amount": "391"
+        },
+        "user_data": {
+          "Consumer Name": "UMESH CHANDRA",
+          "Consumer Address": "1266 BEL LAYOUT VIDYARANYAPURA"
+        },
+        "match_score": 83.93,
+        "risk_score": 16.07
+      },
+      "bbmp_property_tax": {
+        "error": "[Errno 2] No such file or directory: 'riskwrapper/bbmp_property_details.xlsx'",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/ravella/landed/riskwrapper/main.py\", line 289, in run_and_store\n    res = fn()\n  File \"/home/ravella/landed/riskwrapper/main.py\", line 187, in run_bbmp\n    return run_bbmp_propertytax_wrapper(excel_path=cfg[\"excel\"])\n  File \"/home/ravella/landed/riskwrapper/bbmp_propertytax_wrapper.py\", line 433, in run_bbmp_propertytax_wrapper\n    facts = extract_facts_from_excel(excel_path)\n  File \"/home/ravella/landed/riskwrapper/bbmp_propertytax_wrapper.py\", line 16, in extract_facts_from_excel\n    df = pd.read_excel(excel_path)\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pandas/io/excel/_base.py\", line 495, in read_excel\n    io = ExcelFile(\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pandas/io/excel/_base.py\", line 1550, in __init__\n    ext = inspect_excel_format(\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pandas/io/excel/_base.py\", line 1402, in inspect_excel_format\n    with get_handle(\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pandas/io/common.py\", line 882, in get_handle\n    handle = open(handle, ioargs.mode)\nFileNotFoundError: [Errno 2] No such file or directory: 'riskwrapper/bbmp_property_details.xlsx'\n"
+      },
+      "khata": {
+        "document_type": "KHATA",
+        "status": "OK",
+        "report_metadata": {
+          "generated_date": "2026-02-11T21:55:01.776425",
+          "source": "https://bbmptax.karnataka.gov.in/",
+          "ai_used": true
+        },
+        "input": {
+          "pid_number": "1500082907",
+          "owner_name_prefix": "RAM",
+          "expected_owner_name": "RAM KUMAR",
+          "application_number": "1500082907"
+        },
+        "property_data": {
+          "PID": "1500082907",
+          "Application_Number": "1500082907",
+          "Owner_Name_Search": "RAM",
+          "Expected_Owner_Name": "RAM KUMAR",
+          "Extraction_Date": "2026-02-11 21:54:45",
+          "Owner_Name_Portal": "A.RAMAKRISHNA",
+          "Address": "Not found",
+          "Khata_Info": "Not found on portal (Manual verification required)",
+          "Khata_Type": "Not found"
+        },
+        "signals": {
+          "pid_valid": true,
+          "total_payment_records": 12,
+          "years_present": [
+            "2025",
+            "2022",
+            "2020",
+            "2020",
+            "2020",
+            "2019",
+            "2018",
+            "2017",
+            "2016",
+            "2016",
+            "2016",
+            "2015"
+          ],
+          "latest_assessment_year": "2025",
+          "unpaid_years": 4,
+          "payment_consistency": 1,
+          "recent_payment": "2025",
+          "khata_type": "Not found",
+          "khata_info": "Not found on portal (Manual verification required)",
+          "owner_name_match": 1,
+          "owner_match_mode": "PARTIAL_SUBSTRING",
+          "owner_match_reason": "High score is likely from substring/prefix match (e.g., 'RAM' found inside portal name). Not a strict full-name equality check.",
+          "owner_search_prefix": "RAM",
+          "owner_expected": "RAM KUMAR",
+          "owner_portal": "A.RAMAKRISHNA",
+          "khata_info_available": false,
+          "address_available": false,
+          "pid_verified": false
+        },
+        "rule_based_risk": {
+          "safety_score": 60,
+          "risk_score": 40,
+          "risk_level": "MEDIUM",
+          "reasons": [
+            "✅ PID exists in BBMP records",
+            "⚠️  Khata type not found on portal - Manual verification required",
+            "✅ Owner name matches exactly",
+            "❌ 4 unpaid tax records found",
+            "✅ Recent tax payment: 2025"
+          ],
+          "breakdown": {
+            "PID_Valid": 25,
+            "Khata_Type": 0,
+            "Owner_Match": 20,
+            "Payment_Compliance": 5,
+            "Recent_Activity": 10
+          }
+        },
+        "ai_analysis": {
+          "ai_safety_score": 60,
+          "ai_risk_level": "MEDIUM",
+          "ai_explanation": "The property's PID exists in BBMP records, but the Khata type is not found on the portal and requires immediate manual verification. While the owner match score is 100%, it's based on a partial substring match and not a full name equality, raising significant ownership concerns. Additionally, there are multiple unpaid tax records despite a recent payment.",
+          "khata_verification_status": "FAILED",
+          "ownership_concerns": [
+            "Owner name mismatch: Expected 'RAM KUMAR' does not strictly match portal owner 'A.RAMAKRISHNA', despite a 100% partial substring match score.",
+            "Khata type not found on portal, requiring manual verification."
+          ],
+          "recommended_actions": [
+            "Conduct manual verification of Khata type and status directly with BBMP authorities.",
+            "Verify the exact ownership details and identity of 'RAM KUMAR' against 'A.RAMAKRISHNA' using official property documents.",
+            "Investigate and resolve the 4 outstanding unpaid property tax records.",
+            "Obtain and verify the full property address, as it is currently unavailable."
+          ],
+          "ai_risk_score": 40,
+          "ai_used": true,
+          "final_safety_score": 60,
+          "final_risk_score": 40,
+          "final_risk_level": "MEDIUM"
+        },
+        "final_assessment": {
+          "final_safety_score": 60,
+          "final_risk_score": 40,
+          "final_risk_level": "MEDIUM"
+        },
+        "exports": {
+          "excel_report_path": "khata_output\\khata_report.xlsx"
+        }
+      },
+      "oc": {
+        "document_type": "OC",
+        "pdf_path": "/home/ravella/landed/OC-PLH-C.pdf",
+        "important_data": {
+          "issuing_authority": "Joint Director of Town Planning (North), Bruhat Bengaluru Mahanagara Palike",
+          "oc_number": "JD NORTH/ 0254/2014-15",
+          "issue_date": "2018-07-24",
+          "project_name": null,
+          "property_address": "Katha No. 617, Municipal No. 52, Sy No. 176/1, 178/2, 178/3, 179, 180/1, 180/2, 181/1, 181/2, 181/3, 181/4, 182, 183/1, 183/2, 183/3, 183/4, 184/1, 184/2, 7186/1, 187/2, 188/2, 188/5J, 188/5©, 189/1, 190/1, 190/2, 1914/1, 1914/3, 192/3, 192/4, 195/1, 196, 197/1, 197/2, 197/3, 198/1 198/2, 199, 200/2, 203/1, 203/2, 204/1, 204/2, 204/3, 204/4, 204/5, 204/6, 204/7J, 204/7©, 205/1, 205/2, 205/3, 205/4, 205/5, 207/1, 207/2, 207/3, 207/4, 207/5, 207/6, 208, 2710/1, 210/3, 210/4, 210/5, 210/6A, 210/6B, 210/7A, 7B, 210/8, 210/9, 210/10, 210/11, 210/12, 210/134, 210/13B, 210/15A, 210/15B, 210/16, 210/17, 210/18, 211/1, 2114/2, 211/6A, 211/7, 220/1 of Gunjuru Village and Sy No. 28/11, 28/14, 28/5, 28/13, 28/16 of Balagere Village Varthur Hobli, Ward No. 149, Mahadevapura Zone, Bengaluru",
+          "builtup_area": "814075.93 Sqm",
+          "usage_type": "Residential Apartment Building, Villas, Club House, Car Parking",
+          "required_clearances": [
+            "Fire Clearance for the Occupancy Certificate vide No. GBC(1)/388/2013 dated: 16-03-2018 & 16-05-2018",
+            "CFO issued by KSPCB vide No. PCB/ 357/CNP/13 dated: 10-07-2017"
+          ],
+          "noted_deviations": [
+            "Deviation in construction with reference to the sanctioned plan which is within the limits of regularization as per Building Bye-laws - 2003. The deviations effected in the building are condoned and regularized accordingly."
+          ],
+          "conditions_top": [
+            "The car parking at 2 Basement Floors and Ground Floor area shall have adequate safety measures. It shall be done entirely at the risk and cost of the owner. BBMP will not be responsible for any kind of damage, losses, risks etc., arising out of the same.",
+            "The structural safety of building will be entirely at the risk and cost of owner / Architect / Engineer / Structural Engineer and BBMP will not be responsible for structural safety.",
+            "Owner shall not add or alter materially, the structure or a part of the structure there off without specific permission from BBMP. In the event of the applicant violating, the BBMP has the right to demolish the deviated / altered / additional portion without any prior notice.",
+            "2 Basement Floors and Ground Floor area should be used for car parking purpose only and the additional area if any available in, 2 Basement Floors and Ground Floor area shall be used exclusively for car parking purpose only.",
+            "Footpath and road side drain in front of the building should be maintained in good condition.",
+            "Rain water harvesting structure shall be maintained in good condition for storage of water and shall be used for non potable purpose or recharge of ground water at all times as per Building Bye-laws-2003 clause No. 32 (b).",
+            "Since, deviations have been done from the sanctioned plan while constructing the building, the security deposit is here with forfeited",
+            "Owner shall make his own arrangements to dispose off the debris/garbage after segregating it into organic and inorganic waste generated from the building. Suitable arrangements shall be made by the owner himself to transport and dump these segregated wastes in consultation with the BBMP Zonal Health Officer."
+          ]
+        },
+        "scores": {
+          "rule_score": 78,
+          "rule_risk_score": 22,
+          "llm_suggested_score": 45,
+          "llm_risk_score": 55,
+          "blended_score": 68,
+          "blended_risk_score": 32,
+          "overall_risk_level": "HIGH"
+        },
+        "reasons": {
+          "rule_deductions": [
+            "-8 : Deviations/exclusions noted in OC",
+            "-3 : Unknown: Fire NOC validity",
+            "-2 : Unknown: structural condition",
+            "-1 : Unknown: lift certificate",
+            "-2 : Unknown: basement usage compliance",
+            "-1 : Unknown: basement flooding history",
+            "-2 : Unknown: STP status",
+            "-1 : Unknown: RWH status"
+          ],
+          "llm_risk_summary": "The primary risks identified pertain to the lack of documented evidence for ongoing fire safety compliance, specifically the biennial Fire Clearance renewals and annual fire equipment inspections, which are critical for a high-rise residential complex. The Occupancy Certificate (OC) was issued in 2018, and the document does not provide proof of these subsequent mandatory renewals or inspections. Additionally, a history of construction deviations, though regularized, indicates past non-adherence to sanctioned plans. The OC also places significant liability on the owner for structural and car parking safety.",
+          "top_llm_risks": [
+            {
+              "severity": "HIGH",
+              "category": "Regulatory Compliance / Life Safety",
+              "issue": "Lack of documented evidence for biennial Fire Clearance renewals."
+            },
+            {
+              "severity": "HIGH",
+              "category": "Regulatory Compliance / Life Safety",
+              "issue": "Lack of documented evidence for annual fire equipment inspections and affidavit submissions."
+            },
+            {
+              "severity": "MODERATE",
+              "category": "Regulatory Compliance / Construction Quality",
+              "issue": "History of construction deviations from sanctioned plans."
+            },
+            {
+              "severity": "LOW",
+              "category": "Operational Safety / Liability",
+              "issue": "Owner bears full risk and cost for car parking safety."
+            },
+            {
+              "severity": "LOW",
+              "category": "Operational Safety / Liability",
+              "issue": "Owner bears full risk and cost for structural safety."
+            }
+          ]
+        },
+        "errors": {
+          "ocr": null,
+          "extraction": null,
+          "llm_risk": null
+        }
+      },
+      "parking": {
+        "error": "D:\\ocr\\tesseract.exe is not installed or it's not in your PATH. See README file for more information.",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 255, in run_tesseract\n    proc = subprocess.Popen(cmd_args, **subprocess_args())\n  File \"/usr/lib/python3.10/subprocess.py\", line 971, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/usr/lib/python3.10/subprocess.py\", line 1863, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\ocr\\\\tesseract.exe'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/ravella/landed/riskwrapper/main.py\", line 289, in run_and_store\n    res = fn()\n  File \"/home/ravella/landed/riskwrapper/main.py\", line 228, in run_parking\n    return run_parking_wrapper(\n  File \"/home/ravella/landed/riskwrapper/parking_wrapper.py\", line 435, in run_parking_wrapper\n    agreement_ocr = ocr_images(agreement_imgs)\n  File \"/home/ravella/landed/riskwrapper/parking_wrapper.py\", line 94, in ocr_images\n    txt = pytesseract.image_to_string(enhanced, config=OCR_CONFIG)\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 423, in image_to_string\n    return {\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 426, in <lambda>\n    Output.STRING: lambda: run_and_get_output(*args),\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 288, in run_and_get_output\n    run_tesseract(**kwargs)\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 260, in run_tesseract\n    raise TesseractNotFoundError()\npytesseract.pytesseract.TesseractNotFoundError: D:\\ocr\\tesseract.exe is not installed or it's not in your PATH. See README file for more information.\n"
+      },
+      "bylaws": {
+        "document_type": "BYLAWS",
+        "raw_output": "{\"property\": {\"city\": \"Bengaluru\", \"state\": \"Karnataka\"}, \"formation\": {\"entity_type\": \"Association of Apartment Owners\", \"is_registered\": true, \"registration_number_present\": false, \"registration_date_present\": false}, \"declaration_deed\": {\"dod_present\": true, \"dod_registered\": true, \"dod_date_present\": false}, \"bylaws\": {\"bylaws_present\": true, \"bylaws_registered_or_filed\": true, \"mentions_kaoa_act_or_rules\": true, \"core_sections_present\": {\"membership\": true, \"governance_committee\": true, \"meetings_quorum_voting\": true, \"maintenance_charges\": true, \"funds_audit_accounts\": true, \"penalties_dispute_resolution\": true, \"amendment_process\": true}}, \"governance\": {\"agm_required\": true, \"agm_frequency_yearly\": true, \"elections_defined\": true, \"minutes_and_records_access\": true}, \"financials\": {\"audit_required\": true, \"audit_frequency_yearly\": true, \"corpus_or_sinking_fund_mentioned\": true, \"collection_enforcement_defined\": true}, \"property_compliance\": {\"insurance_mentioned\": true, \"fire_safety_compliance_mentioned\": false, \"common_areas_transfer_mentioned\": false, \"litigation_or_disputes_mentioned\": false}, \"confidence\": 0.9, \"notes\": [\"Entity type identified as 'Association of Apartment Owners' based on definitions and objects.\", \"Registration status for the entity is inferred from its formation 'in accordance with the provisions of the Karnataka Apartment Ownership Act, 1972' and the bylaws being 'as per proforma... prescribed by Rule 3'.\", \"Specific registration number or date for the Association's formation is not present.\", \"Specific date for the Declaration Deed is not present.\", \"Bylaws are considered 'registered or filed' due to being 'as per proforma... prescribed by Rule 3 of the Karnataka Apartment Ownership Rules, 1974'.\", \"Penalties/dispute resolution includes disqualification for arrears, recovery of sums due, and hearing complaints.\", \"Fire safety compliance is not explicitly mentioned, only 'fire' as an insurable hazard.\", \"Transfer of common areas (e.g., to the association) is not explicitly mentioned; the text discusses ownership of undivided share in land and use of common areas.\"]}",
+        "extract": {
+          "property": {
+            "city": "Bengaluru",
+            "state": "Karnataka"
+          },
+          "formation": {
+            "entity_type": "Association of Apartment Owners",
+            "is_registered": true,
+            "registration_number_present": false,
+            "registration_date_present": false
+          },
+          "declaration_deed": {
+            "dod_present": true,
+            "dod_registered": true,
+            "dod_date_present": false
+          },
+          "bylaws": {
+            "bylaws_present": true,
+            "bylaws_registered_or_filed": true,
+            "mentions_kaoa_act_or_rules": true,
+            "core_sections_present": {
+              "membership": true,
+              "governance_committee": true,
+              "meetings_quorum_voting": true,
+              "maintenance_charges": true,
+              "funds_audit_accounts": true,
+              "penalties_dispute_resolution": true,
+              "amendment_process": true
+            }
+          },
+          "governance": {
+            "agm_required": true,
+            "agm_frequency_yearly": true,
+            "elections_defined": true,
+            "minutes_and_records_access": true
+          },
+          "financials": {
+            "audit_required": true,
+            "audit_frequency_yearly": true,
+            "corpus_or_sinking_fund_mentioned": true,
+            "collection_enforcement_defined": true
+          },
+          "property_compliance": {
+            "insurance_mentioned": true,
+            "fire_safety_compliance_mentioned": false,
+            "common_areas_transfer_mentioned": false,
+            "litigation_or_disputes_mentioned": false
+          },
+          "confidence": 0.9,
+          "notes": [
+            "Entity type identified as 'Association of Apartment Owners' based on definitions and objects.",
+            "Registration status for the entity is inferred from its formation 'in accordance with the provisions of the Karnataka Apartment Ownership Act, 1972' and the bylaws being 'as per proforma... prescribed by Rule 3'.",
+            "Specific registration number or date for the Association's formation is not present.",
+            "Specific date for the Declaration Deed is not present.",
+            "Bylaws are considered 'registered or filed' due to being 'as per proforma... prescribed by Rule 3 of the Karnataka Apartment Ownership Rules, 1974'.",
+            "Penalties/dispute resolution includes disqualification for arrears, recovery of sums due, and hearing complaints.",
+            "Fire safety compliance is not explicitly mentioned, only 'fire' as an insurable hazard.",
+            "Transfer of common areas (e.g., to the association) is not explicitly mentioned; the text discusses ownership of undivided share in land and use of common areas."
+          ]
+        },
+        "score": 84,
+        "risk_score": 16,
+        "risk_level": "MEDIUM-LOW",
+        "breakdown": {
+          "dimension_scores": {
+            "legal_formation_registration": {
+              "score": 15,
+              "max": 25
+            },
+            "bylaws_coverage_quality": {
+              "score": 15,
+              "max": 15
+            },
+            "governance_transparency": {
+              "score": 15,
+              "max": 15
+            },
+            "financial_discipline": {
+              "score": 20,
+              "max": 20
+            },
+            "property_compliance": {
+              "score": 5,
+              "max": 10
+            },
+            "evidence_confidence": {
+              "score": 14,
+              "max": 15
+            }
+          },
+          "notes": [
+            "Entity type identified as 'Association of Apartment Owners' based on definitions and objects.",
+            "Registration status for the entity is inferred from its formation 'in accordance with the provisions of the Karnataka Apartment Ownership Act, 1972' and the bylaws being 'as per proforma... prescribed by Rule 3'.",
+            "Specific registration number or date for the Association's formation is not present.",
+            "Specific date for the Declaration Deed is not present.",
+            "Bylaws are considered 'registered or filed' due to being 'as per proforma... prescribed by Rule 3 of the Karnataka Apartment Ownership Rules, 1974'.",
+            "Penalties/dispute resolution includes disqualification for arrears, recovery of sums due, and hearing complaints.",
+            "Fire safety compliance is not explicitly mentioned, only 'fire' as an insurable hazard.",
+            "Transfer of common areas (e.g., to the association) is not explicitly mentioned; the text discusses ownership of undivided share in land and use of common areas."
+          ]
+        },
+        "artifacts": null
+      },
+      "builder": {
+        "document_type": "BUILDER",
+        "db_path": "/home/ravella/landed/riskwrapper/db/builder.db",
+        "seeded": false,
+        "builder": {
+          "name": "Prestige Group",
+          "city": "Bangalore",
+          "years_active": 25,
+          "projects": [
+            {
+              "name": "Prestige Falcon City",
+              "status": "completed",
+              "delay_months": 3
+            },
+            {
+              "name": "Prestige Lakeside Habitat",
+              "status": "completed",
+              "delay_months": 6
+            }
+          ],
+          "issues": [
+            {
+              "type": "delay",
+              "count": 1
+            }
+          ]
+        },
+        "rule_based": {
+          "risk_score": 27,
+          "risk_level": "LOW",
+          "reasons": [
+            "RERA compliance: no revoked/suspended signals in DB (placeholder)",
+            "Delivery: 2 delayed out of 2 projects",
+            "Professionals: avg projects completed ≈ 214.0",
+            "Experience: active for 25 years",
+            "Issues: total issue count=1 (penalty applied)"
+          ]
+        },
+        "llm": {
+          "enabled": true,
+          "output": {
+            "score": 75,
+            "risk_level": "HIGH",
+            "confidence": 0.4,
+            "reasons": [
+              "All reported projects (2 out of 2) have experienced significant delays, indicating a 100% delay rate.",
+              "The average delay of 4.5 months per project is substantial.",
+              "Despite 25 years of activity and experienced professionals, the builder's recent project delivery performance is extremely poor.",
+              "The very low total project count (2 projects in 25 years) limits the overall data reliability and raises concerns about the builder's operational scale or consistency."
+            ]
+          }
+        },
+        "final": {
+          "rule_weight": 0.7,
+          "llm_weight": 0.30000000000000004,
+          "risk_score": 41,
+          "risk_level": "MEDIUM"
+        }
+      },
+      "ec": {
+        "ai_analysis": {
+          "confidence": "HIGH",
+          "method": "Google Gemini AI Analysis",
+          "pattern_analysis": "The data shows two 'AGREEMENT_TO_SELL' transactions executed on the same date (2016-12-06) with the identical, complex seller. The striking pattern is the 'consideration_value' being exactly 1.0 in both cases. The buyers, Sri.G.V.Ananda and Sri.G.V.Srinivasa Reddy, are identified as sons of the same late individual, indicating they are brothers. They are acquiring property for their respective families. This coordinated activity, coupled with the highly suspicious nominal consideration for agreements to sell, strongly suggests an attempt to either undervalue the asset for tax purposes, conceal the true financial transaction (undeclared funds), or utilize a shell transaction for some other illicit purpose, rather than a transparent, fair-value commercial agreement. The 'AGREEMENT_TO_SELL' type implies a future full sale, making the nominal agreement value a prime indicator of potential future non-declaration of actual consideration.",
+          "recommendation": "Flag these transactions for immediate, high-priority manual investigation. The investigation should focus on:\n1.  **Verification of True Consideration:** Determine the actual market value of the property/asset involved and compare it against the declared 1.0 consideration.\n2.  **Buyer & Seller Due Diligence:** Conduct enhanced due diligence on all parties involved, particularly the source of funds for the buyers and the legitimacy of the seller entities and their representatives.\n3.  **Future Transactions Monitoring:** Monitor for subsequent 'SALE DEED' transactions related to these agreements and scrutinize their declared consideration values and payment methods.\n4.  **Tax Evasion Assessment:** Refer the case to relevant tax authorities for potential tax evasion or money laundering inquiries.\n5.  **Legal Review:** Assess if the nominal value for an 'AGREEMENT_TO_SELL' is legally permissible and if there are any specific local regulations or common practices that might explain this (though it's highly unlikely to be benign for property transactions).",
+          "risk_indicators": [
+            "Nominal Consideration Value: Both transactions list a 'consideration_value' of 1.0, which is highly unusual and suspicious for an 'AGREEMENT_TO_SELL' involving what appears to be real estate or high-value assets. This is the primary and most significant red flag.",
+            "Transaction Type 'AGREEMENT_TO_SELL' with Nominal Value: While an agreement precedes a sale, a nominal value for a formal, registered agreement to sell suggests either a preparatory step for tax evasion (undeclared consideration) or an attempt to block a property with minimal cost, possibly for future illicit transfer.",
+            "Potential for Undervaluation/Tax Evasion: A consideration value of 1.0 strongly indicates that the true value of the underlying asset is being misrepresented, likely to avoid stamp duty, registration fees, or capital gains taxes.",
+            "Related Buyers from Same Seller on Same Date: Two transactions occurred on the same date from the same complex seller to buyers who are confirmed to be brothers (G.V.Ananda and G.V.Srinivasa Reddy), acquiring property for their respective families (including minors). While family transactions can happen, combined with the nominal value, it raises questions about the true nature and intent.",
+            "Complexity of Seller Name: The seller's name is exceptionally long and involves multiple entities and representatives, which while potentially legitimate for large developers, can also be a tactic to obscure ownership or responsibility in fraudulent schemes."
+          ],
+          "risk_level": "HIGH",
+          "score": 85
+        },
+        "detailed_findings": {
+          "sample_transactions": [
+            {
+              "buyer_name": "Sri.G.V.Ananda S/o Late Venkatappa Reddy @ Abbaiah, Kum. Yashaswi Anand D/o G V Ananda and Master Harshanand S/o G V Ananda Since Minors are represented by their Father and Natural Guardian Sri G V Ananda",
+              "consideration_value": 1,
+              "registration_number": "INR-1-06640-2016-17",
+              "seller_name": "M/s Trishul Buildtech & Infrastructures Private Limited (Formerly Known as M/s Trishul Developers, a Partnership Firm) represented by its Managing Director Mr. K. Prakash Shetty, M/s Prestige Habitat Ventures represented by its Managing Partner Mr. Irfan Razack represented by his PA Holder Mr. M.S. Sanjeeva Kumar",
+              "transaction_date": "2016-12-06",
+              "transaction_type": "AGREEMENT_TO_SELL"
+            },
+            {
+              "buyer_name": "Sri.G.V.Srinivasa Reddy S/o Late Venkatappa Reddy @ Abbaiah, Sri.S.Pradeep S/o Sri.G.V.Srinivasa Reddy, Sri.S.Somashekar S/o Sri.G.V.Srinivasa Reddy, Sri.S.Vishwanath S/o Sri.G.V.Srinivasa Reddy",
+              "consideration_value": 1,
+              "registration_number": "INR-1-06642-2016-17",
+              "seller_name": "M/s Trishul Buildtech & Infrastructures Private Limited (Formerly Known as M/s Trishul Developers, a Partnership Firm) represented by its Managing Director Mr. K. Prakash Shetty, M/s Prestige Habitat Ventures represented by its Managing Partner Mr. Irfan Razack represented by his PA Holder Mr. M.S. Sanjeeva Kumar",
+              "transaction_date": "2016-12-06",
+              "transaction_type": "AGREEMENT_TO_SELL"
+            }
+          ],
+          "transaction_count": 2
+        },
+        "document_analysis": {
+          "duplicate_pages_removed": 0,
+          "total_pages_processed": 24,
+          "unique_pages_after_deduplication": 24
+        },
+        "document_type": "EC",
+        "executive_summary": {
+          "confidence": "HIGH",
+          "recommendation": "Flag these transactions for immediate, high-priority manual investigation. The investigation should focus on:\n1.  **Verification of True Consideration:** Determine the actual market value of the property/asset involved and compare it against the declared 1.0 consideration.\n2.  **Buyer & Seller Due Diligence:** Conduct enhanced due diligence on all parties involved, particularly the source of funds for the buyers and the legitimacy of the seller entities and their representatives.\n3.  **Future Transactions Monitoring:** Monitor for subsequent 'SALE DEED' transactions related to these agreements and scrutinize their declared consideration values and payment methods.\n4.  **Tax Evasion Assessment:** Refer the case to relevant tax authorities for potential tax evasion or money laundering inquiries.\n5.  **Legal Review:** Assess if the nominal value for an 'AGREEMENT_TO_SELL' is legally permissible and if there are any specific local regulations or common practices that might explain this (though it's highly unlikely to be benign for property transactions).",
+          "risk_level": "HIGH",
+          "risk_score": 77,
+          "summary": "Based on analysis of 2 validated transactions, the document shows HIGH fraud risk."
+        },
+        "final_assessment": {
+          "action_required": "YES",
+          "combined_score": 77,
+          "next_steps": [
+            "Escalate to compliance team immediately",
+            "Conduct detailed manual review of all transactions",
+            "Verify seller and buyer identities",
+            "Check for signs of money laundering",
+            "Flag these transactions for immediate, high-priority manual investigation. The investigation should focus on:\n1.  **Verification of True Consideration:** Determine the actual market value of the property/asset involved and compare it against the declared 1.0 consideration.\n2.  **Buyer & Seller Due Diligence:** Conduct enhanced due diligence on all parties involved, particularly the source of funds for the buyers and the legitimacy of the seller entities and their representatives.\n3.  **Future Transactions Monitoring:** Monitor for subsequent 'SALE DEED' transactions related to these agreements and scrutinize their declared consideration values and payment methods.\n4.  **Tax Evasion Assessment:** Refer the case to relevant tax authorities for potential tax evasion or money laundering inquiries.\n5.  **Legal Review:** Assess if the nominal value for an 'AGREEMENT_TO_SELL' is legally permissible and if there are any specific local regulations or common practices that might explain this (though it's highly unlikely to be benign for property transactions)."
+          ],
+          "risk_classification": "HIGH",
+          "risk_range": {
+            "high": "70-100",
+            "low": "0-39",
+            "medium": "40-69"
+          },
+          "scoring_methodology": {
+            "ai_weight": 0.8,
+            "formula": "Final = (AI_Score × 0.8) + (Rule_Score × 0.2) when AI >= 70, else (AI_Score × 0.6) + (Rule_Score × 0.4)",
+            "note": "Higher AI weight applied when AI detects high-risk patterns",
+            "rule_based_weight": 0.2
+          }
+        },
+        "report_metadata": {
+          "analysis_system": "EC Multiple Sales LLM Analysis",
+          "api_provider": "Google Gemini 2.5 Flash",
+          "generated_date": "2026-02-11T19:40:24.143744",
+          "report_type": "EC Fraud Detection Report"
+        },
+        "rule_based_analysis": {
+          "flags_detected": [
+            "Repeated seller detected: M/s Trishul Buildtech & Infrastructures Private Li...",
+            "Multiple transactions with suspiciously low consideration values (2 transactions)",
+            "Transactions involving minors detected (1 transactions)"
+          ],
+          "method": "Pattern Detection (3 rules)",
+          "rules": {
+            "multiple_sales": "3+ sales: +30 points",
+            "rapid_resale": "Sale within 365 days: +25 points",
+            "repeated_seller": "Same seller multiple times: +20 points"
+          },
+          "score": 45
+        },
+        "transaction_analysis": {
+          "breakdown_by_type": {
+            "agreements_to_sell": 2,
+            "gifts": 0,
+            "leases": 0,
+            "mortgages": 0,
+            "others": 0,
+            "releases": 0,
+            "sales": 0
+          },
+          "invalid_transactions": 23,
+          "total_consideration_value": 2,
+          "total_transactions_extracted": 25,
+          "valid_transactions": 2
+        }
+      },
+      "bankloan": {
+        "document_type": "BANK_LOAN",
+        "models": {
+          "extract": "gemini-2.5-flash",
+          "risk": "gemini-2.5-flash"
+        },
+        "input": {
+          "pdf_path": "/home/ravella/landed/CERSAI_Search_Report_200417498632_For_Debtor_Based_Search_10_02_2026_18_03_08_480.pdf"
+        },
+        "loan_details": {
+          "debtor_name": "Gopinatha B M",
+          "loan_amount": "6934403.00",
+          "land_type": "Residential",
+          "mortgaged_property": "BUNGALOW, SITE NO 5, Survey No. 44 1B 1B2, Plot PID 92595, Area 100.66 Square Metre, BADDIHALLI 05 TUMKUR, Tumkur, District Tumkur, Karnataka, Pin 572102",
+          "security_details": "Equitable Mortgage with First Charge",
+          "registration_status": "Not Satisfied",
+          "ltv_ratio": null,
+          "property_value": null,
+          "no_of_charges": 1,
+          "charge_status": "Not Satisfied",
+          "property_age_years": null,
+          "occupancy_type": null,
+          "title_disputes": null
+        },
+        "risk": {
+          "overall_risk_score": 100,
+          "risk_level": "DO_NOT_BUY",
+          "land_type_risk": 0,
+          "security_risk": 100,
+          "registration_risk": 100,
+          "ltv_risk": 100,
+          "cersai_charges_risk": 100,
+          "title_quality_risk": 0,
+          "occupancy_risk": 0,
+          "key_findings": [
+            "❌ DEAL BREAKER: CERSAI shows 'Not Satisfied' (active charge) – property is encumbered.",
+            "❌ DEAL BREAKER: Active loan/charge exists with 'Not Satisfied' status.",
+            "Property is encumbered; clear title transfer is not possible until charge is satisfied.",
+            "High fraud risk if seller asks for payment before clearance.",
+            "Buyer should treat this as automatic rejection unless updated proof is provided."
+          ],
+          "recommendations": [
+            "Reject unless seller clears the loan and CERSAI updates to 'Satisfied'.",
+            "Reject the property unless the seller clears the charge and updates CERSAI.",
+            "Ask for lender NOC + Letter of Satisfaction.",
+            "Re-check fresh CERSAI report after clearance (same debtor/property).",
+            "Proceed only after advocate confirms charge removal and title is clear."
+          ],
+          "risk_factor_breakdown": {
+            "charge_status": "CRITICAL: Not Satisfied",
+            "buyer_rule": "Active charge => DO_NOT_BUY",
+            "deterministic_breakdown": {
+              "normalized_status": "Not Satisfied",
+              "no_of_charges": 1,
+              "title_disputes": false
+            }
+          },
+          "deterministic_overall": 100,
+          "llm_overall": 100,
+          "blend_weights": {
+            "deterministic": 0.55,
+            "llm": 0.45
+          }
+        }
+      },
+      "noc": {
+        "error": "D:\\ocr\\tesseract.exe is not installed or it's not in your PATH. See README file for more information.",
+        "traceback": "Traceback (most recent call last):\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 255, in run_tesseract\n    proc = subprocess.Popen(cmd_args, **subprocess_args())\n  File \"/usr/lib/python3.10/subprocess.py\", line 971, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/usr/lib/python3.10/subprocess.py\", line 1863, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'D:\\\\ocr\\\\tesseract.exe'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/ravella/landed/riskwrapper/main.py\", line 289, in run_and_store\n    res = fn()\n  File \"/home/ravella/landed/riskwrapper/main.py\", line 222, in run_noc\n    return run_noc_wrapper(pdf_paths=cfg[\"pdfs\"])\n  File \"/home/ravella/landed/riskwrapper/noc_wrapper.py\", line 636, in run_noc_wrapper\n    results = process_pdfs(pdf_paths, extract_client, risk_client)\n  File \"/home/ravella/landed/riskwrapper/noc_wrapper.py\", line 491, in process_pdfs\n    pages = ocr_pdf_pages(pdf)\n  File \"/home/ravella/landed/riskwrapper/noc_wrapper.py\", line 171, in ocr_pdf_pages\n    txt = pytesseract.image_to_string(img, lang=\"eng\", config=\"--psm 6\") or \"\"\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 423, in image_to_string\n    return {\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 426, in <lambda>\n    Output.STRING: lambda: run_and_get_output(*args),\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 288, in run_and_get_output\n    run_tesseract(**kwargs)\n  File \"/home/ravella/.local/lib/python3.10/site-packages/pytesseract/pytesseract.py\", line 260, in run_tesseract\n    raise TesseractNotFoundError()\npytesseract.pytesseract.TesseractNotFoundError: D:\\ocr\\tesseract.exe is not installed or it's not in your PATH. See README file for more information.\n"
+      }
+    }
+  }
+}
