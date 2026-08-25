@@ -20,13 +20,14 @@ Notes:
 """
 
 from __future__ import annotations
-
+from google import genai
 import os
 import json
 import sys
 from typing import Any, Dict, List, Optional
 from pathlib import Path
 
+from anthropic import Anthropic
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -94,7 +95,6 @@ class Issue(Base):
     builder = relationship("Builder", back_populates="issues")
 
 Base.metadata.create_all(engine)
-
 
 # ----------------------------
 # Seed example data
@@ -243,45 +243,229 @@ def build_llm_signals(builder: Builder) -> Dict[str, Any]:
         "issues": [{"type": i.type, "count": int(i.count or 0)} for i in (builder.issues or [])],
     }
 
+
 def build_llm_prompt(signals: Dict[str, Any]) -> str:
-    # We ask Gemini for a SAFETY score (higher safer) then convert to RISK score in code.
+
     return f"""
-You are a real-estate builder risk analyst.
+# ROLE
 
-Use ONLY the structured JSON input below. Do NOT assume missing facts.
-Return STRICT JSON only. No markdown. No extra text.
+You are a Senior Real Estate Due Diligence Consultant,
+Builder Reputation Analyst, RERA Compliance Advisor,
+and Construction Risk Assessment Specialist.
 
-IMPORTANT:
-- Return a SAFETY score from 0..100 where HIGHER = SAFER (less risk).
-- The system will convert your SAFETY score to a RISK score internally as: risk = 100 - safety.
+# CONTEXT
 
-Guidance:
-- Penalize delays and high issue counts (lower SAFETY score).
-- Reward long years_active and strong professionals (higher SAFETY score).
-- If data is limited, keep SAFETY score near 60 and lower confidence.
+A prospective buyer wants to evaluate whether a builder is
+reliable enough to purchase a property.
 
-INPUT:
+Use ONLY the structured JSON data provided.
+
+Do NOT assume or invent any facts.
+
+# OBJECTIVE
+
+Estimate the Builder Safety Score.
+
+Safety Score:
+
+100 = Excellent Builder
+
+0 = Extremely Unsafe Builder
+
+The application will internally convert this to:
+
+Risk Score = 100 - Safety Score
+
+# EVALUATION FRAMEWORK
+
+Evaluate the builder using the following factors.
+
+1. Experience
+
+• Years Active
+
+2. Delivery Performance
+
+• Total Projects
+
+• Delayed Projects
+
+• Average Delay
+
+3. Professional Strength
+
+• Architects
+
+• Structural Engineers
+
+• Contractors
+
+• Projects completed by professionals
+
+4. Builder Issues
+
+• Delay Issues
+
+• Complaint Count
+
+• Other Recorded Issues
+
+5. Overall Builder Stability
+
+• Experience
+
+• Delivery Consistency
+
+• Professional Capability
+
+# SCORING GUIDELINES
+
+Experience
+
+25+ years
+Excellent
+
+15–24 years
+Good
+
+5–14 years
+Average
+
+Below 5 years
+Limited experience
+
+Delivery
+
+No delays
+Excellent
+
+Minor delays
+Moderate deduction
+
+Frequent delays
+Significant deduction
+
+Professionals
+
+Large experienced team
+Higher Safety
+
+Small or inexperienced team
+Lower Safety
+
+Issues
+
+No issues
+Highest Safety
+
+Few issues
+Moderate deduction
+
+Repeated issues
+Significant deduction
+
+# IMPORTANT RULES
+
+• Never invent information.
+
+• Never assume missing data.
+
+• Missing information should reduce confidence,
+NOT automatically reduce Safety Score.
+
+• Use ONLY supplied JSON.
+
+• Keep reasons concise.
+
+• Reasons must reference available evidence.
+
+# SAFETY SCORE
+
+90–100
+
+Excellent Builder
+
+75–89
+
+Good Builder
+
+60–74
+
+Average Builder
+
+40–59
+
+Needs Caution
+
+0–39
+
+Poor Builder
+
+# CONFIDENCE
+
+0.90–1.00
+
+Most information available.
+
+0.60–0.89
+
+Moderate information.
+
+0.30–0.59
+
+Sparse information.
+
+Below 0.30
+
+Very limited information.
+
+# INPUT
+
 {json.dumps(signals, ensure_ascii=False, indent=2)}
 
-OUTPUT JSON SCHEMA:
+# OUTPUT
+
+Return ONLY valid JSON.
+
 {{
-  "score": 0,
-  "risk_level": "LOW|MEDIUM|HIGH",
-  "confidence": 0.0,
-  "reasons": ["...", "..."]
+    "score":0,
+
+    "risk_level":"LOW|MEDIUM|HIGH",
+
+    "confidence":0.0,
+
+    "reasons":[
+        "...",
+        "...",
+        "..."
+    ]
 }}
+
+# FINAL VALIDATION
+
+Before returning:
+
+✓ Score between 0 and 100.
+
+✓ Higher score means SAFER builder.
+
+✓ Risk Level matches Safety Score.
+
+✓ Confidence matches data completeness.
+
+✓ Reasons are supported by the supplied JSON.
+
+✓ Return ONLY valid JSON.
 """.strip()
 
 
 def _get_builder_llm_key() -> str:
-    """
-    Strict: ONLY use GEMINI_BUILDER_API_KEY
-    """
-    key = (os.getenv("GEMINI_BUILDER_API_KEY") or "").strip()
-    if not key:
-        raise RuntimeError("Missing GEMINI_BUILDER_API_KEY in .env")
-    return key
+    key = (os.getenv("ANTHROPIC_API_KEY") or "").strip()
 
+    if not key:
+        raise RuntimeError("Missing ANTHROPIC_API_KEY in .env")
+
+    return key
 
 def call_llm(prompt: str) -> Dict[str, Any]:
     """
@@ -294,62 +478,97 @@ def call_llm(prompt: str) -> Dict[str, Any]:
     try:
         api_key = _get_builder_llm_key()
     except Exception as e:
-        return {
-            "score": 40,  # fallback: medium-ish risk
-            "risk_level": "MEDIUM",
-            "confidence": 0.0,
-            "reasons": [f"LLM disabled: {type(e).__name__}: {e}"]
-        }
+        raise RuntimeError(f"LLM unavailable: {e}")
 
     try:
-        from google import genai
-        client = genai.Client(api_key=api_key)
 
-        resp = client.models.generate_content(
-            model="models/gemini-1.5-flash",
-            contents=prompt,
-            config={"temperature": 0}
+        client = Anthropic(api_key=api_key)
+
+        resp = client.messages.create(
+            model="claude-opus-4-7",
+            max_tokens=3000,
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
         )
-        text = (resp.text or "").strip()
+
+        text = ""
+
+        for block in resp.content:
+            if hasattr(block, "text"):
+                text += block.text
+
+        text = text.strip()
         text = text.replace("```json", "").replace("```", "").strip()
 
         start = text.find("{")
         end = text.rfind("}")
-        if start == -1 or end == -1 or end <= start:
-            raise ValueError("No JSON object found in model output.")
 
-        out = json.loads(text[start:end + 1])
+        if start == -1 or end == -1 or end <= start:
+            raise ValueError(
+                "No JSON object found in model output."
+            )
+
+        out = json.loads(
+            text[start:end + 1]
+        )
 
         # normalize model output
-        safety_score = int(out.get("score", 60))
-        safety_score = max(0, min(100, safety_score))
+        safety_score = int(
+            out.get("score", 60)
+        )
 
-        # ✅ Convert SAFETY -> RISK
+        safety_score = max(
+            0,
+            min(100, safety_score)
+        )
+
+        # Convert SAFETY -> RISK
         risk_score = 100 - safety_score
-        risk_score = max(0, min(100, risk_score))
 
-        lvl = str(out.get("risk_level", "MEDIUM")).upper()
+        risk_score = max(
+            0,
+            min(100, risk_score)
+        )
+
+        lvl = str(
+            out.get("risk_level", "MEDIUM")
+        ).upper()
+
         if lvl not in {"LOW", "MEDIUM", "HIGH"}:
             lvl = "MEDIUM"
 
-        conf = float(out.get("confidence", 0.4))
-        conf = max(0.0, min(1.0, conf))
+        conf = float(
+            out.get("confidence", 0.4)
+        )
 
-        reasons = out.get("reasons", [])
+        conf = max(
+            0.0,
+            min(1.0, conf)
+        )
+
+        reasons = out.get(
+            "reasons",
+            []
+        )
+
         if not isinstance(reasons, list):
             reasons = [str(reasons)]
 
-        return {"score": int(risk_score), "risk_level": lvl, "confidence": conf, "reasons": reasons[:8]}
-
-    except Exception as e:
         return {
-            "score": 40,
-            "risk_level": "MEDIUM",
-            "confidence": 0.0,
-            "reasons": [f"LLM failed: {type(e).__name__}: {e}"]
+            "score": int(risk_score),
+            "risk_level": lvl,
+            "confidence": conf,
+            "reasons": reasons[:8]
         }
 
-
+    except Exception as e:
+        raise RuntimeError(
+            f"LLM scoring failed: {e}"
+        )
 # ----------------------------
 # Blend (default: 70% rules + 30% LLM)
 # ----------------------------
@@ -357,13 +576,12 @@ def blend_scores(rule_risk: int, llm_risk: int, rule_weight: float = 0.7) -> int
     final = rule_weight * float(rule_risk) + (1.0 - rule_weight) * float(llm_risk)
     return int(round(max(0, min(100, final))))
 
-
 # ----------------------------
 # Wrapper API
 # ----------------------------
 def run_builder_wrapper(
     builder_name: Optional[str] = None,
-    seed_if_empty: bool = True,
+    seed_if_empty: bool = False,
     run_llm: bool = True,
     rule_weight: float = 0.7
 ) -> Dict[str, Any]:

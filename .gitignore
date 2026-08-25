@@ -11,7 +11,9 @@ venv/
 # Outputs and Data
 *.pdf
 *.xlsx
-output/
-khata_output/
-reports/
-screenshots/
+
+.venv/
+venv/
+__pycache__/
+*.pyc
+.env

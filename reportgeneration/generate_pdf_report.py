@@ -15,9 +15,6 @@ Install:
 
 Set keys in .env:
   GEMINI_REPORT_KEY_1=...
-  GEMINI_REPORT_KEY_2=...
-  GEMINI_REPORT_KEY_3=...
-  GEMINI_REPORT_KEY_4=...
 
 Run:
   python generate_pdf_report.py --input output/risk_report_*.json --out output/report.pdf --verbose
@@ -31,10 +28,11 @@ import math
 import argparse
 from datetime import datetime
 from collections import defaultdict
+from turtle import title
 from typing import Any, Dict, List, Optional, Tuple
 
 from dotenv import load_dotenv
-
+from anthropic import Anthropic
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
 from reportlab.lib import colors
@@ -132,6 +130,43 @@ def safe_avg(vals: List[Optional[float]]) -> Optional[float]:
         return None
     return sum(v) / len(v)
 
+def is_not_applicable(check_obj: Dict[str, Any]) -> bool:
+    # If wrapper data exists, this check is applicable
+    if check_obj.get("extracted_data"):
+        return False
+
+    return str(check_obj.get("status", "")).upper() == "NOT_APPLICABLE"
+
+CHECK_WEIGHTS = {
+
+    "Title Check": 0.14,                         # kaveriecrisk
+
+    "Court Cases": 0.11,                         # ecourtrisk
+
+    "Existing Bank Loans": 0.10,                 # bankloan
+
+    "Khata/Mutation Type Verification": 0.09,   # khata + ekhatarisk
+
+    "Property Tax Paid Receipts": 0.06,          # bbmp_property_tax
+
+    "Electricity Bill": 0.04,                    # bescom
+
+    "Water Bill": 0.04,                          # water
+
+    "Occupancy Certificate": 0.08,               # oc
+
+    "NOCs from Various Departments": 0.07,      # noc
+
+    "Parking Certificate": 0.04,                # parking
+
+    "Association By Laws": 0.03,                # bylaws
+
+    "Municipal Compliance Checks": 0.04,        # ec
+
+    "Builder/Developer Reputation": 0.06,       # builder
+
+    "Registration Check": 0.10,
+}
 
 def risk_color(risk: Optional[float]) -> Tuple[Any, Any]:
     if risk is None:
@@ -191,139 +226,389 @@ def make_card(title: str, body_flowables: List[Any], width: float, max_height: f
     return tbl
 
 
-def get_screenshot_for_check(check_title: str, input_json_path: str, verbose: bool = False,
-                             session_id: str = None, screenshot_dir: str = None) -> Optional[str]:
+from typing import List, Optional
+import os
+import re
+
+
+def get_screenshots_for_check(
+    module_name: str,
+    input_json_path: str,
+    verbose: bool = False,
+    session_id: str = None,
+    screenshot_dir: str = None,
+) -> List[str]:
     """
-    Look for a screenshot matching the check title.
-    Uses an explicit mapping from check title keywords to screenshot filename prefixes.
-    Returns the MOST RECENT matching screenshot.
+    Return screenshots belonging ONLY to the requested module
+    and ONLY to the current session.
+
+    Screenshot rules:
+        Court Cases           -> max 3
+        Occupancy Certificate -> max 4
+        Parking               -> max 4
+        By Laws               -> max 2
+        EC                    -> max 2
+        NOC                   -> max 3
+        Others                -> max 1
+
+    IMPORTANT:
+        - Matching is based on the actual module name.
+        - Old screenshots from previous sessions are NEVER used.
+        - No title-based guessing.
+        - No random fallback to another screenshot.
     """
-    # Explicit mapping: keywords in check title -> screenshot file prefix
-    TITLE_TO_PREFIX = {
-        "ec": "landeed_result",
-        "encumbrance": "landeed_result",
-        "bescom": "bescom_result",
-        "electricity": "bescom_result",
-        "water": "water_result",
-        "waterbill": "water_result",
-        "water bill": "water_result",
-        "khata": "khata_result",
-        "bbmp khata": "khata_result",
-        "noc": "noc_result",
-        "no objection": "noc_result",
+
+    # ------------------------------------------------------------
+    # MODULE -> SCREENSHOT PREFIX
+    # ------------------------------------------------------------
+    MODULE_TO_PREFIX = {
         "oc": "oc_result",
-        "occupancy": "oc_result",
+        "noc": "noc_result",
         "parking": "parking_result",
-        "landeed": "landeed_result",
-        "bbmp": "bbmp_result",
-        "property tax": "bbmp_result",
+        "bylaws": "bylaws_result",
+
+        # EC Document Check
+        "ec": "ec_result",
+
+        # Court Cases
+        "ecourtrisk": "court_result",
+
+        "builder": "builder_result",
+        "bankloan": "bankloan_result",
+        "bescom": "bescom_result",
+        "water": "water_result",
+        "bbmp_property_tax": "bbmp_result",
+        "kaveriecrisk": "kaveri_result",
+        "ekhatarisk": "khata_result",
+        "rera_approval": "rera_result",
     }
 
-    title_lower = check_title.lower()
-    prefix = None
-    for keyword, p in TITLE_TO_PREFIX.items():
-        if keyword in title_lower:
-            prefix = p
-            break
+    # ------------------------------------------------------------
+    # SCREENSHOT LIMITS
+    # ------------------------------------------------------------
+    SCREENSHOT_LIMITS = {
+        "oc_result": 4,
+        "parking_result": 4,
+        "ec_result": 2,
+
+        # ALL NOC screenshots from current session
+        "noc_result": 3,
+
+        "kaveri_result": 1,
+        "khata_result": 1,
+        "bankloan_result": 1,
+        "bbmp_result": 1,
+        "bescom_result": 1,
+        "water_result": 1,
+    }
+
+    # ------------------------------------------------------------
+    # NORMALIZE MODULE NAME
+    # ------------------------------------------------------------
+    module = str(module_name or "").strip().lower()
+
+    # Handle possible aliases
+    module_aliases = {
+        "ec document check": "ec",
+        "encumbrance certificate": "ec",
+        "encumbrance": "ec",
+
+        "court cases": "ecourtrisk",
+        "court case": "ecourtrisk",
+
+        "association by laws": "bylaws",
+        "association bylaws": "bylaws",
+        "by laws": "bylaws",
+
+        "occupancy certificate": "oc",
+
+        "parking certificate": "parking",
+
+        "nocs from various departments": "noc",
+        "no objection certificate": "noc",
+    }
+
+    module = module_aliases.get(module, module)
+
+    # ------------------------------------------------------------
+    # GET PREFIX DIRECTLY FROM MODULE
+    # ------------------------------------------------------------
+    prefix = MODULE_TO_PREFIX.get(module)
 
     if not prefix:
-        # Fallback: slugify title and use as prefix
-        prefix = re.sub(r"[^a-z0-9]+", "_", title_lower).strip("_") + "_result"
+        if verbose:
+            print(
+                f"[DEBUG] No screenshot mapping for module: "
+                f"{module_name}"
+            )
+        return []
 
     if verbose:
-        print(f"[DEBUG] Screenshot lookup: title='{check_title}' -> prefix='{prefix}'")
+        print(
+            f"[DEBUG] Screenshot lookup: "
+            f"module={module_name} -> "
+            f"normalized={module} -> "
+            f"prefix={prefix}"
+        )
 
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    # Build the list of directories to search, including the explicit screenshot_dir if provided
-    screenshots_dirs = []
-    if screenshot_dir and os.path.isdir(screenshot_dir):
-        screenshots_dirs.append(screenshot_dir)
-    screenshots_dirs += [
-        os.path.join(base_dir, "screenshots"),
-        os.path.join(base_dir, "backend", "screenshots"),
-        os.path.join(base_dir, "riskwrapper", "screenshots"),
-    ]
+    # ------------------------------------------------------------
+    # BASE DIRECTORY
+    # ------------------------------------------------------------
+    base_dir = os.path.dirname(
+        os.path.dirname(
+            os.path.abspath(__file__)
+        )
+    )
 
-    # Try extracting session_id from JSON filename if not passed explicitly
+    # ------------------------------------------------------------
+    # SCREENSHOT DIRECTORIES
+    # ------------------------------------------------------------
+
+    screenshot_dirs = []
+
+    # Main screenshot directory
+    DEFAULT_SCREENSHOT_DIR = (
+        r"D:\aasthiv2\Aasthi\riskwrapper\screenshots"
+    )
+
+    # Use explicitly supplied directory if provided
+    if screenshot_dir:
+        screenshot_dirs.append(
+            os.path.abspath(screenshot_dir)
+        )
+
+    # Always include the required default directory
+    screenshot_dirs.append(
+        DEFAULT_SCREENSHOT_DIR
+    )
+
+    # Remove duplicates
+    screenshot_dirs = list(
+        dict.fromkeys(
+            os.path.abspath(d)
+            for d in screenshot_dirs
+        )
+    )
+
+    if verbose:
+        print(
+            f"[DEBUG] Screenshot directories: "
+            f"{screenshot_dirs}"
+        )
+
+    # ------------------------------------------------------------
+    # DETERMINE SESSION ID
+    # ------------------------------------------------------------
     if not session_id:
-        json_name = os.path.basename(input_json_path)
-        m = re.search(r"(\d{13}|\d{8}_\d{6})", json_name)
+        json_name = os.path.basename(
+            input_json_path or ""
+        )
+
+        # Supports:
+        # 20260822_110208
+        # 20260822110208
+        # 13-digit timestamp
+        m = re.search(
+            r"(\d{8}_\d{6}|\d{14}|\d{13})",
+            json_name
+        )
+
         if m:
             session_id = m.group(1)
-        if verbose:
-            print(f"[DEBUG] Found session_id {session_id} from JSON path")
 
-    candidates = []
-    for sdir in screenshots_dirs:
-        if not os.path.exists(sdir):
-            continue
-        for fname in os.listdir(sdir):
-            low = fname.lower()
-            if not low.endswith(".png"):
-                continue
-            if not low.startswith(prefix.lower()):
-                continue
-            full_path = os.path.join(sdir, fname)
-            mtime = os.path.getmtime(full_path)
-            # Prefer session-id match
-            priority = 1 if (session_id and session_id in low) else 0
-            candidates.append((priority, mtime, full_path))
+    if session_id:
+        session_id = str(
+            session_id
+        ).strip().lower()
 
-    if not candidates:
-        if verbose:
-            print(f"[DEBUG] No screenshot found for prefix='{prefix}'")
-        return None
-
-    # Sort: prefer session-id match first, then newest file
-    candidates.sort(key=lambda x: (x[0], x[1]), reverse=True)
-    best = candidates[0][2]
     if verbose:
-        print(f"[INFO] Using screenshot: {best}")
-    return best
+        print(
+            f"[DEBUG] Screenshot session: "
+            f"{session_id}"
+        )
 
+    # ------------------------------------------------------------
+    # FIND SCREENSHOTS
+    # ------------------------------------------------------------
+    candidates = []
+    seen_files = set()
+
+    for folder in screenshot_dirs:
+
+        if not os.path.isdir(folder):
+            continue
+
+        try:
+            filenames = os.listdir(folder)
+        except Exception as e:
+            if verbose:
+                print(
+                    f"[DEBUG] Cannot read screenshot folder "
+                    f"{folder}: {e}"
+                )
+            continue
+
+        for fname in filenames:
+
+            low = fname.lower()
+
+            # ----------------------------------------------------
+            # IMAGE FILE ONLY
+            # ----------------------------------------------------
+            if not low.endswith(
+                (".png", ".jpg", ".jpeg")
+            ):
+                continue
+
+            # ----------------------------------------------------
+            # MODULE PREFIX MUST MATCH
+            #
+            # Example:
+            # ec -> ec_result
+            # parking -> parking_result
+            # noc -> noc_result
+            # ----------------------------------------------------
+            if not low.startswith(
+                prefix.lower()
+            ):
+                continue
+
+            full_path = os.path.abspath(
+                os.path.join(
+                    folder,
+                    fname
+                )
+            )
+
+            # Prevent duplicate files if directories overlap
+            if full_path in seen_files:
+                continue
+
+            seen_files.add(full_path)
+
+            # ----------------------------------------------------
+            # STRICT SESSION MATCH
+            #
+            # THIS IS THE IMPORTANT FIX.
+            #
+            # If current session is:
+            # 20260822_110208
+            #
+            # then:
+            #
+            # ec_result_20260822_110208.png
+            #
+            # is accepted.
+            #
+            # ec_result_20260821_193451.png
+            #
+            # is rejected.
+            # ----------------------------------------------------
+            if session_id:
+
+                if session_id not in low:
+                    if verbose:
+                        print(
+                            f"[DEBUG] Ignoring old screenshot: "
+                            f"{fname}"
+                        )
+                    continue
+
+            # ----------------------------------------------------
+            # FILE MODIFICATION TIME
+            # ----------------------------------------------------
+            try:
+                modified_time = os.path.getmtime(
+                    full_path
+                )
+            except OSError:
+                continue
+
+            candidates.append(
+                (
+                    modified_time,
+                    full_path
+                )
+            )
+
+    # ------------------------------------------------------------
+    # NO CURRENT-SESSION SCREENSHOTS
+    # ------------------------------------------------------------
+    if not candidates:
+
+        if verbose:
+            print(
+                f"[DEBUG] No screenshots found for "
+                f"module={module} "
+                f"prefix={prefix} "
+                f"session={session_id}"
+            )
+
+        return []
+
+    # ------------------------------------------------------------
+    # NEWEST FIRST
+    # ------------------------------------------------------------
+    candidates.sort(
+        key=lambda x: x[0],
+        reverse=True
+    )
+
+    screenshots = [
+        path
+        for _, path in candidates
+    ]
+
+    # ------------------------------------------------------------
+    # SCREENSHOT LIMIT
+    # ------------------------------------------------------------
+    if prefix not in SCREENSHOT_LIMITS:
+
+        if verbose:
+            print(
+                f"[DEBUG] No screenshot rule defined "
+                f"for prefix={prefix}"
+            )
+
+        return []
+
+    limit = SCREENSHOT_LIMITS[
+        prefix
+    ]
+
+    if limit is None:
+        # NOC -> all current-session screenshots
+        selected = screenshots
+    else:
+        selected = screenshots[:limit]
+
+    # ------------------------------------------------------------
+    # DEBUG OUTPUT
+    # ------------------------------------------------------------
+    if verbose:
+
+        print(
+            f"[INFO] Selected "
+            f"{len(selected)} screenshot(s) "
+            f"for module={module}"
+        )
+
+        for p in selected:
+            print(
+                "    ",
+                os.path.basename(p)
+            )
+
+    return selected
 
 # =============================================================================
 # API key handling (multi-key fallback)
-# =============================================================================
-def get_all_api_keys() -> List[str]:
-    """
-    Read Gemini keys from both backend/.env and riskwrapper/.env.
-    Tried sequentially in this order.
-    """
-    # Load riskwrapper env additionally so we have access to all those keys
-    rw_env = os.path.join(os.path.dirname(__file__), "..", "riskwrapper", ".env")
-    if os.path.exists(rw_env):
-        load_dotenv(rw_env)
-        
-    keys = [
-        os.getenv("GEMINI_REPORT_KEY_1"),
-        os.getenv("GEMINI_REPORT_KEY_2"),
-        os.getenv("GEMINI_REPORT_KEY_3"),
-        os.getenv("GEMINI_REPORT_KEY_4"),
-        os.getenv("GEMINI_BESCOM"),
-        os.getenv("GEMINI_EXTRACTION_KEY"),
-        os.getenv("GEMINI_RISK_KEY"),
-        os.getenv("GEMINI_API_KEY_EXTRACT"),
-        os.getenv("GEMINI_API_KEY_RISK"),
-        os.getenv("GEMINI_EXTRACT_KEY"),
-        os.getenv("GEMINI_SCORE_KEY"),
-        os.getenv("GEMINI_API_KEY3"),
-        os.getenv("GEMINI_BYLAW"),
-        os.getenv("GEMINI_BUILDER_API_KEY"),
-        os.getenv("GEMINI_EC_KEY"),
-        os.getenv("GEMINI_Bank_Extract"),
-        os.getenv("GEMINI_BANK_RISK"),
-        os.getenv("GEMINI_KHATA_KEY"),
-        # Backward-compatible fallbacks:
-        os.getenv("GEMINI_REPORT_KEY"),
-        os.getenv("GEMINI_API_KEY"),
-    ]
-    return [k for k in keys if k and str(k).strip()]
+def get_claude_model() -> str:
+    return os.getenv("ANTHROPIC_MODEL", "claude-opus-4-7")
 
 
-def gemini_enabled() -> bool:
-    return len(get_all_api_keys()) > 0
-
+def claude_enabled() -> bool:
+    return bool(os.getenv("ANTHROPIC_API_KEY", "").strip())
 
 # =============================================================================
 # Gemini LLM
@@ -368,56 +653,71 @@ def _extract_json_anywhere(text: str) -> Optional[Dict[str, Any]]:
             return None
 
 
-def gemini_call_json(prompt: str, verbose: bool = False, tag: str = "") -> Optional[Dict[str, Any]]:
-    """
-    Calls Gemini using KEY1->KEY2->KEY3->KEY4 fallback.
-    If one key is exhausted or fails, tries the next.
-    """
-    keys = get_all_api_keys()
-    if not keys:
+client = Anthropic(
+    api_key=os.getenv("ANTHROPIC_API_KEY")
+)
+
+def claude_call_json(
+    prompt: str,
+    verbose: bool = False,
+    tag: str = ""
+):
+    if not claude_enabled():
         if verbose:
-            print("[LLM] No Gemini keys found in environment.")
+            print("[Claude] ANTHROPIC_API_KEY not found.")
         return None
 
     try:
-        from google import genai  # pip install google-genai
-    except Exception:
         if verbose:
-            print("[LLM] google-genai not installed. Run: pip install google-genai")
-        return None
+            print(
+                f"[Claude] Using model "
+                f"{get_claude_model()} for {tag}"
+            )
 
-    # Try each key sequentially
-    last_err = None
-    for idx, api_key in enumerate(keys, start=1):
-        try:
-            if verbose:
-                print(f"[LLM] Using Gemini key #{idx} for {tag}")
+        response = client.messages.create(
+            model=get_claude_model(),
+            max_tokens=2048,
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
+        )
 
-            client = genai.Client(api_key=api_key)
-            resp = client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
-            text = (resp.text or "").strip()
+        text = response.content[0].text.strip()
 
-            obj = _extract_json_anywhere(text)
-            if obj is not None:
-                return obj
+        obj = _extract_json_anywhere(text)
 
-            if verbose:
-                print(f"[LLM] Key #{idx} returned no valid JSON. Trying next key...")
+        if obj:
+            return obj
 
-        except Exception as e:
-            last_err = e
-            if verbose:
-                print(f"[LLM] Key #{idx} failed: {e}")
-            continue
+        if verbose:
+            print(
+                "[Claude] Model returned invalid JSON."
+            )
 
-    if verbose and last_err:
-        print(f"[LLM] All Gemini keys failed. Last error: {last_err}")
+    except Exception as e:
+        if verbose:
+            print(
+                f"[Claude] API Error: {e}"
+            )
 
     return None
-
-
 def llm_reason_all(module_name: str, payload: Dict[str, Any], risk_score: Optional[float], findings: str = "", verbose: bool = False) -> Optional[Dict[str, Any]]:
     # ✅ Check for PRE-STRUCTURED schema (user's preferred format)
+    if not claude_enabled():
+        return {
+            "explanation_bullets": [
+                "LLM analysis is disabled.",
+                "This report was generated from wrapper results only."
+            ],
+            "conclusion": "No AI explanation was generated.",
+            "suggested_actions": [
+                "Review the verification results.",
+                "Perform manual verification if required."
+            ]
+        }
     if isinstance(payload.get("explanation_bullets"), list) and payload.get("conclusion"):
         if verbose:
             print(f"[INFO] Using existing structured schema for {module_name}")
@@ -450,27 +750,127 @@ def llm_reason_all(module_name: str, payload: Dict[str, Any], risk_score: Option
         }
 
     prompt = f"""
-You are writing for a home buyer (non-technical). Produce a clear explanation for this check.
+# ROLE
 
-Rules:
-- Do NOT invent facts. Use only the JSON.
-- Write in simple English.
-- Mention: 0 is best, higher score = higher risk.
-- If score is null, say "Score not available" and focus on findings.
-- Keep it short and user-friendly.
+You are a Senior Property Due Diligence Consultant,
+Real Estate Legal Advisor,
+and Home Buying Risk Assessment Specialist.
 
-Output MUST be strict JSON with keys:
-- explanation_bullets: list of 3 to 8 short sentences
-- conclusion: 1 to 2 sentences
-- suggested_actions: list of 2 to 5 actionable steps
+# CONTEXT
 
-Module: {module_name}
-Risk score (0-100, higher worse): {risk_score}
+A prospective home buyer has completed a property verification report.
 
-JSON:
+Your task is to explain the verification results in simple,
+non-technical language.
+
+Use ONLY the supplied JSON.
+
+Never invent facts.
+
+# OBJECTIVE
+
+Explain:
+
+• What was verified
+
+• What was found
+
+• Why it matters
+
+• What the buyer should do next
+
+Risk Score Interpretation
+
+0 = Lowest Risk
+
+100 = Highest Risk
+
+If the score is unavailable,
+
+state:
+
+"Score not available."
+
+and explain only the available findings.
+
+# WRITING STYLE
+
+Write for someone with no legal or technical background.
+
+Keep explanations:
+
+• Short
+
+• Clear
+
+• Practical
+
+Avoid legal jargon.
+
+Avoid speculation.
+
+Do not repeat raw JSON.
+
+# REQUIRED OUTPUT
+
+Return ONLY valid JSON.
+
+{{
+  "explanation_bullets":[
+    "...",
+    "...",
+    "..."
+  ],
+
+  "conclusion":"...",
+
+  "suggested_actions":[
+    "...",
+    "..."
+  ]
+}}
+
+# RULES
+
+Explanation bullets
+
+• 3–8 bullets
+
+• One idea per bullet
+
+• Explain the significance of the findings
+
+Conclusion
+
+• 1–2 short sentences
+
+Suggested Actions
+
+• 2–5 practical recommendations
+
+Only recommend actions supported by the supplied findings.
+
+# MODULE
+
+{module_name}
+
+Risk Score (0–100)
+
+{risk_score}
+
+# SOURCE DATA
+
 {json.dumps(payload, ensure_ascii=False, indent=2)}
-"""
-    obj = gemini_call_json(prompt, verbose=verbose, tag=module_name)
+
+# FINAL VALIDATION
+
+✓ Use ONLY supplied data.
+
+✓ No invented facts.
+
+✓ Valid JSON only.
+""".strip()
+    obj = claude_call_json(prompt, verbose=verbose, tag=module_name)
     if not obj:
         return None
 
@@ -499,56 +899,220 @@ JSON:
 # Score extraction (still used internally, but NOT displayed)
 # =============================================================================
 def extract_risk_score(module: str, payload: Dict[str, Any]) -> Tuple[Optional[float], str]:
-    m = module.lower()
+    MODULE_ALIASES = {
+        "occupancy certificate": "oc",
+        "oc": "oc",
 
-    # Prioritize fatal errors or missing input.
-    if payload.get("error") or get(payload, "errors.ocr") or payload.get("status") in ("FAILED", "MISSING_INPUT"):
+        "nocs from various departments": "noc",
+        "noc": "noc",
+
+        "parking certificate": "parking",
+        "parking": "parking",
+
+        "association by laws": "bylaws",
+        "bylaws": "bylaws",
+
+        "existing bank loans": "bankloan",
+        "bankloan": "bankloan",
+
+        "ec document check": "ec",
+        "ec": "ec",
+
+        "builder/developer reputation": "builder",
+        "builder": "builder",
+
+        "court cases": "ecourtrisk",
+        "ecourtrisk": "ecourtrisk",
+
+        "property tax paid receipts": "bbmp_property_tax",
+        "bbmp_property_tax": "bbmp_property_tax",
+
+        "electricity bill": "bescom",
+        "bescom": "bescom",
+
+        "water bill": "water",
+        "water": "water",
+
+        "title check": "kaveriecrisk",
+        "kaveriecrisk": "kaveriecrisk",
+
+        "khata/mutation type verification": "ekhatarisk",
+        "ekhatarisk": "ekhatarisk",
+
+        # ============================================================
+        # RERA / BDA / BUDA / TUDA
+        # ============================================================
+        "registration check":
+            "rera_approval",
+
+        "rera/bda/buda/tuda/na registration check":
+            "rera_approval",
+
+        "rera approval":
+            "rera_approval",
+
+        "rera_approval":
+            "rera_approval",
+
+        "rera bda buda tuda approval":
+            "rera_approval",
+
+        "rera_bda_buda_tuda_approval":
+            "rera_approval",
+    }
+
+    m = MODULE_ALIASES.get(str(module).lower().strip(), str(module).lower().strip())
+
+    # Failed module
+    if (
+        payload.get("error")
+        or get(payload, "errors.ocr")
+        or payload.get("status") in ("FAILED", "MISSING_INPUT")
+    ):
         return None, "error_fallback"
+    # ================================================================
+    # RERA / BDA / BUDA / TUDA
+    # ================================================================
 
-    if m in ("bescom", "water"):
-        return clamp(first_number(payload.get("risk_score"))), "risk_score"
+    if m == "rera_approval":
 
-    if m == "oc":
-        return clamp(first_number(get(payload, "scores.blended_risk_score"))), "scores.blended_risk_score"
+        # Primary field from rera_approval_risk.py
+        sc = clamp(
+            first_number(payload.get("risk"))
+        )
 
-    if m == "bankloan":
-        return clamp(first_number(get(payload, "risk.overall_risk_score"))), "risk.overall_risk_score"
+        if sc is not None:
+            return sc, "risk"
 
-    if m == "khata":
-        for p in ("ai_analysis.final_risk_score", "rule_based_risk.risk_score", "final_assessment.final_risk_score"):
-            sc = clamp(first_number(get(payload, p)))
-            if sc is not None:
-                return sc, p
-
-    if m == "parking":
+        # Backup fields in case the RERA module is changed later
         for p in (
-            "combined_risk_score_0_100_higher_is_riskier",
-            "combined_risk_score",
-            "deterministic_risk_score_0_100_higher_is_riskier",
-            "llm_risk_score_stable_0_100_higher_is_riskier",
+            "risk_score",
+            "final_risk_score",
+            "overall_risk_score",
+            "python_risk_score",
+            "final.risk_score",
+            "risk.overall_risk_score",
         ):
-            sc = clamp(first_number(payload.get(p)))
+            val = get(payload, p) if "." in p else payload.get(p)
+
+            sc = clamp(first_number(val))
+
             if sc is not None:
                 return sc, p
 
-    if m == "builder":
-        sc = clamp(first_number(get(payload, "final.score")))
+    # Simple wrappers
+    if m == "ecourtrisk":
+        sc = clamp(
+            first_number(
+                get(payload, "overall_court_risk.risk_score")
+            )
+        )
         if sc is not None:
-            return sc, "final.score"
-        sc = clamp(first_number(get(payload, "rule_based.risk_score")))
-        if sc is not None:
-            return sc, "rule_based.risk_score"
-        sc = clamp(first_number(payload.get("score")))
-        if sc is not None:
-            return sc, "score"
+            return sc, "overall_court_risk.risk_score"
 
+        # Backward-compatible fallback for older eCourt output.
+        sc = clamp(first_number(payload.get("risk_score")))
+        if sc is not None:
+            return sc, "risk_score"
+
+    # Simple wrappers
+    if m in ("bescom", "water", "kaveriecrisk"):
+        sc = clamp(first_number(payload.get("risk_score")))
+        if sc is not None:
+            return sc, "risk_score"
+
+
+
+    # ------------------------------------------------------------
+    # BYLAWS
+    # wrapperlaw stores the official Python risk here:
+    # python_score.risk_score
+    # ------------------------------------------------------------
+    if m == "bylaws":
+        sc = clamp(
+            first_number(
+                get(payload, "python_score.risk_score")
+            )
+        )
+
+        if sc is not None:
+            return sc, "python_score.risk_score"
+
+        # fallback for older wrapper format
+        sc = clamp(
+            first_number(
+                payload.get("risk_score")
+            )
+        )
+
+        if sc is not None:
+            return sc, "risk_score"
+    # Bank Loan
+    if m == "bankloan":
+        sc = clamp(first_number(get(payload, "risk.overall_risk_score")))
+        if sc is not None:
+            return sc, "risk.overall_risk_score"
+
+    # OC
+    if m == "oc":
+        sc = clamp(first_number(get(payload, "scores.blended_risk_score")))
+        if sc is not None:
+            return sc, "scores.blended_risk_score"
+
+    # Parking
+    if m == "parking":
+        sc = clamp(first_number(payload.get("combined_risk_score")))
+        if sc is not None:
+            return sc, "combined_risk_score"
+
+    # Builder
+    if m == "builder":
+        sc = clamp(first_number(get(payload, "final.risk_score")))
+        if sc is not None:
+            return sc, "final.risk_score"
+
+    # BBMP
+    if m == "bbmp_property_tax":
+        sc = clamp(first_number(get(payload, "final.risk_score")))
+        if sc is not None:
+            return sc, "final.risk_score"
+
+    # EC
+    if m == "ec":
+        sc = clamp(first_number(get(payload, "executive_summary.risk_score")))
+        if sc is not None:
+            return sc, "executive_summary.risk_score"
+
+    # eKhata
+    if m == "ekhatarisk":
+        sc = clamp(first_number(get(payload, "final_assessment.risk_score")))
+        if sc is not None:
+            return sc, "final_assessment.risk_score"
+
+    # NOC
+    if m == "noc":
+        sc = clamp(
+            first_number(
+                get(payload, "overall_risk_score")
+            )
+        )
+
+        if sc is not None:
+            return sc, "overall_risk_score"
+
+    # Generic fallback
     for p in (
+        "risk",
         "risk_score",
-        "final_risk_score",
-        "overall_risk_score",
+        "final_assessment.risk_score",
         "final.risk_score",
+        "scores.blended_risk_score",
+        "combined_risk_score",
+        "risk.overall_risk_score",
         "executive_summary.risk_score",
         "project_scores.final.risk_avg",
+        "overall_risk_score",
+        "final_risk_score",
     ):
         val = get(payload, p) if "." in p else payload.get(p)
         sc = clamp(first_number(val))
@@ -556,7 +1120,6 @@ def extract_risk_score(module: str, payload: Dict[str, Any]) -> Tuple[Optional[f
             return sc, p
 
     return None, "not_found"
-
 
 # =============================================================================
 # Visual Flowables
@@ -684,12 +1247,67 @@ def _add_overview_section(story, summary_rows, results, styles, overall_score, o
 # =============================================================================
 def build_pdf(results: Dict[str, Any], out_pdf: str, verbose: bool, input_json_path: str = "",
               session_id: str = None, screenshot_dir: str = None):
-    # ✅ Fix: If merged report was passed, use the merged 'checks' array
-    # instead of just the 'risk_engine' subset.
+
+    # ================================================================
+    # READ DYNAMIC EXCLUDED CHECKS
+    # ================================================================
+
+    meta = results.get("_meta", {})
+
+    if not isinstance(meta, dict):
+        meta = {}
+
+    excluded_checks = set(
+        meta.get("excludedChecks", [])
+    )
+
+    if verbose:
+        print(
+            "[PDF] Excluded checks:",
+            sorted(excluded_checks)
+        )
+
+    # ================================================================
+    # IF ONLY risk_engine IS PASSED, USE IT
+    # ================================================================
+
     if "risk_engine" in results and "checks" not in results:
+
         if verbose:
-            print("[INFO] No global 'checks' found. Falling back to 'risk_engine' key.")
-        results = results["risk_engine"]
+            print(
+                "[INFO] No global checks found. "
+                "Falling back to risk_engine."
+            )
+
+        risk_engine = results.get(
+            "risk_engine",
+            {}
+        )
+
+        if isinstance(risk_engine, dict):
+
+            # In case risk_engine also contains _meta
+            risk_engine_meta = risk_engine.get(
+                "_meta",
+                {}
+            )
+
+            if isinstance(
+                risk_engine_meta,
+                dict
+            ):
+                excluded_checks.update(
+                    risk_engine_meta.get(
+                        "excludedChecks",
+                        []
+                    )
+                )
+
+        results = (
+            risk_engine
+            if isinstance(risk_engine, dict)
+            else {}
+        )
 
     styles = getSampleStyleSheet()
 
@@ -701,36 +1319,116 @@ def build_pdf(results: Dict[str, Any], out_pdf: str, verbose: bool, input_json_p
     styles.add(ParagraphStyle(name="CardTitle", parent=styles["BodyText"], fontName="Helvetica-Bold", fontSize=11, leading=14, textColor=colors.HexColor("#111827")))
 
     if verbose:
-        print(f"[INFO] LLM enabled? {gemini_enabled()}")
-        print("[INFO] Gemini keys detected:", len(get_all_api_keys()))
+        print(f"[INFO] Claude enabled? {claude_enabled()}")
+        print(f"[INFO] Claude model: {get_claude_model()}")
 
-    if not gemini_enabled():
+    if not claude_enabled():
         raise RuntimeError(
-            "Gemini API key not found. Set one of:\n"
-            "  GEMINI_REPORT_KEY_1..4 (recommended)\n"
-            "  or GEMINI_REPORT_KEY / GEMINI_API_KEY / GOOGLE_API_KEY"
+            "ANTHROPIC_API_KEY not found. Please set ANTHROPIC_API_KEY in your .env file."
         )
 
     extracted: Dict[str, Dict[str, Any]] = {}
-    summary_rows: List[Tuple[str, Optional[float], str]] = []
-    risk_vals: List[Optional[float]] = []
+    summary_rows = []
+    risk_vals = []
 
-    # Build uniform chunks out of raw dictionaries if the unified 'checks' array wasn't passed 
-    # (e.g., when run directly via pipeline.py)
-    checks = results.get("checks")
-    if not checks:
+    checks = results.get("checks", [])
+
+    if not isinstance(checks, list):
         checks = []
-        for k, v in results.items():
-            if isinstance(v, dict):
-                checks.append({
-                    "title": k.upper(),
-                    "original_module": k,
-                    "extracted_data": v
-                })
+    # ================================================================
+    # REMOVE EXCLUDED CHECKS BEFORE PROCESSING
+    # ================================================================
 
+    checks = [
+        check
+        for check in checks
+        if isinstance(check, dict)
+        and check.get("title") not in excluded_checks
+    ]
+
+    if verbose:
+        print(
+            "[PDF] Checks after initial exclusion:",
+            [
+                check.get("title")
+                for check in checks
+            ]
+        )
+# ALWAYS add wrapper modules also
+    for k, v in results.items():
+
+        if k in ("_meta", "dashboard_checks", "risk_engine", "checks"):
+            continue
+
+        if not isinstance(v, dict):
+            continue
+
+        title_map = {
+            "bbmp_property_tax": "Property Tax Paid Receipts",
+            "bescom": "Electricity Bill",
+            "water": "Water Bill",
+            "khata": "Khata/Mutation Type Verification",
+            "oc": "Occupancy Certificate",
+            "noc": "NOCs from Various Departments",
+            "parking": "Parking Certificate",
+            "builder": "Builder/Developer Reputation",
+            "ec": "EC Document Check",
+            "bankloan": "Existing Bank Loans",
+            "bylaws": "Association By Laws",
+            "ecourtrisk": "Court Cases",
+            "kaveriecrisk": "Title Check",
+            "ekhatarisk": "Khata/Mutation Type Verification",
+            "rera_approval": "Registration Check",
+        }
+
+        title = title_map.get(k, k.upper())
+
+        # ============================================================
+        # SKIP EXCLUDED WRAPPER MODULES
+        # ============================================================
+
+        if title in excluded_checks:
+            if verbose:
+                print(
+                    f"[PDF] Skipping excluded wrapper: {title}"
+                )
+            continue
+
+        # avoid duplicates
+        # Merge wrapper data into existing dashboard check if present
+        existing = next(
+            (
+                c for c in checks
+                if isinstance(c, dict) and c.get("title") == title
+            ),
+            None,
+        )
+
+        if existing:
+            existing["original_module"] = k
+            existing["extracted_data"] = v
+
+            # Since wrapper returned data, this check is applicable
+            existing["status"] = "COMPLETED"
+
+        else:
+            checks.append({
+                "title": title,
+                "original_module": k,
+                "extracted_data": v,
+                "status": "COMPLETED"
+            })
     for check in checks:
+        if not isinstance(check, dict):
+            continue
+
         title = check.get("title", "Verification Check")
-        orig_module = check.get("original_module", title)
+        orig_module = (
+            check.get("original_module")
+            or check.get("module")
+            or check.get("key")
+            or title
+        )
         extracted_data = check.get("extracted_data")
 
         if extracted_data:
@@ -738,27 +1436,49 @@ def build_pdf(results: Dict[str, Any], out_pdf: str, verbose: bool, input_json_p
             risk, _src = extract_risk_score(orig_module, payload)
         else:
             payload = check
-            # ✅ Standardized: 'score' is now Risk Score (higher is worst)
-            sc = check.get("score")
             try:
-                risk = float(sc) if sc is not None else None
+                risk = float(check.get("score")) if check.get("score") is not None else None
             except Exception:
                 risk = None
 
-        # Re-check if we can get findings for LLM summary
         findings = check.get("findings", "")
-        extracted[title] = {"payload": payload, "risk": risk, "findings": findings}
-        # ✅ Store the check dictionary so we can access title/category in summary
+
+        extracted[title] = {
+            "payload": payload,
+            "risk": risk,
+            "findings": findings
+        }
+
         summary_rows.append((check, risk, risk_level(risk)))
         risk_vals.append(risk)
 
         if verbose:
             print(f"[SCORE] {title} ({orig_module}): risk={risk}")
 
-    # Sort by risk score descending (highest risk first)
-    summary_rows_sorted = sorted(summary_rows, key=lambda x: (x[1] if x[1] is not None else -1), reverse=True)
+    summary_rows_sorted = sorted(
+        summary_rows,
+        key=lambda x: (x[1] if x[1] is not None else -1),
+        reverse=True
+    )
 
-    overall = safe_avg(risk_vals)
+    weighted_sum = 0.0
+    weight_total = 0.0
+
+    for check_obj, risk, lvl in summary_rows:
+        if is_not_applicable(check_obj):
+            continue
+
+        if risk is None:
+            continue
+
+        title = check_obj.get("title", "").strip()
+
+        weight = CHECK_WEIGHTS.get(title, 0.03)
+
+        weighted_sum += risk * weight
+        weight_total += weight
+
+    overall = (weighted_sum / weight_total) if weight_total > 0 else None
     overall_lvl = risk_level(overall)
     overall_em = risk_emoji(overall)
     overall_bg, overall_fg = risk_color(overall)
@@ -771,13 +1491,20 @@ def build_pdf(results: Dict[str, Any], out_pdf: str, verbose: bool, input_json_p
         topMargin=2.3 * cm,
         bottomMargin=2.0 * cm
     )
-    story: List[Any] = []
-    
-    _add_overview_section(story, summary_rows, results, styles, overall, overall_lvl)
 
-    # COVER (User-focused, no legend, no JSON talk)
+    story = []
+
+    _add_overview_section(
+        story,
+        summary_rows,
+        results,
+        styles,
+        overall if overall is not None else 0,
+        overall_lvl
+    )
+
     story.append(Spacer(1, 0.7 * cm))
-    story.append(Paragraph("🏠 Property Due Diligence Risk Report", styles["H1"]))
+    story.append(Paragraph("Property Due Diligence Risk Report", styles["H1"]))
     story.append(Paragraph(
         "This report helps you spot issues that can delay <b>registration</b>, impact <b>home loans</b>, "
         "or create problems during <b>resale</b>. <b>0 is best</b>. <b>Higher score = higher risk</b>.",
@@ -789,12 +1516,17 @@ def build_pdf(results: Dict[str, Any], out_pdf: str, verbose: bool, input_json_p
         [[
             Paragraph(f"<b>{overall_em} Overall Risk</b><br/>{('%.1f' % overall) if overall is not None else 'N/A'} / 100", styles["Body"]),
             Paragraph(f"<b>{overall_lvl}</b>", ParagraphStyle(
-                "CoverBadge", parent=styles["Body"], fontName="Helvetica-Bold",
-                fontSize=12, textColor=overall_fg, alignment=1
+                "CoverBadge",
+                parent=styles["Body"],
+                fontName="Helvetica-Bold",
+                fontSize=12,
+                textColor=overall_fg,
+                alignment=1
             ))
         ]],
         colWidths=[11.5 * cm, 4.9 * cm]
     )
+
     cover_card.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (0, 0), colors.HexColor("#F8FAFC")),
         ("BACKGROUND", (1, 0), (1, 0), overall_bg),
@@ -807,53 +1539,37 @@ def build_pdf(results: Dict[str, Any], out_pdf: str, verbose: bool, input_json_p
         ("LEFTPADDING", (0, 0), (-1, -1), 12),
         ("RIGHTPADDING", (0, 0), (-1, -1), 12),
     ]))
+
     story.append(cover_card)
-    story.append(Spacer(1, 0.35 * cm))
-
-    info_card = Table(
-        [
-            [Paragraph("📌 <b>How to use this report</b>", styles["CardTitle"])],
-            [Paragraph(
-                "• Each check has a <b>risk score (0–100)</b>: <b>0 is best</b>, higher means higher risk.<br/>"
-                "• Start with items marked <b>🚨 High Risk</b> and finish the suggested actions before paying or signing.<br/>"
-                "• If any High Risk item is unresolved, consult a property lawyer before proceeding.",
-                styles["Body"]
-            )],
-            [Paragraph(f"🕒 <b>Generated:</b> {datetime.now().strftime('%Y-%m-%d %H:%M')}", styles["Small"])],
-        ],
-        colWidths=[16.4 * cm]
-    )
-    info_card.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#F8FAFC")),
-        ("BOX", (0, 0), (-1, -1), 0.9, colors.HexColor("#D1D5DB")),
-        ("TOPPADDING", (0, 0), (-1, -1), 12),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 12),
-        ("LEFTPADDING", (0, 0), (-1, -1), 12),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 12),
-    ]))
-    story.append(info_card)
-
-    # ✅ Legend removed intentionally
     story.append(PageBreak())
 
-    # SUMMARY (with Category column)
-    story.append(Paragraph("📊 All checks summary", styles["H2"]))
-    story.append(Paragraph("Scan the top rows first (higher score = higher risk).", styles["Small"]))
+    story.append(Paragraph("All checks summary", styles["H2"]))
+    story.append(Paragraph("Scan the top rows first. Higher score means higher risk.", styles["Small"]))
     story.append(Spacer(1, 6))
 
     table_data = [["", "Check", "Score", "Meter", "Level"]]
-    for check_obj, risk, lvl in summary_rows_sorted:
-        title = check_obj.get("title", "Check")
-        table_data.append([
-            risk_emoji(risk),
-            title,
-            ("%.1f" % risk) if risk is not None else "N/A",
-            pct_bar(risk),
-            lvl,
-        ])
 
-    # Adjust widths for 5 columns: [Emoji, Title, Score, Meter, Level]
+    for check_obj, risk, lvl in summary_rows_sorted:
+        if is_not_applicable(check_obj):
+            display_level = "NOT APPLICABLE"
+            display_score = "N/A"
+            display_meter = "N/A"
+            display_icon = "—"
+        else:
+            display_level = lvl
+            display_score = ("%.1f" % risk) if risk is not None else "N/A"
+            display_meter = pct_bar(risk)
+            display_icon = risk_emoji(risk)
+
+        table_data.append([
+            display_icon,
+            check_obj.get("title", "Check"),
+            display_score,
+            display_meter,
+            display_level,
+        ])
     t = Table(table_data, colWidths=[1.0 * cm, 6.2 * cm, 2.0 * cm, 3.2 * cm, 4.0 * cm])
+
     style_cmds = [
         ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#0B1220")),
         ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
@@ -861,40 +1577,48 @@ def build_pdf(results: Dict[str, Any], out_pdf: str, verbose: bool, input_json_p
         ("FONTSIZE", (0, 0), (-1, 0), 9),
         ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#D1D5DB")),
         ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("ALIGN", (0, 1), (0, -1), "CENTER"),
+        ("ALIGN", (2, 1), (2, -1), "CENTER"),
+        ("ALIGN", (4, 1), (4, -1), "CENTER"),
         ("TOPPADDING", (0, 0), (-1, -1), 7),
         ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
-        ("LEFTPADDING", (0, 0), (-1, -1), 8),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 8),
-        ("ALIGN", (0, 1), (0, -1), "CENTER"), # Emoji
-        ("ALIGN", (2, 1), (2, -1), "CENTER"), # Score
-        ("ALIGN", (4, 1), (4, -1), "CENTER"), # Level
-        # Styles from the removed summary_card wrapper
-        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#F8FAFC")),
-        ("BOX", (0, 0), (-1, -1), 1.0, colors.HexColor("#D1D5DB")),
-        ("LEFTPADDING", (0, 0), (-1, -1), 8),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 8),
-        ("TOPPADDING", (0, 0), (-1, -1), 8),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
     ]
+
     for i, (_, risk, _) in enumerate(summary_rows_sorted, start=1):
         style_cmds.append(("BACKGROUND", (0, i), (-1, i), risk_tint(risk)))
 
     t.setStyle(TableStyle(style_cmds))
-
     story.append(t)
     story.append(PageBreak())
 
-    # DETAIL PAGES
     card_width = 16.4 * cm
 
     for check_obj, risk, lvl in summary_rows_sorted:
         title = check_obj.get("title", "Check")
+
+        # IMPORTANT:
+        # Resolve the module again for THIS check.
+        # Do not reuse `orig_module` from the earlier scoring loop,
+        # because after that loop it contains the last processed module
+        # (typically rera_approval).
+        current_orig_module = (
+            check_obj.get("original_module")
+            or check_obj.get("module")
+            or check_obj.get("key")
+            or title
+        )
+
         payload = extracted[title]["payload"]
         risk = extracted[title]["risk"]
 
-        em = risk_emoji(risk)
-        lvl = risk_level(risk)
-        bg, fg = risk_color(risk)
+        if is_not_applicable(check_obj):
+            em = "—"
+            lvl = "NOT APPLICABLE"
+            bg, fg = colors.HexColor("#E5E7EB"), colors.black
+        else:
+            em = risk_emoji(risk)
+            lvl = risk_level(risk)
+            bg, fg = risk_color(risk)
 
         title_tbl = Table(
             [[Paragraph(f"{em}  {title}", ParagraphStyle(
@@ -906,6 +1630,7 @@ def build_pdf(results: Dict[str, Any], out_pdf: str, verbose: bool, input_json_p
             ))]],
             colWidths=[card_width]
         )
+
         title_tbl.setStyle(TableStyle([
             ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#0B1220")),
             ("BOX", (0, 0), (-1, -1), 0.9, colors.HexColor("#0B1220")),
@@ -913,6 +1638,7 @@ def build_pdf(results: Dict[str, Any], out_pdf: str, verbose: bool, input_json_p
             ("TOPPADDING", (0, 0), (-1, -1), 9),
             ("BOTTOMPADDING", (0, 0), (-1, -1), 9),
         ]))
+
         story.append(title_tbl)
         story.append(Spacer(1, 8))
 
@@ -937,6 +1663,7 @@ def build_pdf(results: Dict[str, Any], out_pdf: str, verbose: bool, input_json_p
             ]],
             colWidths=[11.6 * cm, 4.8 * cm]
         )
+
         score_card.setStyle(TableStyle([
             ("BACKGROUND", (0, 0), (0, 0), colors.HexColor("#F8FAFC")),
             ("BACKGROUND", (1, 0), (1, 0), bg),
@@ -949,10 +1676,11 @@ def build_pdf(results: Dict[str, Any], out_pdf: str, verbose: bool, input_json_p
             ("LEFTPADDING", (0, 0), (-1, -1), 12),
             ("RIGHTPADDING", (0, 0), (-1, -1), 12),
         ]))
+
         story.append(score_card)
         story.append(Spacer(1, 8))
 
-        story.append(Paragraph("📈 Risk meter", styles["Label"]))
+        story.append(Paragraph("Risk meter", styles["Label"]))
         story.append(Spacer(1, 4))
         story.append(RiskBar(width=card_width, height=0.55 * cm, risk=risk))
         story.append(Spacer(1, 10))
@@ -965,75 +1693,89 @@ def build_pdf(results: Dict[str, Any], out_pdf: str, verbose: bool, input_json_p
             actions = [_trim_sentence(x, 150) for x in (llm_obj.get("suggested_actions") or [])[:5]]
             conclusion = _trim_sentence(llm_obj.get("conclusion", ""), 240)
 
-            expl_items = [ListItem(Paragraph(f"✅ {clean_text(x)}", styles["Body"]), leftIndent=0) for x in bullets]
+            expl_items = [
+                ListItem(Paragraph(clean_text(x), styles["Body"]), leftIndent=0)
+                for x in bullets
+            ]
             expl_list = ListFlowable(expl_items, bulletType="bullet", leftIndent=14)
 
             if actions:
-                act_items = [ListItem(Paragraph(f"👉 {clean_text(x)}", styles["Body"]), leftIndent=0) for x in actions]
+                act_items = [
+                    ListItem(Paragraph(clean_text(x), styles["Body"]), leftIndent=0)
+                    for x in actions
+                ]
                 act_list = ListFlowable(act_items, bulletType="bullet", leftIndent=14)
             else:
                 act_list = Paragraph("—", styles["Body"])
 
-            concl_para = Paragraph(f"🧾 <b>Conclusion:</b> {clean_text(conclusion)}", styles["Body"])
+            concl_para = Paragraph(f"<b>Conclusion:</b> {clean_text(conclusion)}", styles["Body"])
 
-            story.append(make_card("🧠 Explanation", [expl_list], width=card_width, max_height=8.2 * cm, title_style=styles["CardTitle"]))
+            story.append(make_card("Explanation", [expl_list], width=card_width, max_height=8.2 * cm, title_style=styles["CardTitle"]))
             story.append(Spacer(1, 10))
-            story.append(make_card("🛠️ Suggested actions", [act_list], width=card_width, max_height=6.2 * cm, title_style=styles["CardTitle"]))
+            story.append(make_card("Suggested actions", [act_list], width=card_width, max_height=6.2 * cm, title_style=styles["CardTitle"]))
             story.append(Spacer(1, 10))
-            story.append(make_card("💡 Summary", [concl_para], width=card_width, max_height=3.6 * cm, title_style=styles["CardTitle"]))
+            story.append(make_card("Summary", [concl_para], width=card_width, max_height=3.6 * cm, title_style=styles["CardTitle"]))
         else:
             story.append(make_card(
-                "🧠 Explanation",
+                "Explanation",
                 [
-                    Paragraph("LLM explanation could not be generated (API error or invalid response).", styles["Body"]),
-                    Paragraph("🛠️ Try re-running with --verbose and confirm GEMINI_REPORT_KEY_1..4 are set in .env.", styles["Body"]),
+                    Paragraph("LLM explanation could not be generated, or the module already contains limited data.", styles["Body"]),
+                    Paragraph("Review the score, findings, and evidence screenshot manually.", styles["Body"]),
                 ],
                 width=card_width,
                 max_height=8.0 * cm,
                 title_style=styles["CardTitle"]
             ))
 
-        # 📸 Screenshot Section
-        screenshot_path = get_screenshot_for_check(title, input_json_path, verbose=verbose,
-                                                    session_id=session_id, screenshot_dir=screenshot_dir)
-        if screenshot_path and os.path.exists(screenshot_path):
-            if verbose:
-                print(f"[INFO] Embedding screenshot: {screenshot_path}")
-            
-            story.append(Spacer(1, 10))
-            story.append(Paragraph("📸 Evidence / Screenshot", styles["Label"]))
-            story.append(Spacer(1, 6))
-            
-            try:
-                img = Image(screenshot_path)
-                # Aspect ratio scaling
-                img_w, img_h = img.drawWidth, img.drawHeight
-                aspect = img_h / float(img_w)
-                
-                final_w = card_width
-                final_h = final_w * aspect
-                
-                # If too tall for the page, scale down
-                max_page_h = 10.0 * cm
-                if final_h > max_page_h:
-                    final_h = max_page_h
-                    final_w = final_h / aspect
-                
-                img.drawWidth = final_w
-                img.drawHeight = final_h
+        screenshots = get_screenshots_for_check(
+            current_orig_module,
+            input_json_path,
+            verbose=verbose,
+            session_id=session_id,
+            screenshot_dir=screenshot_dir,
+        )
 
-                img_card = Table([[img]], colWidths=[card_width])
-                img_card.setStyle(TableStyle([
-                    ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#F8FAFC")),
-                    ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#D1D5DB")),
-                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                    ("TOPPADDING", (0, 0), (-1, -1), 4),
-                    ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-                ]))
-                story.append(img_card)
-            except Exception as e:
-                print(f"[ERROR] Failed to embed image {screenshot_path}: {e}")
+        if screenshots:
+
+            story.append(Spacer(1, 10))
+            story.append(Paragraph("Evidence / Screenshots", styles["Label"]))
+            story.append(Spacer(1, 6))
+
+            for screenshot_path in screenshots:
+
+                if not os.path.exists(screenshot_path):
+                    continue
+
+                try:
+                    img = Image(screenshot_path)
+
+                    aspect = img.drawHeight / float(img.drawWidth)
+
+                    final_w = card_width
+                    final_h = final_w * aspect
+
+                    if final_h > 10 * cm:
+                        final_h = 10 * cm
+                        final_w = final_h / aspect
+
+                    img.drawWidth = final_w
+                    img.drawHeight = final_h
+
+                    img_card = Table([[img]], colWidths=[card_width])
+                    img_card.setStyle(TableStyle([
+                        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#F8FAFC")),
+                        ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#D1D5DB")),
+                        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                        ("TOPPADDING", (0, 0), (-1, -1), 4),
+                        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+                    ]))
+
+                    story.append(img_card)
+                    story.append(Spacer(1, 8))
+
+                except Exception as e:
+                    print(f"[ERROR] Failed to embed image {screenshot_path}: {e}")
 
         story.append(PageBreak())
 
@@ -1070,7 +1812,7 @@ def main():
 
     build_pdf(results, out_pdf, verbose=args.verbose, input_json_path=args.input,
               session_id=session_id, screenshot_dir=screenshot_dir)
-    print(f"✅ PDF created: {out_pdf}")
+    print(f"PDF created: {out_pdf}")
 
 
 if __name__ == "__main__":

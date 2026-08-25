@@ -1,326 +1,304 @@
 #!/usr/bin/env python3
 # bbmp_propertytax_wrapper.py
 
+import base64
+import mimetypes
 import os
 import re
 import json
 import pandas as pd
 import numpy as np
+from PIL import Image
+from anthropic import Anthropic
+def _safe_json_load(text: str) -> dict:
+    text = text.strip()
 
-
-# ============================================================
-# ✅ MOCK DATA (DUMP DATA)
-# ============================================================
-
-def get_mock_bbmp_facts():
-    """Returns realistic mock facts for BBMP property tax."""
-    return {
-        "latest_year": 2024,
-        "years_present": [2021, 2022, 2023, 2024],
-        "paid_years": [2021, 2022, 2023, 2024],
-        "expired_challan_years": [],
-        "sas_app_numbers": ["1000829555"],
-        "tax_amount_variance": "LOW",
-        "tax_trend": "GRADUAL_INCREASE",
-        "has_bulk_payments": False,
-        "has_suspicious_drops": False,
-        "assessment_type": "SAS",
-        "property_id_consistency": "CONSISTENT",
-        "owner_name_match": "MATCHED",
-        "usage_match": "MATCHED"
-    }
-
-
-# ============================================================
-# ✅ FACT EXTRACTION FROM BBMP EXCEL
-# ============================================================
-
-def extract_facts_from_excel(excel_path: str):
-    df = pd.read_excel(excel_path)
-
-    # Normalize column names
-    df.columns = [c.strip().replace("\n", " ") for c in df.columns]
-
-    # Rename known BBMP columns
-    df = df.rename(columns={
-        "Payment Year / Form Type": "year_raw",
-        "Paid status": "status",
-        "Net Amount": "tax_amount",
-        "Paid Amount": "paid_amount",
-        "SAS App. No": "sas_no"
-    })
-
-    required = ["year_raw", "status", "tax_amount", "paid_amount", "sas_no"]
-    for c in required:
-        if c not in df.columns:
-            raise ValueError(f"Missing required column in Excel: {c}")
-
-    def extract_years(val):
-        if pd.isna(val):
-            return []
-        return [int(x) for x in re.findall(r"\d{4}", str(val))]
-
-    def expand_years(yrs):
-        if len(yrs) == 2 and yrs[1] > yrs[0]:
-            return list(range(yrs[0], yrs[1] + 1))
-        return yrs
-
-    df["years_list"] = df["year_raw"].apply(extract_years).apply(expand_years)
-
-    years_present = sorted({y for lst in df["years_list"] for y in lst})
-    latest_year = max(years_present) if years_present else None
-
-    exp = df[["years_list", "status", "tax_amount", "paid_amount", "sas_no"]].explode("years_list")
-    exp = exp.rename(columns={"years_list": "year"})
-    exp["year"] = pd.to_numeric(exp["year"], errors="coerce")
-
-    paid_years = exp.loc[
-        exp["status"].str.contains("receipt", case=False, na=False),
-        "year"
-    ].dropna().astype(int).tolist()
-
-    expired_years = exp.loc[
-        exp["status"].str.contains("expired", case=False, na=False),
-        "year"
-    ].dropna().astype(int).tolist()
-
-    sas_numbers = exp["sas_no"].dropna().astype(str).unique().tolist()
-
-    # Annual paid totals (Prefer Paid Amount; fallback Net Amount)
-    amt = exp["paid_amount"].where(exp["paid_amount"].notna(), exp["tax_amount"])
-    exp["amt_effective"] = pd.to_numeric(amt, errors="coerce").fillna(0.0)
-
-    annual_paid = (
-        exp.loc[exp["status"].str.contains("receipt", case=False, na=False)]
-          .groupby("year")["amt_effective"]
-          .sum()
-          .sort_index()
+    text = re.sub(
+        r"^\s*```json\s*",
+        "",
+        text,
+        flags=re.I
     )
 
-    # Tax variance (CV on annual totals)
-    if len(annual_paid) == 0:
-        tax_variance = "HIGH"
-    else:
-        mean = float(annual_paid.mean())
-        std = float(annual_paid.std(ddof=0))
-        cv = (std / mean) if mean != 0 else float("inf")
-        if cv < 0.15:
-            tax_variance = "LOW"
-        elif cv < 0.35:
-            tax_variance = "MEDIUM"
-        else:
-            tax_variance = "HIGH"
+    text = re.sub(
+        r"^\s*```\s*",
+        "",
+        text
+    )
 
-    # Tax trend (annual totals)
-    if len(annual_paid) <= 1:
-        tax_trend = "STABLE"
-    else:
-        diff = annual_paid.diff().dropna()
-        if (diff >= 0).all():
-            tax_trend = "GRADUAL_INCREASE"
-        elif abs(diff.mean()) < 100:
-            tax_trend = "STABLE"
-        else:
-            tax_trend = "IRREGULAR"
+    text = re.sub(
+        r"\s*```\s*$",
+        "",
+        text
+    )
 
-    has_bulk_payments = exp["year"].value_counts().max() > 1
-    has_suspicious_drops = bool((annual_paid.diff() < -500).any()) if len(annual_paid) > 1 else False
+    return json.loads(text.strip())
 
-    # Clean for display
-    paid_years = sorted(set(paid_years))
-    expired_years = sorted(set(expired_years))
+def claude_score_bbmp_excel_stable(facts: dict) -> dict:
 
-    return {
-        "latest_year": latest_year,
-        "years_present": years_present,
-        "paid_years": paid_years,
-        "expired_challan_years": expired_years,
-        "sas_app_numbers": sas_numbers,
-        "tax_amount_variance": tax_variance,
-        "tax_trend": tax_trend,
+    api_key = os.getenv("ANTHROPIC_API_KEY")
 
-        # ✅ ensure Python bool (JSON safe)
-        "has_bulk_payments": bool(has_bulk_payments),
-        "has_suspicious_drops": bool(has_suspicious_drops),
+    if not api_key:
+        raise RuntimeError("Missing ANTHROPIC_API_KEY")
+    client = Anthropic(api_key=api_key)
+    prompt = build_bbmp_llm_prompt_from_excel_facts(facts)
+    resp = client.messages.create(
+        model="claude-opus-4-7",
+        max_tokens=2048,
+        messages=[
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ]
+    )
 
-        "assessment_type": "SAS",
-        "property_id_consistency": "MISSING",
-        "owner_name_match": "MISSING",
-        "usage_match": "MISSING"
-    }
+    text = resp.content[0].text.strip()
 
-
-# ============================================================
-# ✅ PROPERTY TAX RISK ENGINE (DETERMINISTIC PYTHON)
-# ============================================================
+    return json.loads(text)
 
 def property_tax_risk_engine(facts):
-    breakdown = []
+
     total_score = 0
-    max_total = 100
+    breakdown = []
 
-    # 1️⃣ TAX PAYMENT STATUS (30)
+    # ===================================================
+    # 1. PROPERTY IDENTIFICATION (20)
+    # ===================================================
+
     points = 0
     obs = []
-    if facts["latest_year"] in facts["paid_years"]:
-        points += 25
-        obs.append(f"✅ Latest year {facts['latest_year']} paid")
-    else:
-        obs.append(f"❌ Latest year {facts['latest_year']} unpaid")
 
-    if not facts["expired_challan_years"]:
+    if facts.get("sas_application_number"):
         points += 5
-        obs.append("✅ No expired challans")
-    else:
-        obs.append(f"⚠️ Expired challans: {facts['expired_challan_years']}")
+
+    if facts.get("new_application_number"):
+        points += 5
+
+    if facts.get("khata_number"):
+        points += 5
+
+    if facts.get("property_number"):
+        points += 5
+
+    obs.append("Property identifiers verified")
 
     breakdown.append({
-        "emoji": "1️⃣", "category": "Tax Payment Status",
-        "points": points, "max_points": 30, "observations": obs
+        "category": "Property Identification",
+        "points": points,
+        "max_points": 20,
+        "observations": obs
     })
+
     total_score += points
 
-    # 2️⃣ ASSESSMENT TYPE (15)
-    breakdown.append({
-        "emoji": "2️⃣", "category": "Assessment Type",
-        "points": 15, "max_points": 15,
-        "observations": ["✅ Official BBMP SAS Forms (2 / 4 / 5)"]
-    })
-    total_score += 15
+    # ===================================================
+    # 2. OWNERSHIP VERIFICATION (20)
+    # ===================================================
 
-    # 3️⃣ PROPERTY IDENTIFICATION (20)
-    unique_sas = len(set(facts["sas_app_numbers"]))
-    years_count = len(facts["years_present"])
+    points = 0
+    obs = []
 
-    if unique_sas == 1:
+    owner = str(
+        facts.get("owner_name", "")
+    ).strip()
+
+    if owner:
         points = 20
-        obs = ["✅ Same SAS number across all years"]
-    elif unique_sas == 2:
-        points = 12
-        obs = ["⚠️ Two SAS numbers detected"]
+        obs.append(f"Owner detected: {owner}")
     else:
-        points = 5
-        obs = ["❌ Multiple SAS numbers detected"]
+        obs.append("Owner missing")
 
     breakdown.append({
-        "emoji": "3️⃣", "category": "Property Identification Consistency",
-        "points": points, "max_points": 20, "observations": obs
+        "category": "Ownership Verification",
+        "points": points,
+        "max_points": 20,
+        "observations": obs
     })
+
     total_score += points
 
-    # 4️⃣ OWNERSHIP CONTINUITY (15)
+    # ===================================================
+    # 3. TAX COMPLIANCE (25)
+    # ===================================================
+
     points = 0
     obs = []
 
-    if years_count >= 10:
-        points += 8
-        obs.append("✅ Long continuous tax history")
-    elif years_count >= 5:
+    if facts.get("latest_year_paid"):
+        points += 20
+        obs.append("Latest year paid")
+
+    if not facts.get("expired_challans", False):
         points += 5
-        obs.append("✅ Moderate tax history")
-    else:
-        points += 2
-        obs.append("⚠️ Short tax history")
+        obs.append("No expired challans")
 
-    if unique_sas == 1:
+    breakdown.append({
+        "category": "Tax Compliance",
+        "points": points,
+        "max_points": 25,
+        "observations": obs
+    })
+
+    total_score += points
+
+    # ===================================================
+    # 4. USAGE & PROPERTY TYPE (10)
+    # ===================================================
+
+    points = 0
+    obs = []
+
+    usage = str(
+        facts.get("usage", "")
+    ).upper()
+
+    nature = str(
+        facts.get("nature_of_property", "")
+    ).upper()
+
+    if usage:
         points += 5
-        obs.append("✅ Stable ownership signal")
-    else:
-        points += 2
-        obs.append("⚠️ Possible ownership change")
+
+    if nature:
+        points += 5
+
+    obs.append(f"Usage: {usage}")
+    obs.append(f"Nature: {nature}")
 
     breakdown.append({
-        "emoji": "4️⃣", "category": "Ownership Continuity",
-        "points": points, "max_points": 15, "observations": obs
+        "category": "Usage & Property Type",
+        "points": points,
+        "max_points": 10,
+        "observations": obs
     })
+
     total_score += points
 
-    # 5️⃣ TAX VARIANCE (10)
-    variance_score = {"LOW": 10, "MEDIUM": 7, "HIGH": 4}
-    points = variance_score.get(facts["tax_amount_variance"], 0)
+    # ===================================================
+    # 5. ADDRESS COMPLETENESS (10)
+    # ===================================================
+
+    address_fields = [
+        "zone",
+        "ward",
+        "door_number",
+        "locality",
+        "pin_code"
+    ]
+
+    present = sum(
+        1 for f in address_fields
+        if facts.get(f)
+    )
+
+    points = round(
+        (present / len(address_fields)) * 10
+    )
 
     breakdown.append({
-        "emoji": "5️⃣", "category": "Tax Variance",
-        "points": points, "max_points": 10,
-        "observations": [f"Tax variance: {facts['tax_amount_variance']}"]
+        "category": "Address Completeness",
+        "points": points,
+        "max_points": 10,
+        "observations": [
+            f"{present}/5 address fields present"
+        ]
     })
+
     total_score += points
 
-    # 6️⃣ TAX TREND (10)
-    if facts["tax_trend"] == "GRADUAL_INCREASE":
-        points = 10
-    elif facts["tax_trend"] == "STABLE":
-        points = 7
-    else:
-        points = 0
+    # ===================================================
+    # 6. CONSTRUCTION & OCCUPANCY (10)
+    # ===================================================
+
+    points = 0
+    obs = []
+
+    if facts.get("construction_year"):
+        points += 5
+
+    if (
+        facts.get("self_occupied_area") is not None
+        or
+        facts.get("tenanted_area") is not None
+    ):
+        points += 5
+
+    obs.append(
+        f"Construction Year: {facts.get('construction_year')}"
+    )
 
     breakdown.append({
-        "emoji": "6️⃣", "category": "Tax Trend Behaviour",
-        "points": points, "max_points": 10,
-        "observations": [f"Trend: {facts['tax_trend']}"]
+        "category": "Construction & Occupancy",
+        "points": points,
+        "max_points": 10,
+        "observations": obs
     })
+
     total_score += points
 
-    if total_score >= 85:
-        risk_level, emoji = "LOW", "🟢"
-    elif total_score >= 70:
-        risk_level, emoji = "MEDIUM-LOW", "🟡"
-    elif total_score >= 55:
-        risk_level, emoji = "MEDIUM", "🟠"
+    # ===================================================
+    # 7. AREA CONSISTENCY (5)
+    # ===================================================
+
+    points = 0
+
+    builtup = facts.get("builtup_area")
+    plinth = facts.get("plinth_area")
+
+    if (
+        builtup
+        and
+        plinth
+    ):
+
+        diff = abs(
+            float(builtup)
+            -
+            float(plinth)
+        )
+
+        if diff <= 50:
+            points = 5
+        elif diff <= 200:
+            points = 3
+
+    breakdown.append({
+        "category": "Area Consistency",
+        "points": points,
+        "max_points": 5,
+        "observations": [
+            f"Builtup={builtup}",
+            f"Plinth={plinth}"
+        ]
+    })
+
+    total_score += points
+
+    # ===================================================
+    # FINAL RISK
+    # ===================================================
+
+    risk_score = 100 - total_score
+
+    if risk_score <= 15:
+        risk_level = "LOW"
+
+    elif risk_score <= 30:
+        risk_level = "MEDIUM-LOW"
+
+    elif risk_score <= 45:
+        risk_level = "MEDIUM"
+
     else:
-        risk_level, emoji = "HIGH", "🔴"
+        risk_level = "HIGH"
 
-    return generate_report(breakdown, total_score, max_total, risk_level, emoji), total_score, risk_level
-
-
-def generate_report(breakdown, total, max_total, level, emoji):
-    lines = []
-    lines.append("=" * 70)
-    lines.append("PROPERTY TAX RISK ASSESSMENT REPORT")
-    lines.append("=" * 70)
-    for b in breakdown:
-        lines.append(f"{b['emoji']} {b['category']} ({b['points']} / {b['max_points']})")
-        for o in b["observations"]:
-            lines.append(f"  {o}")
-        lines.append("")
-    lines.append("=" * 70)
-    lines.append(f"{emoji} FINAL SCORE: {total} / {max_total}")
-    lines.append(f"RISK LEVEL: {level}")
-    lines.append("=" * 70)
-    return "\n".join(lines)
-
-
-# ============================================================
-# ✅ RISK SCORE = 100 - SAFETY SCORE (HELPERS)
-# ============================================================
-
-def risk_score_from_safety(score: int) -> int:
-    """Convert safety score (higher is safer) to risk score (higher is riskier)."""
-    score = int(max(0, min(100, score)))
-    return 100 - score
-
-
-def risk_level_from_risk_score(risk: int) -> str:
-    """Risk level where higher risk score = higher risk."""
-    risk = int(max(0, min(100, risk)))
-    if risk >= 45:
-        return "HIGH"
-    if risk >= 30:
-        return "MEDIUM"
-    if risk >= 15:
-        return "MEDIUM-LOW"
-    return "LOW"
-
-
-def level_from_score(score: int) -> str:
-    """Safety label (kept for backward compatibility)."""
-    if score >= 85:
-        return "LOW"
-    if score >= 70:
-        return "MEDIUM-LOW"
-    if score >= 55:
-        return "MEDIUM"
-    return "HIGH"
+    return {
+        "safety_score": total_score,
+        "risk_score": risk_score,
+        "risk_level": risk_level,
+        "breakdown": breakdown
+    }
 
 
 # ============================================================
@@ -328,116 +306,247 @@ def level_from_score(score: int) -> str:
 # ============================================================
 
 def build_bbmp_llm_prompt_from_excel_facts(facts: dict) -> str:
+
     payload = {
-        "latest_year": facts.get("latest_year"),
-        "years_present": facts.get("years_present", []),
-        "paid_years": facts.get("paid_years", []),
-        "expired_challan_years": facts.get("expired_challan_years", []),
-        "sas_app_numbers": facts.get("sas_app_numbers", []),
-        "tax_amount_variance": facts.get("tax_amount_variance"),
-        "tax_trend": facts.get("tax_trend"),
-        "has_bulk_payments": facts.get("has_bulk_payments"),
-        "has_suspicious_drops": facts.get("has_suspicious_drops"),
+        "owner_name": facts.get("owner_name"),
+        "khata_number": facts.get("khata_number"),
+        "property_number": facts.get("property_number"),
+        "sas_application_number": facts.get("sas_application_number"),
+        "new_application_number": facts.get("new_application_number"),
+        "zone": facts.get("zone"),
+        "ward": facts.get("ward"),
+        "usage": facts.get("usage"),
+        "nature_of_property": facts.get("nature_of_property"),
+        "door_number": facts.get("door_number"),
+        "locality": facts.get("locality"),
+        "pin_code": facts.get("pin_code"),
+        "builtup_area": facts.get("builtup_area"),
+        "plinth_area": facts.get("plinth_area"),
+        "construction_year": facts.get("construction_year"),
+        "self_occupied_area": facts.get("self_occupied_area"),
+        "tenanted_area": facts.get("tenanted_area"),
+        "latest_year_paid": facts.get("latest_year_paid"),
+        "expired_challans": facts.get("expired_challans")
     }
 
     return f"""
-Score BBMP Property Tax compliance risk using ONLY the JSON facts provided.
+# ROLE
 
-Rules:
-- Use ONLY provided facts. Do NOT assume owner, usage, PID, address or anything not given.
-- Output STRICT JSON only. No markdown. No text.
-- Higher score = safer.
-- Score must be integer 0..100.
+You are a Senior BBMP Property Tax Auditor, Municipal Compliance Officer,
+and Property Due Diligence Expert specializing in Karnataka real estate verification.
 
-Scoring logic (deterministic):
-Start score = 85
+# CONTEXT
 
-If latest_year not paid => -25
-If expired_challan_years not empty => -10
-If multiple SAS numbers:
-    2 => -8
-    >=3 => -15
-If tax_amount_variance HIGH => -10
-If tax_amount_variance MEDIUM => -5
-If tax_trend IRREGULAR => -10
-If tax_trend STABLE => -3
-If has_bulk_payments => -3
-If has_suspicious_drops => -7
+A property buyer wants to verify whether the BBMP Property Tax information
+indicates a legally compliant and low-risk property.
 
-Clamp 0..100.
+Evaluate ONLY the supplied JSON facts.
 
-Risk level:
->=85 LOW
->=70 MEDIUM-LOW
->=55 MEDIUM
-else HIGH
+Do NOT assume or infer any information.
 
-Reasons rule:
-- Add 1 short reason for every deduction applied.
-- Do NOT add reasons for positive factors.
+# OBJECTIVE
 
-Confidence rule:
-- confidence = 0.9 if latest_year is not null AND years_present not empty AND sas_app_numbers not empty
-- confidence = 0.6 if at least 2 of these are present: latest_year, years_present, sas_app_numbers, paid_years
-- confidence = 0.3 otherwise
+Assess the municipal compliance and assign a Safety Score.
 
-Flag rules:
-- latest_year_paid = (latest_year in paid_years)
-- expired_challans = (expired_challan_years not empty)
-- multiple_sas = (count of unique sas_app_numbers >= 2)
-- high_variance = (tax_amount_variance == "HIGH")
-- irregular_trend = (tax_trend == "IRREGULAR")
-- bulk_payment_pattern = (has_bulk_payments is true)
-- suspicious_drop_pattern = (has_suspicious_drops is true)
+Safety Score:
 
-Return ONLY this JSON structure:
+100 = Excellent / Very Safe
+
+0 = Very Poor / High Risk
+
+# EVALUATION FRAMEWORK
+
+Evaluate the following categories.
+
+1. Property Identification (20)
+
+- SAS Application Number
+- New Application Number
+- Khata Number
+- Property Number
+
+2. Ownership Verification (20)
+
+- Owner Name
+
+3. Tax Compliance (25)
+
+- Latest Tax Paid
+- Expired Challans
+
+4. Usage & Property Type (10)
+
+- Usage
+- Nature of Property
+
+5. Address Completeness (10)
+
+- Zone
+- Ward
+- Door Number
+- Locality
+- PIN Code
+
+6. Construction & Occupancy (10)
+
+- Construction Year
+- Occupancy Information
+
+7. Area Consistency (5)
+
+- Built-up Area
+- Plinth Area
+
+# SCORING GUIDELINES
+
+Property Identification
+
+All identifiers available → Excellent
+
+Few identifiers missing → Moderate reduction
+
+Most identifiers missing → Significant reduction
+
+Ownership
+
+Owner present → High confidence
+
+Missing owner → Lower confidence
+
+Tax Compliance
+
+Latest year paid
+
+No expired challans
+
+Highest weight.
+
+Usage
+
+Usage available
+
+Nature available
+
+Address
+
+More complete address = higher confidence.
+
+Construction
+
+Construction year
+
+Occupancy details
+
+Area
+
+If Built-up Area and Plinth Area are reasonably consistent,
+Area Consistency should be TRUE.
+
+If values differ substantially,
+Area Consistency should be FALSE.
+
+# IMPORTANT RULES
+
+• Never invent facts.
+
+• Never estimate missing values.
+
+• Missing information reduces confidence,
+NOT automatically the score.
+
+• Use ONLY supplied JSON.
+
+• Reasons must reference available evidence.
+
+• Keep reasons concise.
+
+# RISK LEVELS
+
+85–100  = LOW
+
+70–84   = MEDIUM-LOW
+
+55–69   = MEDIUM
+
+0–54    = HIGH
+
+# CONFIDENCE
+
+0.90–1.00
+
+Most fields present.
+
+0.60–0.89
+
+Moderate information available.
+
+0.30–0.59
+
+Sparse information.
+
+Below 0.30
+
+Very limited information.
+
+# OUTPUT
+
+Return ONLY valid JSON.
 
 {{
-  "score": 0,
-  "risk_level": "",
-  "flags": {{
-    "latest_year_paid": false,
-    "expired_challans": false,
-    "multiple_sas": false,
-    "high_variance": false,
-    "irregular_trend": false,
-    "bulk_payment_pattern": false,
-    "suspicious_drop_pattern": false
-  }},
-  "reasons": ["..."],
-  "confidence": 0.0
+    "score":0,
+
+    "risk_level":"",
+
+    "flags":{{
+
+        "property_identified":false,
+
+        "ownership_verified":false,
+
+        "tax_compliant":false,
+
+        "usage_verified":false,
+
+        "address_complete":false,
+
+        "construction_info_available":false,
+
+        "area_consistent":false
+
+    }},
+
+    "reasons":[
+
+        "...",
+        "...",
+        "..."
+
+    ],
+
+    "confidence":0.0
+
 }}
 
-FACTS:
-{json.dumps(payload, ensure_ascii=False)}
+# FINAL VALIDATION
+
+Before returning:
+
+✓ Score between 0 and 100.
+
+✓ Risk level matches score.
+
+✓ Flags agree with supplied facts.
+
+✓ Confidence matches completeness of information.
+
+✓ Reasons supported by facts.
+
+✓ Return ONLY valid JSON.
+
+FACTS
+
+{json.dumps(payload, ensure_ascii=False, indent=2)}
 """.strip()
-
-
-def gemini_score_bbmp_excel_stable(facts: dict) -> dict:
-    api_key = os.getenv("GEMINI_API_KEY3")
-    if not api_key:
-        raise RuntimeError("Missing GEMINI_API_KEY3 env var.")
-
-    from google import genai
-    from google.genai import types
-
-    client = genai.Client(api_key=api_key)
-
-    resp = client.models.generate_content(
-        model="gemini-1.5-flash",
-        contents=build_bbmp_llm_prompt_from_excel_facts(facts),
-        config=types.GenerateContentConfig(
-            temperature=0,
-            top_p=0.1,
-            top_k=1,
-            response_mime_type="application/json",
-            max_output_tokens=2048
-        )
-    )
-
-    return json.loads(resp.text)
-
-
 # ============================================================
 # ✅ BLEND SCORE: 70% PYTHON + 30% LLM
 # ============================================================
@@ -447,112 +556,531 @@ def blend_scores(python_score: int, llm_score: int, w_python: float = 0.7) -> in
     final = (w_python * float(python_score)) + (w_llm * float(llm_score))
     return int(round(max(0.0, min(100.0, final))))
 
+from openai import OpenAI
 
+
+qwen_client = OpenAI(
+    base_url="http://localhost:11434/v1",
+    api_key="ollama"
+)
+
+def extract_property_facts_from_image(image_path):
+
+    mime_type, _ = mimetypes.guess_type(image_path)
+    if mime_type is None:
+        mime_type = "image/png"
+
+    with open(image_path, "rb") as f:
+        image_data = base64.b64encode(f.read()).decode("utf-8")
+
+    response = qwen_client.chat.completions.create(
+        model="qwen2.5vl:7b",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are an information extraction engine. Return ONLY valid JSON."
+            },
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": """
+Analyze this BBMP Property Tax screenshot.
+
+Extract ONLY information that is explicitly visible in this screenshot.
+
+Return ONLY valid JSON.
+
+{
+  "owner_name": null,
+  "khata_number": null,
+  "property_number": null,
+  "sas_application_number": null,
+  "new_application_number": null,
+  "zone": null,
+  "ward": null,
+  "usage": null,
+  "nature_of_property": null,
+  "door_number": null,
+  "locality": null,
+  "pin_code": null,
+  "builtup_area": null,
+  "plinth_area": null,
+  "construction_year": null,
+  "self_occupied_area": null,
+  "tenanted_area": null,
+  "latest_year_paid": null,
+  "expired_challans": null
+}
+
+IMPORTANT EXTRACTION RULES:
+
+1. Extract ONLY values that are actually visible in this screenshot.
+
+2. Do NOT guess, infer, calculate, or invent values.
+
+3. If a field is not visible in this screenshot, return null.
+
+4. Ignore empty fields.
+
+5. Ignore UI placeholders such as:
+   - "--Select--"
+   - "--Select"
+   - "Select"
+   - "Please Select"
+
+6. For radio buttons, extract the option that is visibly SELECTED.
+
+7. For dropdowns, extract the currently SELECTED value only.
+   Do not extract unselected dropdown options.
+
+8. "usage" must come specifically from the BBMP "Usage" section.
+   Valid examples include:
+   - Residential
+   - Non Residential
+   - Both
+
+9. "nature_of_property" must come specifically from the
+   "Nature of Property" section.
+
+10. Do NOT confuse "Nature of Property" with:
+    - Usage Details Category
+    - Sub Category
+    - Sub Group
+    - Construction Category
+
+11. "builtup_area" must come specifically from:
+    "Built up Area (in Sft)"
+
+12. "plinth_area" must come specifically from:
+    "Plinth Area (in Sft)"
+
+13. "construction_year" must come from the
+    "Year of Construction" field.
+
+14. "self_occupied_area" must come from the
+    "Self Occupied" field in Usage Details.
+
+15. "tenanted_area" must come from the
+    "Tenanted" field in Usage Details.
+
+16. Preserve the values as shown in the screenshot.
+
+17. Do not use information from another screenshot or assume information
+    from another page.
+
+18. If the field is visible but has no value, return null.
+
+19. Return ONLY valid JSON. Do not include explanations or markdown.
+
+FINAL CHECK BEFORE RETURNING:
+
+- Do not return "--Select--" for any field.
+- Do not confuse Usage with Nature of Property.
+- Do not confuse Nature of Property with Construction Category.
+- Extract Built up Area if visible.
+- Extract Plinth Area if visible.
+- Extract selected radio/dropdown values only.
+- Missing information must be null.
+"""
+                    },
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:{mime_type};base64,{image_data}"
+                        }
+                    }
+                ]
+            }
+        ],
+        temperature=0
+    )
+
+    text = response.choices[0].message.content.strip()
+
+    return _safe_json_load(text)
+
+def extract_property_facts_from_images(image_paths):
+
+    merged = {}
+
+    for image_path in image_paths:
+
+        print("\n" + "=" * 90)
+        print(f"🔍 QWEN ANALYZING: {os.path.basename(image_path)}")
+        print("=" * 90)
+
+        facts = extract_property_facts_from_image(image_path)
+
+        print("\n📦 QWEN EXTRACTED DATA:")
+        print(json.dumps(
+            facts,
+            indent=2,
+            ensure_ascii=False
+        ))
+
+        print("=" * 90)
+
+        for key, value in facts.items():
+
+            if value is None:
+                continue
+
+            if isinstance(value, str) and value.strip() == "":
+                continue
+
+            if isinstance(value, (list, dict)) and len(value) == 0:
+                continue
+
+            merged[key] = value
+
+    print("\n" + "=" * 90)
+    print("📦 FINAL MERGED QWEN DATA")
+    print("=" * 90)
+
+    print(json.dumps(
+        merged,
+        indent=2,
+        ensure_ascii=False
+    ))
+
+    print("=" * 90)
+
+    return merged
 # ============================================================
 # ✅ WRAPPER (FINAL)
 # ============================================================
 
-def run_bbmp_propertytax_wrapper(excel_path: str, run_llm_score: bool = True, session_id: str = None, screenshot_dir: str = None) -> dict:
+
+def create_bbmp_evidence_screenshot(
+    image_paths,
+    output_path
+):
+    """
+    Merge BBMP screenshots into one evidence image.
+    """
+
+    images = []
+
+    for path in image_paths:
+
+        if not os.path.exists(path):
+            continue
+
+        img = Image.open(path).convert("RGB")
+
+        images.append(img)
+
+    if not images:
+        return
+
+    width = max(img.width for img in images)
+
+    height = sum(img.height for img in images)
+
+    canvas = Image.new(
+        "RGB",
+        (width, height),
+        "white"
+    )
+
+    y = 0
+
+    for img in images:
+
+        canvas.paste(img, (0, y))
+
+        y += img.height
+
+    canvas.save(output_path)
+
+def run_bbmp_propertytax_wrapper(
+    image_paths: list,
+    run_llm_score: bool = True,
+    session_id: str = None,
+    screenshot_dir: str = None
+) -> dict:
+
+    # ==========================================
+    # EXTRACT FACTS FROM SCREENSHOTS
+    # ==========================================
+# ==========================================
+# SAVE SCREENSHOT
+# ==========================================
+
+    if screenshot_dir and session_id:
+
+        os.makedirs(
+            screenshot_dir,
+            exist_ok=True
+        )
+
+        screenshot_path = os.path.join(
+            screenshot_dir,
+            f"bbmp_result_{session_id}.png"
+        )
+
+        try:
+
+            create_bbmp_evidence_screenshot(
+                image_paths,
+                screenshot_path
+            )
+
+            print(
+                f"Saved BBMP evidence screenshot → {screenshot_path}"
+            )
+
+        except Exception as e:
+
+            print(
+                f"Failed to save BBMP screenshot: {e}"
+            )
     try:
-        facts = extract_facts_from_excel(excel_path)
+
+        facts = extract_property_facts_from_images(
+            image_paths
+        )
+
     except Exception as e:
-        print(f"⚠️ Error extracting facts from Excel: {e}. Using mock data.")
-        facts = get_mock_bbmp_facts()
-    
-    # If facts are empty/missing, also fallback to mock
-    if not facts.get("years_present"):
-        print("⚠️ No years found in Excel. Using mock data.")
-        facts = get_mock_bbmp_facts()
 
-    report, py_score, py_level = property_tax_risk_engine(facts)
+        raise RuntimeError(
+            f"Failed to extract BBMP property facts: {e}"
+        )
 
-    py_risk = risk_score_from_safety(py_score)
+    # ==========================================
+    # PYTHON RISK ENGINE
+    # ==========================================
+
+    risk_result = property_tax_risk_engine(
+        facts
+    )
+
+    py_score = risk_result["safety_score"]
+
+    py_risk = risk_result["risk_score"]
+
+    py_level = risk_result["risk_level"]
+
+    report = risk_result["breakdown"]
+
+    # ==========================================
+    # BASE OUTPUT
+    # ==========================================
 
     out = {
+
         "document_type": "BBMP_PROPERTY_TAX",
-        "excel_path": excel_path,
+
+        "image_count": len(image_paths),
+        "images": image_paths,
         "facts": facts,
         "python": {
-            "score": py_score,  # safety score (higher is safer)
-            "risk_score": py_risk,  # ✅ 100 - score (higher is riskier)
-            "risk_level": py_level,  # safety-based label (existing)
-            "risk_level_from_risk_score": risk_level_from_risk_score(py_risk),  # risk-based label
-            "report": report
+
+            "score": py_score,
+
+            "risk_score": py_risk,
+
+            "risk_level": py_level,
+
+            "breakdown": report
         },
-        "gemini": {
+
+        "claude": {
+
             "enabled": bool(run_llm_score),
+
             "output": None,
+
             "error": None
         },
+
         "final": None
     }
 
+    # ==========================================
+    # GEMINI SCORING
+    # ==========================================
+
     if run_llm_score:
+
         try:
-            llm_out = gemini_score_bbmp_excel_stable(facts)
-            out["gemini"]["output"] = llm_out
 
-            llm_score = int(llm_out.get("score", 0) or 0)
-            llm_score = max(0, min(100, llm_score))
-            llm_risk = risk_score_from_safety(llm_score)
+            llm_out = claude_score_bbmp_excel_stable(
+                facts
+            )
 
-            # add computed risk score alongside Gemini output (non-breaking)
-            if isinstance(out["gemini"]["output"], dict):
-                out["gemini"]["output"]["risk_score"] = llm_risk
-                out["gemini"]["output"]["risk_level_from_risk_score"] = risk_level_from_risk_score(llm_risk)
+            out["claude"]["output"] = llm_out
 
-            final_score = blend_scores(py_score, llm_score, w_python=0.7)
-            final_risk = risk_score_from_safety(final_score)
+            llm_score = int(
+                llm_out.get("score", 0)
+            )
+
+            llm_score = max(
+                0,
+                min(100, llm_score)
+            )
+
+            llm_risk = (
+                100 - llm_score
+            )
+
+            out["claude"]["output"]["risk_score"] = (
+                llm_risk
+            )
+
+            final_score = blend_scores(
+                py_score,
+                llm_score,
+                w_python=0.7
+            )
+
+            final_risk = (
+                100 - final_score
+            )
+
+            if final_risk <= 15:
+
+                final_level = "LOW"
+
+            elif final_risk <= 30:
+
+                final_level = "MEDIUM-LOW"
+
+            elif final_risk <= 45:
+
+                final_level = "MEDIUM"
+
+            else:
+
+                final_level = "HIGH"
 
             out["final"] = {
-                "score": final_score,  # safety score
-                "risk_score": final_risk,  # ✅ 100 - score
-                "risk_level": level_from_score(final_score),  # safety-based label
-                "risk_level_from_risk_score": risk_level_from_risk_score(final_risk),  # risk-based label
-                "weights": {"python": 0.7, "llm": 0.3},
+
+                "score": final_score,
+
+                "risk_score": final_risk,
+
+                "risk_level": final_level,
+
+                "weights": {
+
+                    "python": 0.7,
+
+                    "llm": 0.3
+                },
+
                 "components": {
+
                     "python_score": py_score,
+
                     "python_risk_score": py_risk,
+
                     "llm_score": llm_score,
+
                     "llm_risk_score": llm_risk
                 }
             }
 
         except Exception as e:
-            out["gemini"]["error"] = str(e)
-            # fallback: deterministic only
+
+            out["claude"]["error"] = str(e)
+
             out["final"] = {
+
                 "score": py_score,
-                "risk_score": py_risk,  # ✅ 100 - score
+
+                "risk_score": py_risk,
+
                 "risk_level": py_level,
-                "risk_level_from_risk_score": risk_level_from_risk_score(py_risk),
-                "weights": {"python": 1.0, "llm": 0.0},
-                "components": {"python_score": py_score, "python_risk_score": py_risk, "llm_score": None, "llm_risk_score": None}
+
+                "weights": {
+
+                    "python": 1.0,
+
+                    "llm": 0.0
+                },
+
+                "components": {
+
+                    "python_score": py_score,
+
+                    "python_risk_score": py_risk,
+
+                    "llm_score": None,
+
+                    "llm_risk_score": None
+                }
             }
 
     else:
+
         out["final"] = {
+
             "score": py_score,
-            "risk_score": py_risk,  # ✅ 100 - score
+
+            "risk_score": py_risk,
+
             "risk_level": py_level,
-            "risk_level_from_risk_score": risk_level_from_risk_score(py_risk),
-            "weights": {"python": 1.0, "llm": 0.0},
-            "components": {"python_score": py_score, "python_risk_score": py_risk, "llm_score": None, "llm_risk_score": None}
+
+            "weights": {
+
+                "python": 1.0,
+
+                "llm": 0.0
+            },
+
+            "components": {
+
+                "python_score": py_score,
+
+                "python_risk_score": py_risk,
+
+                "llm_score": None,
+
+                "llm_risk_score": None
+            }
         }
 
     return out
-
-
-# ============================================================
-# ✅ OPTIONAL CLI ENTRY: prints JSON + saves JSON file
-# ============================================================
-
 if __name__ == "__main__":
-    EXCEL_PATH = "bbmp_property_details.xlsx"
+    import argparse
 
-    result = run_bbmp_propertytax_wrapper(EXCEL_PATH, run_llm_score=True)
+    parser = argparse.ArgumentParser()
 
-    print(json.dumps(result, indent=2, ensure_ascii=False, default=str))
+    parser.add_argument(
+        "--images",
+        nargs="+",
+        required=True,
+        help="BBMP screenshot/image paths"
+    )
 
-    with open("bbmp_result.json", "w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2, ensure_ascii=False, default=str)
+    parser.add_argument(
+        "--session-id",
+        default="debug"
+    )
+
+    parser.add_argument(
+        "--screenshot-dir",
+        default="screenshots"
+    )
+
+    args = parser.parse_args()
+
+    result = run_bbmp_propertytax_wrapper(
+        image_paths=args.images,
+        run_llm_score=False,
+        session_id=args.session_id,
+        screenshot_dir=args.screenshot_dir
+    )
+
+    print("\n" + "=" * 90)
+    print("BBMP PROPERTY TAX — QWEN EXTRACTION RESULT")
+    print("=" * 90)
+
+    print(json.dumps(
+        result,
+        indent=2,
+        ensure_ascii=False
+    ))

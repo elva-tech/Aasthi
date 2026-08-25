@@ -1,6 +1,7 @@
+import os
 import time
 import pandas as pd
-
+import glob
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -11,14 +12,13 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 
 class BBMPPropertyTaxScraper:
+   
 
-    def __init__(self, pid_number, owner_name, application_number,
-                 output_file="bbmp_property_details.xlsx", timeout=40):
+
+    def __init__(self, pid_number, owner_name, timeout=40):
 
         self.pid_number = pid_number
         self.owner_prefix = owner_name[:3].upper()
-        self.application_number = application_number
-        self.output_file = output_file
 
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")
@@ -29,6 +29,18 @@ class BBMPPropertyTaxScraper:
             options=options
         )
         self.wait = WebDriverWait(self.driver, timeout)
+
+    def clear_old_screenshots(self):
+        screenshot_dir = "tax_screenshots"
+
+        os.makedirs(screenshot_dir, exist_ok=True)
+
+        for file in glob.glob(os.path.join(screenshot_dir, "*.png")):
+            try:
+                os.remove(file)
+                print(f"Deleted old screenshot: {os.path.basename(file)}")
+            except Exception as e:
+                print(f"Could not delete {file}: {e}")
 
     # ---------------- OPEN SITE ---------------- #
     def open_site(self):
@@ -70,87 +82,106 @@ class BBMPPropertyTaxScraper:
         )
         self.driver.execute_script("arguments[0].click();", confirm_btn)
 
-    # ---------------- NAVIGATE TO PAYMENT HISTORY ---------------- #
-    def open_payment_history(self):
-        click_here = self.wait.until(
-            EC.element_to_be_clickable(
-                (By.XPATH, "//a[contains(text(),'click here')]")
-            )
-        )
-        self.driver.execute_script("arguments[0].click();", click_here)
+    def wait_for_captcha_and_proceed(self):
 
-        # Dropdown (Application Number)
-        try:
-            dropdown = self.wait.until(EC.presence_of_element_located((By.XPATH, "//select")))
-            try:
-                Select(dropdown).select_by_visible_text("Application Number")
-            except:
-                pass
-        except:
-            pass
+        print("\n==============================")
+        print("ENTER CAPTCHA MANUALLY")
+        print("Waiting for Proceed button...")
+        print("==============================\n")
 
-        app_input = self.wait.until(
-            EC.presence_of_element_located(
-                (By.XPATH, "//input[contains(@class,'form-control') or contains(@id,'txt')]")
-            )
-        )
-        app_input.clear()
-        app_input.send_keys(self.application_number)
-        app_input.send_keys("\t")
-        time.sleep(1)
+        old_url = self.driver.current_url
 
-        retrieve2 = self.wait.until(
-            EC.element_to_be_clickable(
-                (By.ID, "ContentPlaceHolder1_ContentPlaceHolder1_Button1")
-            )
-        )
-        self.driver.execute_script("arguments[0].click();", retrieve2)
-
-        print("✅ Payment history loaded")
-
-    # ---------------- EXTRACT TABLE ---------------- #
-    def extract_payment_history(self):
-        self.wait.until(
-            EC.presence_of_element_located(
-                (By.XPATH, "//th[contains(text(),'SAS App. No')]")
-            )
+        WebDriverWait(self.driver, 300).until(
+            lambda d: d.current_url != old_url
         )
 
-        # Auto scroll
-        last_height = self.driver.execute_script("return document.body.scrollHeight")
-        while True:
-            self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        print("✅ Proceed detected")
+        time.sleep(10)
+# ---------------- SCREENSHOTS ---------------- #
+    time.sleep(5)
+    def capture_full_page(self):
+
+        screenshot_dir = "tax_screenshots"
+
+        os.makedirs(
+            screenshot_dir,
+            exist_ok=True
+        )
+
+        time.sleep(5)
+
+        total_height = self.driver.execute_script(
+            """
+            return Math.max(
+                document.body.scrollHeight,
+                document.documentElement.scrollHeight
+            );
+            """
+        )
+
+        viewport_height = self.driver.execute_script(
+            "return window.innerHeight;"
+        )
+
+        print("Total Height:", total_height)
+
+        part = 1
+
+        for y in range(
+            0,
+            total_height,
+            viewport_height
+        ):
+
+            self.driver.execute_script(
+                f"window.scrollTo(0,{y});"
+            )
+
             time.sleep(2)
-            new_height = self.driver.execute_script("return document.body.scrollHeight")
-            if new_height == last_height:
-                break
-            last_height = new_height
 
-        table = self.driver.find_element(
-            By.XPATH, "//table[.//th[contains(text(),'SAS App. No')]]"
+            filename = os.path.join(
+                screenshot_dir,
+                f"tax_page_{part}.png"
+            )
+
+            self.driver.save_screenshot(
+                filename
+            )
+
+            print("📸", filename)
+
+            part += 1
+
+        self.driver.execute_script(
+            "window.scrollTo(0,0);"
         )
-
-        headers = [h.text.strip() for h in table.find_elements(By.XPATH, ".//th")]
-        rows = table.find_elements(By.XPATH, ".//tr")[1:]
-
-        data = []
-        for row in rows:
-            cells = row.find_elements(By.XPATH, ".//td")
-            data.append([c.text.strip() for c in cells])
-
-        df = pd.DataFrame(data, columns=headers)
-        df.to_excel(self.output_file, index=False)
-
-        print(f"✅ Property tax data saved: {self.output_file}")
-        return df
 
     # ---------------- RUN ---------------- #
     def run(self):
+
         try:
+            self.clear_old_screenshots()
             self.open_site()
+
             self.retrieve_property()
-            self.open_payment_history()
-            return self.extract_payment_history()
+
+            self.wait_for_captcha_and_proceed()
+
+            self.capture_full_page()
+
+
+            print("✅ Screenshots completed")
+
         finally:
+
             self.driver.quit()
-            print("✅ BBMP browser closed")
+
+            print("Browser closed")
+if __name__ == "__main__":
+
+    scraper = BBMPPropertyTaxScraper(
+        pid_number="1500082907",
+        owner_name="RAM",
+    )
+
+    scraper.run()

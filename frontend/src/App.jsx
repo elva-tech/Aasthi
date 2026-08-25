@@ -1,53 +1,91 @@
-import React, { useState } from 'react';
-import { Building2, Search, ArrowRight } from 'lucide-react';
-import PhoneLogin from './components/PhoneLogin';
-import OTPVerify from './components/OTPVerify';
-import EcFinder from './components/EcFinder';
-import ResultCard from './components/ResultCard';
+import React, { useEffect, useState } from "react";
+import { Building2, Moon, Sun } from "lucide-react";
+import InvestmentInputs from "./components/InvestmentInputs";
+import Landing from "./components/Landing";
+import PropertyInputs from "./components/PropertyInputs";
+import ResultCard from "./components/ResultCard";
+
+function getInitialTheme() {
+  const stored = localStorage.getItem("aasthi-theme");
+  if (stored === "light" || stored === "dark") return stored;
+  return window.matchMedia("(prefers-color-scheme: light)").matches
+    ? "light"
+    : "dark";
+}
 
 function App() {
-  const [step, setStep] = useState(1);
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [sessionId, setSessionId] = useState('');
-  const [ecImage, setEcImage] = useState('');
-  const [propertyType, setPropertyType] = useState('Non Agricultural');
+  const [step, setStep] = useState(0);
+  const [theme, setTheme] = useState(getInitialTheme);
 
-  // Move to next step
-  const handleNext = () => setStep(step + 1);
+  const [propertyDetails, setPropertyDetails] = useState({
+    propertyType: "Apartment",
+  });
 
-  // Handle successful login request
-  const onLoginInitiated = (phone, session) => {
-    setPhoneNumber(phone);
-    setSessionId(session);
-    handleNext(); // Go to OTP
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("aasthi-theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () =>
+    setTheme((t) => (t === "dark" ? "light" : "dark"));
+
+  const handleDueDiligence = () => setStep(1);
+  const handleInvestment = () => setStep(3);
+
+  const handlePropertySubmit = (details) => {
+    setPropertyDetails(details);
+    setStep(2);
   };
 
-  // Handle successful OTP verification
-  const onOTPVerified = () => {
-    handleNext(); // Go to Finder
+  const handleReset = () => {
+    setPropertyDetails({ propertyType: "Apartment" });
+    setStep(0);
   };
 
-  // Handle successful Fetch
-  const onEcFetched = (imageUrl, type) => {
-    setEcImage(imageUrl);
-    if (type) setPropertyType(type);
-    handleNext(); // Go to Result
-  };
+  const goHome = () => setStep(0);
 
   return (
     <div className="app-container">
       <nav className="app-nav">
-        <div className="logo">
-          <Building2 size={28} color="var(--accent-secondary)" />
-          <span>Elva Asti</span>
+        <button type="button" className="logo logo-btn" onClick={goHome}>
+          <Building2 size={24} color="var(--accent-secondary)" />
+          <span>Aasthi</span>
+        </button>
+
+        <div className="nav-actions">
+          {step !== 0 && (
+            <button type="button" className="nav-link" onClick={goHome}>
+              Home
+            </button>
+          )}
+          <button
+            type="button"
+            className="theme-toggle"
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
         </div>
       </nav>
 
       <main className="main-content">
-        {step === 1 && <PhoneLogin onLoginInitiated={onLoginInitiated} />}
-        {step === 2 && <OTPVerify sessionId={sessionId} phoneNumber={phoneNumber} onOTPVerified={onOTPVerified} />}
-        {step === 3 && <EcFinder sessionId={sessionId} onEcFetched={onEcFetched} />}
-        {step === 4 && <ResultCard sessionId={sessionId} imageUrl={ecImage} propertyType={propertyType} onReset={() => setStep(1)} />}
+        {step === 0 && (
+          <Landing
+            onDueDiligence={handleDueDiligence}
+            onInvestment={handleInvestment}
+          />
+        )}
+
+        {step === 1 && (
+          <PropertyInputs onSubmit={handlePropertySubmit} onBack={goHome} />
+        )}
+
+        {step === 2 && (
+          <ResultCard propertyDetails={propertyDetails} onReset={handleReset} />
+        )}
+
+        {step === 3 && <InvestmentInputs onBack={goHome} />}
       </main>
     </div>
   );

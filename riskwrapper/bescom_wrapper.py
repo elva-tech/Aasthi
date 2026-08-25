@@ -6,9 +6,8 @@ import pdfplumber
 from PIL import Image
 from difflib import SequenceMatcher
 
-import google.generativeai as old_genai # keep for now if needed elsewhere
-from google import genai
-from google.genai import types
+from anthropic import Anthropic
+import pytesseract
 
 
 # ==================================================
@@ -53,21 +52,63 @@ def pdf_to_images(pdf_path, max_pages=2, dpi=200):
             images.append(pil_img)
     return images
 
+def create_bescom_evidence_screenshot(
+    pdf_path,
+    output_path,
+    dpi=220
+):
+    """
+    Save the page containing customer details.
+    """
 
+    images = pdf_to_images(
+        pdf_path,
+        max_pages=2,
+        dpi=dpi
+    )
+
+    if not images:
+        return
+
+    keywords = [
+        "consumer",
+        "name",
+        "address",
+        "rr no",
+        "rr number",
+        "account",
+        "bill amount"
+    ]
+
+    best_img = images[0]
+    best_score = -1
+
+    for img in images:
+
+        text = pytesseract.image_to_string(img).lower()
+
+        score = sum(
+            1
+            for k in keywords
+            if k in text
+        )
+
+        if score > best_score:
+            best_score = score
+            best_img = img
+
+    best_img.save(output_path)
 # ==================================================
 # GEMINI CONFIG
 # ==================================================
-BESCOM_MODEL = "models/gemini-2.0-flash-lite"
+BESCOM_MODEL = "qwen3:8b"
 
-def get_genai_client():
-    key = (
-        os.environ.get("GEMINI_BESCOM", "").strip() or 
-        os.environ.get("GEMINI_EXTRACTION_KEY", "").strip() or 
-        os.environ.get("GEMINI_API_KEY", "").strip()
-    )
-    if not key:
-        raise RuntimeError("No Gemini API key found (GEMINI_BESCOM, GEMINI_EXTRACTION_KEY, or GEMINI_API_KEY).")
-    return genai.Client(api_key=key)
+from openai import OpenAI
+
+qwen_client = OpenAI(
+    base_url="http://localhost:11434/v1",
+    api_key="ollama"
+)
 
 
 def parse_json_strict(raw: str) -> dict:
@@ -99,22 +140,193 @@ def parse_json_strict(raw: str) -> dict:
 # ==================================================
 # GEMINI: TEXT MODE
 # ==================================================
-def gemini_extract_from_text(pdf_text: str, debug=False) -> dict:
-    client = get_genai_client()
+def claude_extract_from_text(pdf_text: str, debug=False) -> dict:
+    client = qwen_client
+
+    prompt = f"""
+# ROLE
+
+You are a Senior BESCOM Electricity Bill Verification Officer and Karnataka Utility Document Extraction Specialist.
+
+# CONTEXT
+
+You are analyzing an official BESCOM electricity bill.
+
+Your task is to extract ONLY the registered consumer's name and service address.
+
+The extracted information will be compared against buyer-provided details for identity verification.
+
+# OBJECTIVE
+
+Extract the following fields accurately:
+
+1. Customer Name
+2. Service Address
+
+# EXTRACTION PROCESS
+
+Step 1
+
+Read the entire BESCOM bill.
+
+Step 2
+
+Locate the registered consumer information.
+
+Possible labels include:
+
+• Consumer Name
+• Name
+• Registered Consumer
+• Consumer Details
+• Consumer Information
+
+Step 3
+
+Locate the Service Address.
+
+Possible labels include:
+
+• Address
+• Service Address
+• Consumer Address
+• Installation Address
+• Premises Address
+
+Step 4
+
+Ignore every other section.
+
+Do NOT extract:
+
+• RR Number
+• Account ID
+• Customer ID
+• Tariff
+• Sanction Load
+• Meter Number
+• Bill Amount
+• Due Date
+• Reading Details
+• GST Details
+• Payment Details
+• Feeder Information
+
+Step 5
+
+Normalize the extracted values.
+
+• Remove unnecessary spaces.
+• Preserve original spelling.
+• Preserve capitalization if present.
+• Keep commas and house numbers.
+• Do not abbreviate or rewrite addresses.
+
+# IMPORTANT RULES
+
+• Use ONLY information explicitly present in the bill.
+
+• Never guess missing values.
+
+• Never infer from nearby text.
+
+• If the name is not visible,
+return an empty string.
+
+• If the address is not visible,
+return an empty string.
+
+• Ignore OCR noise.
+
+• Ignore decorative text.
+
+• Ignore repeated footer/header text.
+
+# OUTPUT
+
+Return ONLY valid JSON.
+
+{{
+    "name": "",
+    "address": ""
+}}
+
+# FINAL VALIDATION
+
+Before returning:
+
+✓ Name must be the registered consumer.
+
+✓ Address must be the complete service address.
+
+✓ No RR Number.
+
+✓ No Meter Number.
+
+✓ No Tariff.
+
+✓ No Bill Amount.
+
+✓ No extra keys.
+
+✓ Return ONLY valid JSON.
+
+BESCOM BILL TEXT
+
+-------------------------
+
+{pdf_text[:20000]}
+
+-------------------------
+""".strip()
+    client = qwen_client
+
+    response = client.chat.completions.create(
+        model=BESCOM_MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": "You are an information extraction engine. Return ONLY valid JSON."
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=0
+    )
+    raw = response.choices[0].message.content.strip()
+    if debug:
+        print("\n[DEBUG] Qwen raw output:\n", raw)
+
+    data = parse_json_strict(raw)
+
+    return {
+        "name": str(data.get("name", "")).strip(),
+        "address": str(data.get("address", "")).strip(),
+}
+
+# ==================================================
+# GEMINI: IMAGE MODE (for scanned PDFs)
+# ==================================================
+def claude_extract_from_text(pdf_text: str, debug=False) -> dict:
+
+    client = qwen_client
 
     prompt = f"""
 Extract customer details from a BESCOM electricity bill.
 
 Return ONLY valid JSON:
+
 {{
   "name": "...",
   "address": "..."
 }}
 
 Rules:
-- Name is the customer name (usually CAPS).
-- Address is the postal address (may include PIN).
-- Do NOT output tariff/type/meter fields as name.
+- Name is the customer name.
+- Address is the postal address.
+- Do not output tariff/meter details as name.
 - If missing, use empty strings.
 
 PDF text:
@@ -123,95 +335,56 @@ PDF text:
 ---
 """
 
-    resp = client.models.generate_content(
+    response = client.chat.completions.create(
         model=BESCOM_MODEL,
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            temperature=0,
-            response_mime_type="application/json",
-        )
+        messages=[
+            {
+                "role": "system",
+                "content": "You are an information extraction engine. Return ONLY valid JSON."
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=0
     )
-
-    raw = (resp.text or "").strip()
+    raw = response.choices[0].message.content.strip()
     if debug:
-        print("\n[DEBUG] Gemini raw output (TEXT MODE):\n", raw)
+        print("\n[DEBUG] Qwen raw output:\n", raw)
 
     data = parse_json_strict(raw)
+
     return {
         "name": str(data.get("name", "")).strip(),
         "address": str(data.get("address", "")).strip(),
     }
-
-
-# ==================================================
-# GEMINI: IMAGE MODE (for scanned PDFs)
-# ==================================================
-def gemini_extract_from_images(images, debug=False) -> dict:
-    client = get_genai_client()
-
-    prompt = """
-You are reading images of a BESCOM electricity bill.
-
-Extract the CUSTOMER NAME and FULL POSTAL ADDRESS.
-Return ONLY valid JSON:
-{
-  "name": "...",
-  "address": "..."
-}
-
-Rules:
-- Name is the customer name (usually CAPS).
-- Address is the postal address (may include PIN).
-- Do NOT output tariff/type/meter fields as name.
-- If missing, use empty strings.
-"""
-
-    if debug:
-        print(f"DEBUG: Calling Gemini API for BESCOM extraction (IMAGE MODE)...")
-    
-    resp = client.models.generate_content(
-        model=BESCOM_MODEL,
-        contents=[prompt, images[0]],
-        config=types.GenerateContentConfig(
-            temperature=0,
-            response_mime_type="application/json",
-        )
-    )
-    if debug:
-        print(f"DEBUG: Gemini API response received for BESCOM (IMAGE MODE).")
-
-    raw = (resp.text or "").strip()
-    if debug:
-        print("\n[DEBUG] Gemini raw output (IMAGE MODE):\n", raw)
-
-    data = parse_json_strict(raw)
-    return {
-        "name": str(data.get("name", "")).strip(),
-        "address": str(data.get("address", "")).strip(),
-    }
-
 
 # ==================================================
 # AUTO MODE: choose best approach
 # ==================================================
-def gemini_extract_name_address(pdf_path: str, debug=False) -> dict:
+def claude_extract_name_address(
+    pdf_path: str,
+    debug=False
+) -> dict:
+
     pdf_text = extract_text(pdf_path)
 
-    # If text is too small, likely scanned -> image mode
     if debug:
-        print(f"[DEBUG] Extracted text length: {len(pdf_text)}")
+        print(
+            f"[DEBUG] Extracted text length: {len(pdf_text)}"
+        )
 
-    if len(pdf_text) >= 300:
-        out = gemini_extract_from_text(pdf_text, debug=debug)
-        # If Gemini failed in text mode, fallback to image mode
-        if (not out["name"] and not out["address"]) and debug:
-            print("[DEBUG] Text mode returned empty. Falling back to image mode...")
-        if out["name"] or out["address"]:
-            return out
+    if not pdf_text:
+        return {
+            "name": "",
+            "address": ""
+        }
 
-    images = pdf_to_images(pdf_path, max_pages=2, dpi=220)
-    return gemini_extract_from_images(images, debug=debug)
-
+    return claude_extract_from_text(
+        pdf_text,
+        debug=debug
+    )
 
 # ==================================================
 # SCORING
@@ -222,7 +395,6 @@ def calculate_risk(system, user):
     match_score = round(name_score + addr_score, 2)
     risk_score = round(100 - match_score, 2)
     return match_score, risk_score
-
 
 # ==================================================
 # WRAPPER (NEW)
@@ -250,22 +422,35 @@ def run_bescom_wrapper(
     """
     # 1) Setup screenshot if needed
     if screenshot_dir and session_id:
-        import os
-        os.makedirs(screenshot_dir, exist_ok=True)
-        screenshot_path = os.path.join(screenshot_dir, f"bescom_result_{session_id}.png")
-        print(f"DEBUG: BESCOM wrapper - attempting to capture screenshot to {screenshot_path}")
-        # Reuse existing pdf_to_images to save the first page
-        try:
-            print(f"DEBUG: BESCOM wrapper - calling pdf_to_images for screenshot...")
-            images = pdf_to_images(pdf_path, max_pages=1, dpi=220)
-            if images:
-                print(f"DEBUG: BESCOM wrapper - saving first page as screenshot...")
-                images[0].save(screenshot_path)
-                print(f"DEBUG: Saved BESCOM screenshot to {screenshot_path}")
-        except Exception as e:
-            print(f"DEBUG: BESCOM wrapper - failed to capture screenshot: {e}")
+        os.makedirs(
+            screenshot_dir,
+            exist_ok=True
+        )
 
-    system_data = gemini_extract_name_address(pdf_path, debug=debug)
+        screenshot_path = os.path.join(
+            screenshot_dir,
+            f"bescom_result_{session_id}.png"
+        )
+
+        try:
+
+            create_bescom_evidence_screenshot(
+                pdf_path,
+                screenshot_path
+            )
+
+            print(
+                f"Saved BESCOM evidence screenshot → {screenshot_path}"
+            )
+
+        except Exception as e:
+
+            print(
+                f"Failed to save BESCOM screenshot: {e}"
+            )
+        
+
+    system_data = claude_extract_name_address(pdf_path, debug=debug)
 
     user_data = {
         "name": (user_name or "").strip(),
@@ -286,11 +471,11 @@ def run_bescom_wrapper(
 
 # Optional: keep a simple CLI entry without changing logic
 if __name__ == "__main__":
-    PDF_PATH = r"D:\aasthi\wrappercode\7220755000\7220755000.pdf"
+    PDF_PATH = r"D:\aasthiv2\Aasthi\wrappercode\input\bescom\7220755000.pdf"
 
     # keeping it non-interactive-friendly: edit these two lines if needed
-    USER_NAME = "ENTER_NAME_HERE"
-    USER_ADDRESS = "ENTER_ADDRESS_HERE"
+    USER_NAME = "G KRISHNA REDDY"
+    USER_ADDRESS = "KAGADASPURAKAGADASPURA-, KAR -56001"
 
     result = run_bescom_wrapper(PDF_PATH, USER_NAME, USER_ADDRESS, debug=True)
     print(json.dumps(result, indent=2))

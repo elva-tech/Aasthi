@@ -1,0 +1,56 @@
+{
+  "property": {
+    "city": "Bengaluru",
+    "state": "Karnataka"
+  },
+  "formation": {
+    "entity_type": "Association",
+    "is_registered": false,
+    "registration_number_present": false,
+    "registration_date_present": false
+  },
+  "declaration_deed": {
+    "dod_present": true,
+    "dod_registered": true,
+    "dod_date_present": false
+  },
+  "bylaws": {
+    "bylaws_present": true,
+    "bylaws_registered_or_filed": true,
+    "mentions_kaoa_act_or_rules": true,
+    "core_sections_present": {
+      "membership": true,
+      "governance_committee": true,
+      "meetings_quorum_voting": true,
+      "maintenance_charges": true,
+      "funds_audit_accounts": true,
+      "penalties_dispute_resolution": true,
+      "amendment_process": true
+    }
+  },
+  "governance": {
+    "agm_required": true,
+    "agm_frequency_yearly": true,
+    "elections_defined": true,
+    "minutes_and_records_access": true
+  },
+  "financials": {
+    "audit_required": true,
+    "audit_frequency_yearly": true,
+    "corpus_or_sinking_fund_mentioned": true,
+    "collection_enforcement_defined": true
+  },
+  "property_compliance": {
+    "insurance_mentioned": true,
+    "fire_safety_compliance_mentioned": true,
+    "common_areas_transfer_mentioned": true,
+    "litigation_or_disputes_mentioned": false
+  },
+  "confidence": 0.95,
+  "notes": [
+    "Deterministic evidence correction: bylaws.core_sections_present.governance_committee = True — A Board/Office Bearers/Executive Committee is explicitly defined.",
+    "Deterministic evidence correction: governance.agm_required = True — Annual General/General Body Meeting is explicitly mentioned.",
+    "Deterministic evidence correction: governance.minutes_and_records_access = True — Minutes/records maintenance is explicitly defined.",
+    "Deterministic evidence correction: financials.collection_enforcement_defined = True — Collection/recovery of Association dues is explicitly defined."
+  ]
+}

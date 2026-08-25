@@ -3,7 +3,40 @@ import re
 from difflib import SequenceMatcher
 from waterbill import WaterBillFetcher
 
+def run_waterbill_wrapper(
+    rr_number: str,
+    user_name: str,
+    user_address: str,
+    session_id: str = None,
+    screenshot_dir: str = None
+) -> dict:
 
+    # ==========================
+    # DUMMY MODE
+    # ==========================
+
+    system_data = {
+        "Consumer Name": "Ramesh Kumar",
+        "Consumer Address": "12, Whitefield Main Road, Bengaluru, Karnataka - 560066"
+    }
+
+    user_data = {
+        "Consumer Name": (user_name or "").strip(),
+        "Consumer Address": (user_address or "").strip()
+    }
+
+    return {
+        "document_type": "WATER_BILL",
+        "rr_number": (rr_number or "").strip(),
+        "system_data": system_data,
+        "user_data": user_data,
+        "match_score": 95.8,
+        "risk_score": 4.2
+    }
+
+    # ==========================
+    # ORIGINAL CODE BELOW
+    # ==========================
 # =============================
 # TEXT NORMALIZATION
 # =============================
@@ -64,7 +97,7 @@ def calculate_risk(system_data, user_data):
 
     return match_score, risk_score
 
-
+'''
 # =============================
 # WRAPPER (NEW)
 # =============================
@@ -109,7 +142,7 @@ def run_waterbill_wrapper(
         "match_score": match,
         "risk_score": risk
     }
-
+'''
 
 # =============================
 # OPTIONAL CLI ENTRY

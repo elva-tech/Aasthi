@@ -1,0 +1,171 @@
+{
+  "module": "rera_bda_buda_tuda_approval",
+  "risk": 77.0,
+  "risk_level": "VERY HIGH",
+  "verification_status": "UNVERIFIED",
+  "project": {
+    "project_name": "",
+    "registration_number": "",
+    "acknowledgement_number": "",
+    "project_status": "",
+    "project_type": "",
+    "project_description": "",
+    "project_start_date": "",
+    "proposed_project_completion_date": "",
+    "project_address": "",
+    "district": "",
+    "taluk": "",
+    "approving_authority": "",
+    "total_area_of_land_sq_m": "",
+    "total_covered_area_sq_m": "",
+    "total_open_area_sq_m": "",
+    "estimated_cost_of_construction_inr": "",
+    "cost_of_land_inr": "",
+    "total_project_cost_inr": "",
+    "no_of_garage_for_sale": "",
+    "area_of_garage_for_sale_sq_m": "",
+    "no_of_parking_for_sale": "",
+    "area_of_parking_for_sale_sq_m": ""
+  },
+  "authority": {
+    "detected": null,
+    "rera_approving_authority": "",
+    "claude_verification": {
+      "authority": "",
+      "authority_listed_in_rera": false,
+      "verification_status": "UNVERIFIED",
+      "approval_found": false,
+      "independent_approval_verified": false,
+      "approval_status": "",
+      "approval_number": "",
+      "approval_document": "",
+      "project_name": "",
+      "project_name_match": null,
+      "project_address": "",
+      "location_match": null,
+      "evidence": [],
+      "missing_information": [
+        "Supported planning authority could not be identified."
+      ],
+      "risk_observations": [
+        "Approving authority is missing or not recognized as BDA, BUDA or TUDA."
+      ],
+      "confidence": 0.0
+    },
+    "verification_summary": "Authority is listed, but independent approval evidence was not found in the supplied RERA data."
+  },
+  "checks": {
+    "rera_registration": {
+      "status": "FAIL",
+      "risk": 20,
+      "max_risk": 20,
+      "message": "RERA registration number is missing."
+    },
+    "rera_registration_format": {
+      "status": "NOT_CHECKED",
+      "risk": 0,
+      "max_risk": 5,
+      "message": "No RERA registration number to validate."
+    },
+    "project_name": {
+      "status": "FAIL",
+      "risk": 5,
+      "max_risk": 5,
+      "message": "Project name is missing."
+    },
+    "project_status": {
+      "status": "UNKNOWN",
+      "risk": 7,
+      "max_risk": 15,
+      "message": "Project status is missing or could not be classified."
+    },
+    "location": {
+      "status": "FAIL",
+      "risk": 5,
+      "max_risk": 5,
+      "message": "Project location information is missing."
+    },
+    "approving_authority": {
+      "status": "FAIL",
+      "risk": 15,
+      "max_risk": 15,
+      "authority": null,
+      "message": "Approving authority is missing."
+    },
+    "authority_approval_verification": {
+      "status": "UNVERIFIED",
+      "risk": 20,
+      "max_risk": 30,
+      "message": "Authority is listed, but independent approval evidence was not found in the supplied RERA data.",
+      "evidence": []
+    },
+    "claude_consistency": {
+      "status": "WARNING",
+      "risk": 5,
+      "max_risk": 5,
+      "message": "Claude identified additional due-diligence observations.",
+      "observations": [
+        "Approving authority is missing or not recognized as BDA, BUDA or TUDA."
+      ]
+    }
+  },
+  "score_breakdown": {
+    "total_rule_risk": 77,
+    "maximum_rule_risk": 100,
+    "risk_percentage": 77.0
+  },
+  "risk_reasons": [
+    {
+      "check": "rera_registration",
+      "risk": 20,
+      "status": "FAIL",
+      "reason": "RERA registration number is missing."
+    },
+    {
+      "check": "project_name",
+      "risk": 5,
+      "status": "FAIL",
+      "reason": "Project name is missing."
+    },
+    {
+      "check": "project_status",
+      "risk": 7,
+      "status": "UNKNOWN",
+      "reason": "Project status is missing or could not be classified."
+    },
+    {
+      "check": "location",
+      "risk": 5,
+      "status": "FAIL",
+      "reason": "Project location information is missing."
+    },
+    {
+      "check": "approving_authority",
+      "risk": 15,
+      "status": "FAIL",
+      "reason": "Approving authority is missing."
+    },
+    {
+      "check": "authority_approval_verification",
+      "risk": 20,
+      "status": "UNVERIFIED",
+      "reason": "Authority is listed, but independent approval evidence was not found in the supplied RERA data."
+    },
+    {
+      "check": "claude_consistency",
+      "risk": 5,
+      "status": "WARNING",
+      "reason": "Claude identified additional due-diligence observations."
+    }
+  ],
+  "_meta": {
+    "source": "Karnataka RERA extracted JSON",
+    "input_file": "D:\\aasthiv2\\Aasthi\\riskwrapper\\assoc_extract.json",
+    "scoring_method": "Claude evidence analysis + Python deterministic rules",
+    "claude_model": "gemini-2.5-flash",
+    "authority_apis_used": false,
+    "anthropic_api_used": true,
+    "claude_error": null,
+    "generated_at": "2026-08-19 21:13:42"
+  }
+}

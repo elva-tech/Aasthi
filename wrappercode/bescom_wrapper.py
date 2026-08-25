@@ -1,6 +1,11 @@
+from glob import glob
 import os
 import time
 import pandas as pd
+import os
+import time
+import base64
+import requests
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -12,12 +17,19 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 class BESCOMBillScraper:
 
+    def clear_old_downloads(self):
+        for file in glob(os.path.join(self.base_dir, "*.pdf")):
+            try:
+                os.remove(file)
+            except Exception:
+                pass
     def __init__(self, account_id):
         self.account_id = account_id
         self.url = "https://www.bescom.co.in/bescom/main/quick-payment"
 
         # Create folder by Account ID
-        self.base_dir = os.path.join(os.getcwd(), self.account_id)
+        BASE_DIR = r"D:\aasthiv2\Aasthi\wrappercode"
+        self.base_dir = os.path.join(BASE_DIR, "input", "bescom")
         os.makedirs(self.base_dir, exist_ok=True)
 
         options = webdriver.ChromeOptions()
@@ -75,7 +87,7 @@ class BESCOMBillScraper:
         )
         acc_input.clear()
         acc_input.send_keys(self.account_id)
-        print("✅ Account ID entered")
+        print(" Account ID entered")
 
     # ---------------- CAPTCHA (MANUAL) ---------------- #
     def wait_for_manual_captcha(self):
@@ -89,7 +101,7 @@ class BESCOMBillScraper:
         )
 
         self.wait.until(EC.staleness_of(continue_btn))
-        print("✅ CAPTCHA verified")
+        print(" CAPTCHA verified")
 
     # ---------------- TRANSACTION HISTORY ---------------- #
     def transaction_history(self):
@@ -146,19 +158,77 @@ class BESCOMBillScraper:
             index=False
         )
 
-        print(f"📊 {len(df)} transactions saved")
+        print(f" {len(df)} transactions saved")
 
         self.safe_click_by_exact_text("Close")
 
     # ---------------- DOWNLOAD BILL ---------------- #
+
     def download_bill(self):
+
         self.safe_click_by_exact_text("Download Bill")
-        print("⬇ Bill downloaded into account folder")
-        time.sleep(5)
+        time.sleep(2)
+
+        url = "https://bescom.co.in:8081/bescom/view-billpdf"
+
+        payload = {
+            "_cdata": "6709fe79878c7ebef32c898bb131c82f99da852aa60321c2c1e52fe74feeb733606b9e6f234250658d07c63a5f67fb90PsZsmCEu8o6UwL40oN/nDF3YH1rpZeG6dWcpkjqB1vVzLLRD47edxi1lbGUfgTp2W9YhRwfQDQunQpxEiqJ8FQ=="
+        }
+
+        headers = {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json",
+            "Origin": "https://www.bescom.co.in",
+            "Referer": "https://www.bescom.co.in/",
+            "User-Agent": self.driver.execute_script("return navigator.userAgent"),
+            "Appservicekey": "$3z$23$JBC7QqHzHEzJ/TzoS5qH4.Morw8ublIgfA.0byOEKrvnMyOr1K8Aj"
+        }
+
+        session = requests.Session()
+
+        # Copy browser cookies
+        for cookie in self.driver.get_cookies():
+            session.cookies.set(cookie["name"], cookie["value"])
+
+        try:
+            r = session.post(
+                url,
+                headers=headers,
+                json=payload,
+                verify=False,
+                timeout=30
+            )
+
+            r.raise_for_status()
+
+            data = r.json()
+
+            if data.get("ResultCode") == "1":
+
+                pdf_bytes = base64.b64decode(data["Result"])
+
+                output = os.path.join(
+                    self.base_dir,
+                    f"{self.account_id}.pdf"
+                )
+
+                with open(output, "wb") as f:
+                    f.write(pdf_bytes)
+
+                print("✅ PDF Saved:", output)
+                return output
+
+            print("❌ API returned failure:")
+
+        except Exception as e:
+            print("❌ Request failed:", e)
+
+        return None
 
     # ---------------- RUN ---------------- #
     def run(self):
         try:
+            self.clear_old_downloads()
             self.enter_account_id()
             self.wait_for_manual_captcha()
             self.transaction_history()
@@ -167,7 +237,7 @@ class BESCOMBillScraper:
         finally:
             time.sleep(2)
             self.driver.quit()
-            print("✅ Browser closed")
+            print("Browser closed")
 
 
 # ---------------- MAIN ---------------- #
