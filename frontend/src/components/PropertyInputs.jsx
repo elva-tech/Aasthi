@@ -5,7 +5,7 @@ const PROPERTY_TYPES = [
   "Apartment",
   "Site",
   "Individual House",
-  "Agricultural",
+  "Farm Land",
 ];
 
 export const CHECK_RULES = {
@@ -49,7 +49,7 @@ export const CHECK_RULES = {
     ],
   },
 
-  Agricultural: {
+  "Farm Land": {
     exclude: [
       "Occupancy Certificate",
       "Parking Certificate",
@@ -126,7 +126,7 @@ function PropertyInputs({ onSubmit, onBack }) {
     formData.propertyType === "Individual House";
 
   const isAgricultural =
-    formData.propertyType === "Agricultural";
+    formData.propertyType === "Farm Land";
 
   return (
     <div
@@ -408,7 +408,7 @@ function PropertyInputs({ onSubmit, onBack }) {
 
               <div className="form-group">
                 <label className="form-label">
-                  Court Party Name
+                  Legal Name
                 </label>
 
                 <input
@@ -423,7 +423,7 @@ function PropertyInputs({ onSubmit, onBack }) {
 
               <div className="form-group">
                 <label className="form-label">
-                  Court Year
+                  Start Year of Project
                 </label>
 
                 <input
@@ -598,7 +598,7 @@ function PropertyInputs({ onSubmit, onBack }) {
 
               <div className="form-group">
                 <label className="form-label">
-                  Court Party Name
+                  Legal Name
                 </label>
 
                 <input
@@ -612,7 +612,7 @@ function PropertyInputs({ onSubmit, onBack }) {
 
               <div className="form-group">
                 <label className="form-label">
-                  Court Year
+                  Start Year of Project
                 </label>
 
                 <input
@@ -653,7 +653,7 @@ function PropertyInputs({ onSubmit, onBack }) {
 
               <div className="form-group">
                 <label className="form-label">
-                  Court Party Name
+                  Legal Name
                 </label>
 
                 <input
@@ -668,7 +668,7 @@ function PropertyInputs({ onSubmit, onBack }) {
 
               <div className="form-group">
                 <label className="form-label">
-                  Court Year
+                  Start Year of Project
                 </label>
 
                 <input
