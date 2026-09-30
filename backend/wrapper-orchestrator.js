@@ -657,6 +657,54 @@ export async function runCompletePropertyAnalysis(
       "--property-no",
       params.propertyNo || "",
 
+      "--survey-no",
+      params.surveyNo || "",
+
+      "--hissa-no",
+      params.hissaNo || "",
+
+      "--mr-hissa-no",
+      params.mrHissaNo || "",
+
+      "--search-text",
+      params.searchText || "",
+
+      "--akarband-district",
+      params.akarbandDistrict || "",
+
+      "--akarband-taluk",
+      params.akarbandTaluk || "",
+
+      "--akarband-hobli",
+      params.akarbandHobli || "",
+
+      "--akarband-village",
+      params.akarbandVillage || "",
+
+      "--english-district",
+      params.englishDistrict || "",
+
+      "--english-taluk",
+      params.englishTaluk || "",
+
+      "--english-hobli",
+      params.englishHobli || "",
+
+      "--english-village",
+      params.englishVillage || "",
+
+      "--mr-district",
+      params.mrDistrict || "",
+
+      "--mr-taluk",
+      params.mrTaluk || "",
+
+      "--mr-hobli",
+      params.mrHobli || "",
+
+      "--mr-village",
+      params.mrVillage || "",
+
       "--court-party-name",
       params.courtPartyName ||
         params.ownerName ||
@@ -1021,9 +1069,53 @@ export async function runCompletePropertyAnalysis(
       : null,
 
   // ============================================================
-  // COURT
+  // AKARBAND RISK
   // ============================================================
+  akarband: {
+    input_dir: path.join(wrappercodeDir, "input", "Akarband"),
+    survey_no: params.surveyNo || "117",
+    hissa_no: params.hissaNo || "1",
+  },
 
+  // ============================================================
+  // RTC RISK
+  // ============================================================
+  rtc: {
+    input_dir: path.join(wrappercodeDir, "input", "RTC"),
+    survey_no: params.surveyNo || "117",
+    hissa_no: params.hissaNo || "1",
+  },
+
+  // ============================================================
+  // MAP RISK
+  // ============================================================
+  map: {
+    input_dir: path.join(wrappercodeDir, "input", "Map"),
+    survey_no: params.surveyNo || "117",
+    hissa_no: params.hissaNo || "1",
+  },
+
+  // ============================================================
+  // MR RISK
+  // ============================================================
+  mr: {
+  input_dir: path.join(wrappercodeDir, "input", "MR"),
+  survey_no: params.surveyNo || "117",
+  hissa_no: params.mrHissaNo || "3",
+  },
+
+  // ============================================================
+  // RCCMS RISK
+  // ============================================================
+  rccms: {
+  input_dir: path.join(wrappercodeDir, "input", "CourtCases"),
+  survey_no: params.surveyNo || "117",
+  hissa_no: params.hissaNo || "1",
+  },
+
+  // ============================================================
+  // COURT
+  // ============================================================     
   ecourtrisk: {
     screenshots_folder:
       path.join(
@@ -1053,16 +1145,19 @@ export async function runCompletePropertyAnalysis(
   // ============================================================
 
   ekhatarisk:
-    isCheckApplicable(
-      "Khata/Mutation Type Verification",
-      params.propertyType,
-      excludedChecks
-    )
-      ? {
-          pdf:
-            getPath(["khata"]),
-        }
-      : null,
+  isCheckApplicable(
+    "Khata/Mutation Type Verification",
+    params.propertyType,
+    excludedChecks
+  )
+    ? {
+        pdf: path.join(
+          wrappercodeDir,
+          "input",
+          "ekhata"
+        ),
+      }
+    : null,
   // ============================================================
   // RERA APPROVAL
   // ===========================================================

@@ -5,6 +5,7 @@ Usage: python map.py --file "path.pdf" --survey-no 117 --hissa-no 1
 
 import os, json, re, time, argparse
 from PIL import Image
+import pymupdf
 
 API_KEY = os.getenv("GEMINI_API_KEY")
 MODELS_TO_TRY = ["gemini-3.6-flash", "gemini-3.7-flash", "gemini-3.5-flash",
@@ -170,9 +171,55 @@ def blend_scores(rule_score, llm_score):
     return {"risk_score": round(final, 2), "risk_level": level}
 
 
-def analyze_map(image_path, survey, hissa, output_path=None):
+def analyze_map(
+    image_path,
+    survey,
+    hissa,
+    output_path=None,
+    session_id=None,
+    screenshot_dir=None,
+):
     print(f"\n🗺️ Analyzing {image_path}")
     print(f"  🎯 Target: Survey {survey}, Hissa {hissa}")
+
+    # Save Map evidence screenshots
+    if screenshot_dir and session_id:
+        os.makedirs(screenshot_dir, exist_ok=True)
+
+        try:
+            if str(image_path).lower().endswith(".pdf"):
+                doc = pymupdf.open(image_path)
+
+                # Save up to 2 important Map pages
+                for page_no in range(min(2, len(doc))):
+                    page = doc.load_page(page_no)
+                    pix = page.get_pixmap(matrix=pymupdf.Matrix(2, 2))
+
+                    screenshot_path = os.path.join(
+                        screenshot_dir,
+                        f"map_result_{page_no + 1}_{session_id}.png"
+                    )
+
+                    pix.save(screenshot_path)
+                    print(
+                        f"Saved Map screenshot → {screenshot_path}"
+                    )
+
+                doc.close()
+
+            else:
+                screenshot_path = os.path.join(
+                    screenshot_dir,
+                    f"map_result_1_{session_id}.png"
+                )
+
+                Image.open(image_path).save(screenshot_path)
+                print(
+                    f"Saved Map screenshot → {screenshot_path}"
+                )
+
+        except Exception as e:
+            print(f"Failed to save Map screenshots: {e}")
 
     data = extract_map_details(image_path, survey, hissa)
     print(f"  ✅ Extracted: survey={data.get('survey_no', '?')}, OLC={data.get('olc_code', '?')}")

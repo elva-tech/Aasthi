@@ -6,6 +6,7 @@ Safety-first blend: final = MAX(rule, LLM)
 
 import os, json, re, time, argparse
 from PIL import Image
+import pymupdf
 
 API_KEY = os.getenv("GEMINI_API_KEY")
 MODELS_TO_TRY = ["gemini-3.6-flash", "gemini-3.7-flash", "gemini-3.5-flash",
@@ -249,9 +250,35 @@ def blend_scores(rule_score, llm_score):
     return {"risk_score": round(final, 2), "risk_level": level}
 
 
-def analyze_mr(image_path, survey, hissa, output_path=None):
+def analyze_mr(
+    image_path,
+    survey,
+    hissa,
+    output_path=None,
+    session_id=None,
+    screenshot_dir=None,
+):
     print(f"\n📜 Analyzing {image_path}")
     print(f"  🎯 Target: Survey {survey}, Hissa {hissa}")
+
+    # Save MR evidence screenshot
+    if screenshot_dir and session_id:
+        os.makedirs(screenshot_dir, exist_ok=True)
+
+        try:
+            screenshot_path = os.path.join(
+                screenshot_dir,
+                f"mr_result_1_{session_id}.png"
+            )
+
+            Image.open(image_path).save(screenshot_path)
+
+            print(
+                f"Saved MR screenshot → {screenshot_path}"
+            )
+
+        except Exception as e:
+            print(f"Failed to save MR screenshot: {e}")
 
     data = extract_mr_details(image_path, survey, hissa)
     print(f"  ✅ Target found in MR: {data.get('target_found', '?')}")

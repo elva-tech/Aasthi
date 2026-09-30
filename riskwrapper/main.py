@@ -49,7 +49,7 @@ MODULES_TO_LOG = [
     "wrapperlaw", "builder_wrapper", "ec_wrapper", "ecourtrisk",
     "rera_approval_risk",
     # 5 new land risk modules
-    "rtc", "map", "akarband", "mr", "court",
+    "rtc", "map", "akarband", "mr", "RCCMS",
 ]
 
 
@@ -152,7 +152,7 @@ CONFIG = {
         "survey_no": "117",
         "hissa_no": "3",   # MR for our current test is 117/3
     },
-    "court": {
+    "rccms": {
         "input_dir": os.path.join(INPUT_DIR, "CourtCases"),
         "survey_no": "117",
         "hissa_no": "1",
@@ -471,7 +471,13 @@ def run_rtc(session_id=None, screenshot_dir=None):
     path = _pick_latest_file(cfg["input_dir"], ["*.pdf", "*.png"])
     print(f"[RTC] File: {path}")
     print(f"[RTC] Target: Survey {survey}, Hissa {hissa}")
-    return analyze_rtc(path, survey, hissa)
+    return analyze_rtc(
+    path,
+    survey,
+    hissa,
+    session_id=session_id,
+    screenshot_dir=screenshot_dir,
+    )
 
 
 def run_map(session_id=None, screenshot_dir=None):
@@ -483,7 +489,13 @@ def run_map(session_id=None, screenshot_dir=None):
     path = _pick_latest_file(cfg["input_dir"], ["*.pdf", "*.png"])
     print(f"[MAP] File: {path}")
     print(f"[MAP] Target: Survey {survey}, Hissa {hissa}")
-    return analyze_map(path, survey, hissa)
+    return analyze_map(
+    path,
+    survey,
+    hissa,
+    session_id=session_id,
+    screenshot_dir=screenshot_dir,
+    )
 
 
 def run_akarband(session_id=None, screenshot_dir=None):
@@ -495,7 +507,13 @@ def run_akarband(session_id=None, screenshot_dir=None):
     path = _pick_latest_file(cfg["input_dir"], ["*.pdf", "*.png"])
     print(f"[AKARBAND] File: {path}")
     print(f"[AKARBAND] Target: Survey {survey}, Hissa {hissa}")
-    return analyze_akarband(path, survey, hissa)
+    return analyze_akarband(
+    path,
+    survey,
+    hissa,
+    session_id=session_id,
+    screenshot_dir=screenshot_dir,
+    )
 
 
 def run_mr(session_id=None, screenshot_dir=None):
@@ -507,19 +525,31 @@ def run_mr(session_id=None, screenshot_dir=None):
     path = _pick_latest_file(cfg["input_dir"], ["*.png", "*.pdf"])
     print(f"[MR] File: {path}")
     print(f"[MR] Target: Survey {survey}, Hissa {hissa}")
-    return analyze_mr(path, survey, hissa)
+    return analyze_mr(
+    path,
+    survey,
+    hissa,
+    session_id=session_id,
+    screenshot_dir=screenshot_dir,
+    )
 
 
-def run_court(session_id=None, screenshot_dir=None):
-    from court import analyze_court
-    cfg = CONFIG["court"]
+def run_rccms(session_id=None, screenshot_dir=None):
+    from RCCMS import analyze_court
+    cfg = CONFIG["rccms"]
     survey, hissa = _get_cli_overrides()
     survey = survey or cfg["survey_no"]
     hissa = hissa or cfg["hissa_no"]
     path = _pick_latest_file(cfg["input_dir"], ["*.png", "*.pdf"])
-    print(f"[COURT] File: {path}")
-    print(f"[COURT] Target: Survey {survey}, Hissa {hissa}")
-    return analyze_court(path, survey, hissa)
+    print(f"[RCCMS] File: {path}")
+    print(f"[RCCMS] Target: Survey {survey}, Hissa {hissa}")
+    return analyze_court(
+    path,
+    survey,
+    hissa,
+    session_id=session_id,
+    screenshot_dir=screenshot_dir,
+    )
 
 
 # ============================================================
@@ -547,7 +577,7 @@ ALL_MODULES = [
     "map",
     "akarband",
     "mr",
-    "court",
+    "rccms",
 ]
 
 
@@ -663,7 +693,7 @@ def main():
         "map": run_map,
         "akarband": run_akarband,
         "mr": run_mr,
-        "court": run_court,
+        "rccms": run_rccms,
         "all": run_all,
     }
 

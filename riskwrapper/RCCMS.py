@@ -5,6 +5,7 @@ Usage: python court.py --file "path.png" --survey-no 117 --hissa-no 1
 
 import os, json, re, time, argparse
 from PIL import Image
+import pymupdf
 
 API_KEY = os.getenv("GEMINI_API_KEY")
 MODELS_TO_TRY = ["gemini-3.6-flash", "gemini-3.7-flash", "gemini-3.5-flash",
@@ -182,11 +183,44 @@ def blend_scores(rule_score, llm_score):
     return {"risk_score": round(final, 2), "risk_level": level}
 
 
-def analyze_court(image_path, survey, hissa, output_path=None):
-    print(f"\n⚖️  Analyzing {image_path}")
+def analyze_court(
+    path,
+    survey,
+    hissa,
+    session_id=None,
+    output_path=None,
+    screenshot_dir=None,
+):
+    print(f"\n⚖️  Analyzing {path}")
     print(f"  🎯 Target: Survey {survey}, Hissa {hissa}")
 
-    data = extract_court_details(image_path, survey, hissa)
+    # Save RCCMS evidence screenshot
+    if screenshot_dir and session_id:
+        os.makedirs(screenshot_dir, exist_ok=True)
+
+        try:
+            screenshot_path = os.path.join(
+                screenshot_dir,
+                f"rccms_result_1_{session_id}.png"
+            )
+
+            if str(path).lower().endswith(".pdf"):
+                doc = pymupdf.open(path)
+                page = doc.load_page(0)
+                pix = page.get_pixmap(matrix=pymupdf.Matrix(2, 2))
+                pix.save(screenshot_path)
+                doc.close()
+            else:
+                Image.open(path).save(screenshot_path)
+
+            print(
+                f"Saved RCCMS screenshot → {screenshot_path}"
+            )
+
+        except Exception as e:
+            print(f"Failed to save RCCMS screenshot: {e}")
+
+    data = extract_court_details(path, survey, hissa)
     print(f"  ✅ Extracted: type='{data.get('case_type', '?')}', "
           f"status='{data.get('case_status', '?')}', "
           f"no_cases='{str(data.get('no_cases_message', ''))[:40]}'")
@@ -204,13 +238,13 @@ def analyze_court(image_path, survey, hissa, output_path=None):
         final = {"risk_score": rule_risk["risk_score"], "risk_level": rule_risk["risk_level"]}
 
     result = {
-        "doc_type": "COURT", "file": image_path,
+        "doc_type": "COURT", "file": path,
         "target": {"survey_no": survey, "hissa_no": hissa},
         "data": data, "rule_risk": rule_risk, "llm_risk": llm_risk, "final": final,
     }
 
     if output_path is None:
-        base = os.path.splitext(os.path.basename(image_path))[0]
+        base = os.path.splitext(os.path.basename(path))[0]
         output_path = f"risk_{base}.json"
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2, ensure_ascii=False)

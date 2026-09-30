@@ -281,6 +281,11 @@ def get_screenshots_for_check(
         "kaveriecrisk": "kaveri_result",
         "ekhatarisk": "khata_result",
         "rera_approval": "rera_result",
+        "rtc": "rtc_result",
+        "map": "map_result",
+        "mr": "mr_result",
+        "akarband": "akarband_result",
+        "rccms": "rccms_result",
     }
 
     # ------------------------------------------------------------
@@ -300,6 +305,12 @@ def get_screenshots_for_check(
         "bbmp_result": 1,
         "bescom_result": 1,
         "water_result": 1,
+
+        "rtc_result": 2,
+        "map_result": 2,
+        "akarband_result": 2,
+        "mr_result": 2,
+        "rccms_result": 2,
     }
 
     # ------------------------------------------------------------
@@ -959,6 +970,12 @@ def extract_risk_score(module: str, payload: Dict[str, Any]) -> Tuple[Optional[f
 
         "rera_bda_buda_tuda_approval":
             "rera_approval",
+
+        "rtc": "rtc",
+        "map": "map",
+        "akarband": "akarband",
+        "mr": "mr",
+        "rccms": "rccms",
     }
 
     m = MODULE_ALIASES.get(str(module).lower().strip(), str(module).lower().strip())
@@ -970,6 +987,12 @@ def extract_risk_score(module: str, payload: Dict[str, Any]) -> Tuple[Optional[f
         or payload.get("status") in ("FAILED", "MISSING_INPUT")
     ):
         return None, "error_fallback"
+
+    # Land record modules
+    if m in ("rtc", "map", "akarband", "mr", "rccms"):
+        sc = clamp(first_number(payload.get("risk_score")))
+        if sc is not None:
+            return sc, "risk_score"
     # ================================================================
     # RERA / BDA / BUDA / TUDA
     # ================================================================
@@ -1088,6 +1111,7 @@ def extract_risk_score(module: str, payload: Dict[str, Any]) -> Tuple[Optional[f
         sc = clamp(first_number(get(payload, "final_assessment.risk_score")))
         if sc is not None:
             return sc, "final_assessment.risk_score"
+
 
     # NOC
     if m == "noc":
