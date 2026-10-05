@@ -86,7 +86,7 @@ from google import genai
 #
 # ============================================================
 
-# from anthropic import Anthropic
+from anthropic import Anthropic
 
 
 # ============================================================

@@ -1,0 +1,312 @@
+{
+  "_meta": {
+    "failed_modules": [
+      "ec",
+      "kaveriecrisk",
+      "rtc",
+      "map",
+      "akarband",
+      "mr",
+      "rccms"
+    ],
+    "screenshot_dir": "D:\\aasthiv2\\Aasthi\\riskwrapper\\screenshots",
+    "session_id": "20261002_114833",
+    "success": false
+  },
+  "akarband": {
+    "error": "Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\Akarband",
+    "status": "FAILED",
+    "traceback": "Traceback (most recent call last):\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 620, in run_all\n    res = _call_module(fn, session_id, screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 590, in _call_module\n    return fn(session_id=session_id, screenshot_dir=screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 507, in run_akarband\n    path = _pick_latest_file(cfg[\"input_dir\"], [\"*.pdf\", \"*.png\"])\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 220, in _pick_latest_file\n    raise FileNotFoundError(f\"Folder not found: {folder}\")\nFileNotFoundError: Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\Akarband\n"
+  },
+  "bankloan": {
+    "document_type": "BANK_LOAN",
+    "error": "Loan extraction failed: Request timed out.",
+    "input": {
+      "pdf_path": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\bankloan\\CERSAI_Search_Report_200417498632_For_Debtor_Based_Search_10_02_2026_18_03_08_480.pdf"
+    },
+    "loan_details": null,
+    "models": {
+      "extract": "qwen3:8b",
+      "risk": "claude-opus-4-7"
+    },
+    "risk": {
+      "overall_risk_score": null,
+      "risk_level": null
+    },
+    "status": "FAILED"
+  },
+  "bbmp_property_tax": {
+    "claude": {
+      "enabled": true,
+      "error": null,
+      "output": {
+        "confidence": 0.82,
+        "flags": {
+          "address_complete": true,
+          "area_consistent": false,
+          "construction_info_available": true,
+          "ownership_verified": true,
+          "property_identified": true,
+          "tax_compliant": false,
+          "usage_verified": true
+        },
+        "reasons": [
+          "All property identifiers present: SAS/New Application Number (1500082907), Khata Number, and Property Number.",
+          "Owner name 'A.RAMAKRISHNA' is clearly provided, supporting ownership verification.",
+          "Tax compliance cannot be confirmed: 'latest_year_paid' is null and 'expired_challans' is null — no evidence of recent tax payment.",
+          "Usage ('Self Occupied') and Nature of Property ('I - RCC/Madras Terrace Buildings') are both available.",
+          "Address is reasonably complete with Zone (C), Ward (Attur-3), Door Number (C-108), Locality (Yehalanka), and PIN (560064).",
+          "Construction year (2015) and occupancy details (self-occupied area 1203, tenanted 0) are available.",
+          "Area inconsistency detected: Built-up Area (1203 sqft) differs substantially from Plinth Area (180 sqft)."
+        ],
+        "risk_level": "MEDIUM",
+        "risk_score": 32,
+        "score": 68
+      }
+    },
+    "document_type": "BBMP_PROPERTY_TAX",
+    "facts": {
+      "builtup_area": "1203",
+      "construction_year": "2015",
+      "door_number": "C-108",
+      "khata_number": "366/87/54/1/FLAT NO.C-108",
+      "locality": "Yehalanka",
+      "nature_of_property": "I - RCC/Madras Terrace Buildings",
+      "new_application_number": "1500082907",
+      "owner_name": "A.RAMAKRISHNA",
+      "pin_code": "560064",
+      "plinth_area": "180",
+      "property_number": "NO.366/87/54/1/FLAT NO.C-108",
+      "sas_application_number": "1500082907",
+      "self_occupied_area": "1203",
+      "tenanted_area": "0",
+      "usage": "Self Occupied",
+      "ward": "Attur-3",
+      "zone": "C"
+    },
+    "final": {
+      "components": {
+        "llm_risk_score": 32,
+        "llm_score": 68,
+        "python_risk_score": 25,
+        "python_score": 75
+      },
+      "risk_level": "MEDIUM-LOW",
+      "risk_score": 27,
+      "score": 73,
+      "weights": {
+        "llm": 0.3,
+        "python": 0.7
+      }
+    },
+    "image_count": 5,
+    "images": [
+      "D:\\aasthiv2\\Aasthi\\wrappercode\\tax_screenshots\\tax_page_1.png",
+      "D:\\aasthiv2\\Aasthi\\wrappercode\\tax_screenshots\\tax_page_2.png",
+      "D:\\aasthiv2\\Aasthi\\wrappercode\\tax_screenshots\\tax_page_3.png",
+      "D:\\aasthiv2\\Aasthi\\wrappercode\\tax_screenshots\\tax_page_4.png",
+      "D:\\aasthiv2\\Aasthi\\wrappercode\\tax_screenshots\\tax_page_5.png"
+    ],
+    "python": {
+      "breakdown": [
+        {
+          "category": "Property Identification",
+          "max_points": 20,
+          "observations": [
+            "Property identifiers verified"
+          ],
+          "points": 20
+        },
+        {
+          "category": "Ownership Verification",
+          "max_points": 20,
+          "observations": [
+            "Owner detected: A.RAMAKRISHNA"
+          ],
+          "points": 20
+        },
+        {
+          "category": "Tax Compliance",
+          "max_points": 25,
+          "observations": [
+            "No expired challans"
+          ],
+          "points": 5
+        },
+        {
+          "category": "Usage & Property Type",
+          "max_points": 10,
+          "observations": [
+            "Usage: SELF OCCUPIED",
+            "Nature: I - RCC/MADRAS TERRACE BUILDINGS"
+          ],
+          "points": 10
+        },
+        {
+          "category": "Address Completeness",
+          "max_points": 10,
+          "observations": [
+            "5/5 address fields present"
+          ],
+          "points": 10
+        },
+        {
+          "category": "Construction & Occupancy",
+          "max_points": 10,
+          "observations": [
+            "Construction Year: 2015"
+          ],
+          "points": 10
+        },
+        {
+          "category": "Area Consistency",
+          "max_points": 5,
+          "observations": [
+            "Builtup=1203",
+            "Plinth=180"
+          ],
+          "points": 0
+        }
+      ],
+      "risk_level": "MEDIUM-LOW",
+      "risk_score": 25,
+      "score": 75
+    }
+  },
+  "bescom": {
+    "document_type": "BESCOM",
+    "match_score": 11.63,
+    "pdf_path": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\bescom\\7220755000.pdf",
+    "risk_score": 88.37,
+    "system_data": {
+      "address": "KAGADASPURAKAGADASPU RA, KAR -560016",
+      "name": "G KRISHNA REDDY"
+    },
+    "user_data": {
+      "address": "Bengaluru",
+      "name": ""
+    }
+  },
+  "ec": {
+    "error": "No EC PDF in D:\\aasthiv2\\Aasthi\\wrappercode\\input\\ec",
+    "status": "FAILED",
+    "traceback": "Traceback (most recent call last):\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 620, in run_all\n    res = _call_module(fn, session_id, screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 590, in _call_module\n    return fn(session_id=session_id, screenshot_dir=screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 361, in run_ec\n    raise FileNotFoundError(f\"No EC PDF in {cfg['input_dir']}\")\nFileNotFoundError: No EC PDF in D:\\aasthiv2\\Aasthi\\wrappercode\\input\\ec\n"
+  },
+  "ecourtrisk": {
+    "case_count": 1,
+    "cases": [
+      {
+        "case_data": {
+          "act": "Indian penal code | 326,504r/w34OFIPC",
+          "case_status": "Case disposed",
+          "case_type": "C.C. - CRIMINAL CASES",
+          "cnr_number": "KABC030822072015 (Note the CNR number for future reference)",
+          "court_name": "CMM Court Complex, Bangalore",
+          "decision_date": "19th January 2017",
+          "filing_date": "",
+          "filing_number": "",
+          "first_hearing_date": "04th June 2016",
+          "nature_of_disposal": "Contested--SETTLED IN LOK ADALATH",
+          "pending": false,
+          "petitioner": "ADITYA H S",
+          "registration_date": "16-12-2015",
+          "registration_number": "29445/2015",
+          "respondent": "RAHUL BHOMIK 2) V M RAGHAVENDRA"
+        },
+        "case_id": "case_1.json",
+        "final_assessment": {
+          "risk_level": "LOW",
+          "risk_score": 5
+        },
+        "llm_risk": {
+          "error": "Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'model: Input should be a valid string'}, 'request_id': 'req_011CfcyL9qsq5rSGS5AP1jAz'}"
+        },
+        "rule_based_risk": {
+          "reasons": [
+            "Case already disposed"
+          ],
+          "risk_level": "LOW",
+          "risk_score": 5
+        }
+      }
+    ],
+    "document_type": "ECOURT",
+    "overall_court_risk": {
+      "risk_level": "LOW",
+      "risk_score": 5
+    },
+    "status": "RISK_ANALYSIS_SUCCESS"
+  },
+  "ekhatarisk": {
+    "document_type": "KHATA",
+    "facts": {
+      "application_number": "57/14/10/13/A1-004",
+      "area_sqft": "82.87",
+      "document_status": "UNKNOWN",
+      "document_type": "BBMP e-Khata",
+      "khata_type": "E-KHATA",
+      "owner_name": "A RAMAKRUSHNA",
+      "pid_number": "2737828078",
+      "property_address": "Multistorey Flats",
+      "survey_number": "3 - 11",
+      "ward_number": "3 - 11"
+    },
+    "pdf_path": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\ekhata\\ekhata_2737828078_1790921734.pdf",
+    "status": "QWEN_EXTRACTION_SUCCESS"
+  },
+  "kaveriecrisk": {
+    "error": "cannot import name 'create_ec_evidence_screenshot' from 'karveriecrisk' (D:\\aasthiv2\\Aasthi\\riskwrapper\\karveriecrisk.py)",
+    "status": "FAILED",
+    "traceback": "Traceback (most recent call last):\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 620, in run_all\n    res = _call_module(fn, session_id, screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 590, in _call_module\n    return fn(session_id=session_id, screenshot_dir=screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 399, in run_kaveriecrisk\n    from karveriecrisk import create_ec_evidence_screenshot\nImportError: cannot import name 'create_ec_evidence_screenshot' from 'karveriecrisk' (D:\\aasthiv2\\Aasthi\\riskwrapper\\karveriecrisk.py). Did you mean: 'create_evidence_screenshot'?\n"
+  },
+  "map": {
+    "error": "Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\Map",
+    "status": "FAILED",
+    "traceback": "Traceback (most recent call last):\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 620, in run_all\n    res = _call_module(fn, session_id, screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 590, in _call_module\n    return fn(session_id=session_id, screenshot_dir=screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 489, in run_map\n    path = _pick_latest_file(cfg[\"input_dir\"], [\"*.pdf\", \"*.png\"])\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 220, in _pick_latest_file\n    raise FileNotFoundError(f\"Folder not found: {folder}\")\nFileNotFoundError: Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\Map\n"
+  },
+  "mr": {
+    "error": "Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\MR",
+    "status": "FAILED",
+    "traceback": "Traceback (most recent call last):\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 620, in run_all\n    res = _call_module(fn, session_id, screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 590, in _call_module\n    return fn(session_id=session_id, screenshot_dir=screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 525, in run_mr\n    path = _pick_latest_file(cfg[\"input_dir\"], [\"*.png\", \"*.pdf\"])\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 220, in _pick_latest_file\n    raise FileNotFoundError(f\"Folder not found: {folder}\")\nFileNotFoundError: Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\MR\n"
+  },
+  "rccms": {
+    "error": "Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\CourtCases",
+    "status": "FAILED",
+    "traceback": "Traceback (most recent call last):\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 620, in run_all\n    res = _call_module(fn, session_id, screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 590, in _call_module\n    return fn(session_id=session_id, screenshot_dir=screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 543, in run_rccms\n    path = _pick_latest_file(cfg[\"input_dir\"], [\"*.png\", \"*.pdf\"])\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 220, in _pick_latest_file\n    raise FileNotFoundError(f\"Folder not found: {folder}\")\nFileNotFoundError: Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\CourtCases\n"
+  },
+  "rtc": {
+    "error": "Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\RTC",
+    "status": "FAILED",
+    "traceback": "Traceback (most recent call last):\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 620, in run_all\n    res = _call_module(fn, session_id, screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 590, in _call_module\n    return fn(session_id=session_id, screenshot_dir=screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 471, in run_rtc\n    path = _pick_latest_file(cfg[\"input_dir\"], [\"*.pdf\", \"*.png\"])\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 220, in _pick_latest_file\n    raise FileNotFoundError(f\"Folder not found: {folder}\")\nFileNotFoundError: Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\RTC\n"
+  },
+  "water": {
+    "document_type": "WATER_BILL",
+    "match_score": 95.8,
+    "risk_score": 4.2,
+    "rr_number": "N-435608",
+    "system_data": {
+      "Consumer Address": "12, Whitefield Main Road, Bengaluru, Karnataka - 560066",
+      "Consumer Name": "Ramesh Kumar"
+    },
+    "user_data": {
+      "Consumer Address": "Bengaluru",
+      "Consumer Name": ""
+    }
+  },
+  "checks": [
+    {
+      "title": "EC Document Check",
+      "status": "NOT_APPLICABLE",
+      "score": null,
+      "impact_weight": 0,
+      "findings": "EC PDF was not available for deep wrapper verification."
+    },
+    {
+      "title": "Existing Bank Loans",
+      "status": "NOT_APPLICABLE",
+      "score": null,
+      "impact_weight": 0,
+      "findings": "CERSAI/bank loan report was not uploaded or downloaded."
+    }
+  ]
+}

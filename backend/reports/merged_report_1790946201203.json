@@ -1,0 +1,322 @@
+{
+  "_meta": {
+    "failed_modules": [
+      "bbmp",
+      "rtc",
+      "map",
+      "akarband",
+      "mr",
+      "rccms"
+    ],
+    "screenshot_dir": "D:\\aasthiv2\\Aasthi\\riskwrapper\\screenshots",
+    "session_id": "20261002_181625",
+    "success": false
+  },
+  "akarband": {
+    "error": "Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\Akarband",
+    "status": "FAILED",
+    "traceback": "Traceback (most recent call last):\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 617, in run_all\n    res = _call_module(fn, session_id, screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 587, in _call_module\n    return fn(session_id=session_id, screenshot_dir=screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 504, in run_akarband\n    path = _pick_latest_file(cfg[\"input_dir\"], [\"*.pdf\", \"*.png\"])\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 217, in _pick_latest_file\n    raise FileNotFoundError(f\"Folder not found: {folder}\")\nFileNotFoundError: Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\Akarband\n"
+  },
+  "bankloan": {
+    "document_type": "BANK_LOAN",
+    "input": {
+      "pdf_path": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\bankloan\\CERSAI_Search_Report_200417498632_For_Debtor_Based_Search_10_02_2026_18_03_08_480.pdf"
+    },
+    "loan_details": {
+      "charge_status": "Not Satisfied",
+      "debtor_name": "Gopinatha B M",
+      "land_type": null,
+      "loan_amount": "6934403.00",
+      "ltv_ratio": null,
+      "mortgaged_property": null,
+      "no_of_charges": null,
+      "occupancy_type": null,
+      "property_age_years": null,
+      "property_value": null,
+      "registration_status": null,
+      "security_details": null,
+      "title_disputes": null
+    },
+    "models": {
+      "extract": "qwen3:8b",
+      "risk": "claude-opus-4-7"
+    },
+    "risk": {
+      "blend_weights": {
+        "deterministic": 0.55,
+        "llm": 0.45
+      },
+      "cersai_charges_risk": 100,
+      "deterministic_overall": 100,
+      "key_findings": [
+        "❌ DEAL BREAKER: CERSAI shows 'Not Satisfied' (active charge) – property is encumbered.",
+        "❌ DEAL BREAKER: Active loan/charge exists with 'Not Satisfied' status.",
+        "Property is encumbered; clear title transfer is not possible until charge is satisfied.",
+        "High fraud risk if seller asks for payment before clearance.",
+        "Buyer should treat this as automatic rejection unless updated proof is provided."
+      ],
+      "land_type_risk": 0,
+      "llm_overall": 100,
+      "ltv_risk": 100,
+      "occupancy_risk": 0,
+      "overall_risk_score": 100,
+      "recommendations": [
+        "Reject unless seller clears the loan and CERSAI updates to 'Satisfied'.",
+        "Reject the property unless the seller clears the charge and updates CERSAI.",
+        "Ask for lender NOC and Letter of Satisfaction.",
+        "Re-check a fresh CERSAI report after clearance.",
+        "Proceed only after an advocate confirms charge removal and clear title."
+      ],
+      "registration_risk": 100,
+      "risk_factor_breakdown": {
+        "buyer_rule": "Active charge => DO_NOT_BUY",
+        "charge_status": "CRITICAL: Not Satisfied",
+        "deterministic_breakdown": {
+          "no_of_charges": null,
+          "normalized_status": "Not Satisfied",
+          "title_disputes": false
+        }
+      },
+      "risk_level": "DO_NOT_BUY",
+      "security_risk": 100,
+      "title_quality_risk": 0
+    },
+    "status": "QWEN_EXTRACTION_SUCCESS"
+  },
+  "bbmp_property_tax": {
+    "error": "Failed to extract BBMP property facts: Error code: 400 - {'error': {'message': '{\"error\":{\"code\":400,\"message\":\"request (4698 tokens) exceeds the available context size (4096 tokens), try increasing it\",\"type\":\"exceed_context_size_error\",\"n_prompt_tokens\":4698,\"n_ctx\":4096}}', 'type': 'invalid_request_error', 'param': None, 'code': None}}",
+    "status": "FAILED",
+    "traceback": "Traceback (most recent call last):\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\bbmp_propertytax_wrapper.py\", line 842, in run_bbmp_propertytax_wrapper\n    facts = extract_property_facts_from_images(\n        image_paths\n    )\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\bbmp_propertytax_wrapper.py\", line 714, in extract_property_facts_from_images\n    facts = extract_property_facts_from_image(image_path)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\bbmp_propertytax_wrapper.py\", line 576, in extract_property_facts_from_image\n        response = qwen_client.chat.completions.create(\n                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\n            model=\"qwen2.5vl:7b\",\n            ^^^^^^^^^^^^^^^^^^^^^\n    ...<119 lines>...\n            temperature=0\n            ^^^^^^^^^^^^^\n        )\n        ^\n  File \"D:\\aasthiv2\\Aasthi\\.venv\\Lib\\site-packages\\openai\\_utils\\_utils.py\", line 298, in wrapper\n    return func(*args, **kwargs)\n  File \"D:\\aasthiv2\\Aasthi\\.venv\\Lib\\site-packages\\openai\\resources\\chat\\completions\\completions.py\", line 1251, in create\n    return self._post(\n           ~~~~~~~~~~^\n        \"/chat/completions\",\n        ^^^^^^^^^^^^^^^^^^^^\n    ...<52 lines>...\n        stream_cls=Stream[ChatCompletionChunk],\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"D:\\aasthiv2\\Aasthi\\.venv\\Lib\\site-packages\\openai\\_base_client.py\", line 1332, in post\n    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))\n                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"D:\\aasthiv2\\Aasthi\\.venv\\Lib\\site-packages\\openai\\_base_client.py\", line 1105, in request\n    raise self._make_status_error_from_response(err.response) from None\nopenai.BadRequestError: Error code: 400 - {'error': {'message': '{\"error\":{\"code\":400,\"message\":\"request (4698 tokens) exceeds the available context size (4096 tokens), try increasing it\",\"type\":\"exceed_context_size_error\",\"n_prompt_tokens\":4698,\"n_ctx\":4096}}', 'type': 'invalid_request_error', 'param': None, 'code': None}}\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 617, in run_all\n    res = _call_module(fn, session_id, screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 587, in _call_module\n    return fn(session_id=session_id, screenshot_dir=screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 270, in run_bbmp\n    return run_bbmp_propertytax_wrapper(\n        image_paths=image_paths,\n        session_id=session_id,\n        screenshot_dir=screenshot_dir,\n    )\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\bbmp_propertytax_wrapper.py\", line 848, in run_bbmp_propertytax_wrapper\n    raise RuntimeError(\n        f\"Failed to extract BBMP property facts: {e}\"\n    )\nRuntimeError: Failed to extract BBMP property facts: Error code: 400 - {'error': {'message': '{\"error\":{\"code\":400,\"message\":\"request (4698 tokens) exceeds the available context size (4096 tokens), try increasing it\",\"type\":\"exceed_context_size_error\",\"n_prompt_tokens\":4698,\"n_ctx\":4096}}', 'type': 'invalid_request_error', 'param': None, 'code': None}}\n"
+  },
+  "bescom": {
+    "document_type": "BESCOM",
+    "match_score": 22.74,
+    "pdf_path": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\bescom\\7220755000.pdf",
+    "risk_score": 77.26,
+    "system_data": {
+      "address": "KAGADASPURAKAGADASPU RA, KAR -560016",
+      "name": "G KRISHNA REDDY"
+    },
+    "user_data": {
+      "address": "Bengaluru",
+      "name": "RAM"
+    }
+  },
+  "ec": {
+    "document_type": "EC",
+    "pages": 4,
+    "status": "QWEN_EXTRACTION_SUCCESS",
+    "transactions": [
+      {
+        "buyer_name": "",
+        "consideration_value": 0,
+        "registration_number": null,
+        "seller_name": "",
+        "transaction_date": "",
+        "transaction_type": "OTHER"
+      },
+      {
+        "buyer_name": "Sri. K.R. Appaiah S/o SRJD500",
+        "consideration_value": 2600000,
+        "registration_number": "SRJ-1-04401-2019-20",
+        "seller_name": "Sri. M. Vasanth Kumar",
+        "transaction_date": "01-01-2004",
+        "transaction_type": "AGREEMENT_TO_SELL"
+      },
+      {
+        "buyer_name": "N- Siddaraju/S Late Sri.N- Siddaraju/S Late",
+        "consideration_value": 1500000,
+        "registration_number": "ANK4-1-02130-2018-19",
+        "seller_name": "Syndicate Bank of S 65",
+        "transaction_date": "17-07-2018",
+        "transaction_type": "OTHER"
+      },
+      {
+        "buyer_name": "Sri.Vasanthkumar S/o Sri.Mulliyappa...",
+        "consideration_value": 760000,
+        "registration_number": "SRJ-1-04686-2017-18",
+        "seller_name": "Hema D/o Late Jayarama",
+        "transaction_date": "23-02-2018",
+        "transaction_type": "SALE"
+      },
+      {
+        "buyer_name": "Sri. Ramachandr Muniyellappa",
+        "consideration_value": 1000000,
+        "registration_number": "SRJ-1-00937-2018-19",
+        "seller_name": "Sri. M. Vasanth Kumar",
+        "transaction_date": "31-05-2018",
+        "transaction_type": "OTHER"
+      }
+    ]
+  },
+  "ecourtrisk": {
+    "case_count": 1,
+    "cases": [
+      {
+        "case_data": {
+          "act": "Indian penal code | 326,504r/w34OFIPC",
+          "case_status": "Case disposed",
+          "case_type": "C.C. - CRIMINAL CASES",
+          "cnr_number": "KABC030822072015 (Note the CNR number for future reference)",
+          "court_name": "CMM Court Complex, Bangalore",
+          "decision_date": "19th January 2017",
+          "filing_date": "",
+          "filing_number": "",
+          "first_hearing_date": "04th June 2016",
+          "nature_of_disposal": "Contested--SETTLED IN LOK ADALATH",
+          "pending": false,
+          "petitioner": "ADITYA H S",
+          "registration_date": "16-12-2015",
+          "registration_number": "29445/2015",
+          "respondent": "RAHUL BHOMIK 2) V M RAGHAVENDRA"
+        },
+        "case_id": "case_1.json",
+        "final_assessment": {
+          "risk_level": "LOW",
+          "risk_score": 5
+        },
+        "llm_risk": {
+          "confidence": 0.9,
+          "major_risks": [],
+          "positive_findings": [
+            "Case status is 'Case disposed' indicating no active litigation.",
+            "Nature of disposal recorded as 'Contested--SETTLED IN LOK ADALATH', meaning parties reached a settlement.",
+            "Case was decided on 19-01-2017, concluded several years ago.",
+            "Pending flag is false, confirming no ongoing proceedings.",
+            "Matter is a criminal case under IPC Sections 326, 504 r/w 34, not a property title, partition, injunction, or specific performance dispute."
+          ],
+          "reasoning": [
+            "Case type is 'C.C. - CRIMINAL CASES' under IPC provisions relating to voluntarily causing grievous hurt (326), intentional insult (504), and common intention (34). These are personal criminal offences and do not inherently involve immovable property rights.",
+            "The court is a CMM (Chief Metropolitan Magistrate) Court, which deals with criminal matters, not civil property adjudication.",
+            "The case has been disposed of via Lok Adalat settlement, which produces a binding, non-appealable award, reducing the chance of revival.",
+            "No indication in the supplied data that the subject property is linked to this case or that either party's property is encumbered as a result.",
+            "Parties listed (Aditya H S vs Rahul Bhomik and V M Raghavendra) — buyer should still verify whether the seller is any of these parties."
+          ],
+          "recommendations": [
+            "Verify whether the current seller is identical to any party named (Rahul Bhomik or V M Raghavendra); if yes, obtain certified copy of the Lok Adalat award to confirm no residual obligation.",
+            "Obtain the certified disposal order and Lok Adalat settlement terms to confirm full and final settlement.",
+            "Conduct independent title due diligence: 30-year EC, mother deed chain, mutation records, khata, and property tax receipts.",
+            "Check for any other pending civil, revenue, or property-related litigation against the seller via CNR search and local court records.",
+            "Obtain a vendor indemnity and declaration confirming no pending disputes or claims affecting the property.",
+            "Verify no cross-complaints or appeals/revisions were filed post-disposal through court record inspection."
+          ],
+          "risk_level": "LOW",
+          "risk_score": 5,
+          "summary": "The supplied case is a disposed criminal matter (IPC 326, 504 r/w 34) settled in Lok Adalat in January 2017 before the CMM Court, Bangalore. It is unrelated to property title, possession, or partition and poses minimal direct legal risk to the proposed property purchase. Standard title due diligence and verification of parties' identity with the seller are still recommended."
+        },
+        "rule_based_risk": {
+          "reasons": [
+            "Case already disposed"
+          ],
+          "risk_level": "LOW",
+          "risk_score": 5
+        }
+      }
+    ],
+    "document_type": "ECOURT",
+    "overall_court_risk": {
+      "risk_level": "LOW",
+      "risk_score": 5
+    },
+    "status": "RISK_ANALYSIS_SUCCESS"
+  },
+  "ekhatarisk": {
+    "document_type": "KHATA",
+    "facts": {
+      "application_number": "57/14/10/13/A1-004",
+      "area_sqft": "82.87",
+      "document_status": "UNKNOWN",
+      "document_type": "BBMP e-Khata",
+      "khata_type": "E-KHATA",
+      "owner_name": "A RAMAKRUSHNA",
+      "pid_number": "2737828078",
+      "property_address": "Multistorey Flats",
+      "survey_number": "3 - 11",
+      "ward_number": "3 - 11"
+    },
+    "final_assessment": {
+      "risk_level": "LOW",
+      "risk_score": 20.5
+    },
+    "llm_risk": {
+      "confidence": 0.6,
+      "major_risks": [
+        "Document status is UNKNOWN — cannot confirm whether this is a Final or Draft e-Khata, which affects legal validity.",
+        "Property address is vague ('Multistorey Flats') with no street name, locality, flat number, or landmark — insufficient for property identification.",
+        "Survey number ('3 - 11') and ward number ('3 - 11') are identical, which is unusual and raises an internal consistency concern.",
+        "Survey number format ('3 - 11') appears incomplete or non-standard for BBMP records."
+      ],
+      "reasoning": [
+        "Khata type is E-KHATA, which is generally favorable and reduces baseline risk, as e-Khata is BBMP's digitized and preferred format.",
+        "Owner name (A RAMAKRUSHNA), PID number (2737828078), and application number (57/14/10/13/A1-004) are present, providing core identifiers.",
+        "Document status marked UNKNOWN prevents verification that this is a Final issued e-Khata rather than a Draft — a material risk factor per the framework.",
+        "Property address field only states 'Multistorey Flats' without flat number, building name, street, or locality — this severely limits ability to physically identify or legally link the Khata to a specific unit.",
+        "Survey number and ward number showing the same value ('3 - 11') is an internal inconsistency flag, as these are typically distinct identifiers.",
+        "Area of 82.87 (presumably sqft, though small) is noted but cannot be cross-verified against the vague address."
+      ],
+      "risk_level": "MEDIUM",
+      "risk_score": 45,
+      "summary": "The property is on an E-Khata (favorable) with core identifiers like PID, owner name, and application number present. However, risk is elevated to MEDIUM due to UNKNOWN document status (cannot confirm Final vs Draft), a vague property address lacking unit-level detail, and an internal inconsistency where survey number and ward number are identical. Buyer should obtain the Final e-Khata certificate from BBMP, verify PID on the official BBMP portal, insist on a detailed property address with flat/building identification, and reconcile the survey vs ward number discrepancy before proceeding."
+    },
+    "pdf_path": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\ekhata\\ekhata_2737828078_1790945166.pdf",
+    "rule_based_risk": {
+      "reasons": [
+        "E-Khata detected",
+        "Document status could not be verified"
+      ],
+      "risk_level": "LOW",
+      "risk_score": 10
+    },
+    "status": "RISK_ANALYSIS_SUCCESS"
+  },
+  "map": {
+    "error": "Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\Map",
+    "status": "FAILED",
+    "traceback": "Traceback (most recent call last):\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 617, in run_all\n    res = _call_module(fn, session_id, screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 587, in _call_module\n    return fn(session_id=session_id, screenshot_dir=screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 486, in run_map\n    path = _pick_latest_file(cfg[\"input_dir\"], [\"*.pdf\", \"*.png\"])\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 217, in _pick_latest_file\n    raise FileNotFoundError(f\"Folder not found: {folder}\")\nFileNotFoundError: Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\Map\n"
+  },
+  "mr": {
+    "error": "Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\MR",
+    "status": "FAILED",
+    "traceback": "Traceback (most recent call last):\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 617, in run_all\n    res = _call_module(fn, session_id, screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 587, in _call_module\n    return fn(session_id=session_id, screenshot_dir=screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 522, in run_mr\n    path = _pick_latest_file(cfg[\"input_dir\"], [\"*.png\", \"*.pdf\"])\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 217, in _pick_latest_file\n    raise FileNotFoundError(f\"Folder not found: {folder}\")\nFileNotFoundError: Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\MR\n"
+  },
+  "rccms": {
+    "error": "Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\CourtCases",
+    "status": "FAILED",
+    "traceback": "Traceback (most recent call last):\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 617, in run_all\n    res = _call_module(fn, session_id, screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 587, in _call_module\n    return fn(session_id=session_id, screenshot_dir=screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 540, in run_rccms\n    path = _pick_latest_file(cfg[\"input_dir\"], [\"*.png\", \"*.pdf\"])\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 217, in _pick_latest_file\n    raise FileNotFoundError(f\"Folder not found: {folder}\")\nFileNotFoundError: Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\CourtCases\n"
+  },
+  "rtc": {
+    "error": "Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\RTC",
+    "status": "FAILED",
+    "traceback": "Traceback (most recent call last):\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 617, in run_all\n    res = _call_module(fn, session_id, screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 587, in _call_module\n    return fn(session_id=session_id, screenshot_dir=screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 468, in run_rtc\n    path = _pick_latest_file(cfg[\"input_dir\"], [\"*.pdf\", \"*.png\"])\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 217, in _pick_latest_file\n    raise FileNotFoundError(f\"Folder not found: {folder}\")\nFileNotFoundError: Folder not found: D:\\aasthiv2\\Aasthi\\wrappercode\\input\\RTC\n"
+  },
+  "water": {
+    "document_type": "WATER_BILL",
+    "match_score": 95.8,
+    "risk_score": 4.2,
+    "rr_number": "N-435608",
+    "system_data": {
+      "Consumer Address": "12, Whitefield Main Road, Bengaluru, Karnataka - 560066",
+      "Consumer Name": "Ramesh Kumar"
+    },
+    "user_data": {
+      "Consumer Address": "Bengaluru",
+      "Consumer Name": "RAM"
+    }
+  },
+  "checks": [
+    {
+      "title": "EC Document Check",
+      "status": "NOT_APPLICABLE",
+      "score": null,
+      "impact_weight": 0,
+      "findings": "EC PDF was not available for deep wrapper verification."
+    },
+    {
+      "title": "Existing Bank Loans",
+      "status": "NOT_APPLICABLE",
+      "score": null,
+      "impact_weight": 0,
+      "findings": "CERSAI/bank loan report was not uploaded or downloaded."
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "_meta": {
+    "propertyType": "Farm Land",
+    "excludedChecks": [
+      "Occupancy Certificate",
+      "Parking Certificate",
+      "Association By Laws",
+      "Builder/Developer Reputation",
+      "RERA / BDA / Buda / Tuda / NA Registration Check",
+      "NOCs from Various Departments",
+      "Title Check",
+      "Electricity Bill",
+      "Water Bill",
+      "Property Tax Paid Receipts",
+      "Existing Bank Loans",
+      "Khata/Mutation Type Verification"
+    ]
+  },
+  "bescom": null,
+  "water": null,
+  "bbmp": null,
+  "oc": null,
+  "noc": null,
+  "parking": null,
+  "bylaws": null,
+  "ec": {
+    "pdf": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\kaveriec\\download.pdf",
+    "tesseract_cmd": "D:\\ocr\\tesseract.exe"
+  },
+  "bankloan": null,
+  "builder": null,
+  "akarband": {
+    "input_dir": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\Akarband",
+    "survey_no": "117",
+    "hissa_no": "1"
+  },
+  "rtc": {
+    "input_dir": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\RTC",
+    "survey_no": "117",
+    "hissa_no": "1"
+  },
+  "map": {
+    "input_dir": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\Map",
+    "survey_no": "117",
+    "hissa_no": "1"
+  },
+  "mr": {
+    "input_dir": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\MR",
+    "survey_no": "117",
+    "hissa_no": "3"
+  },
+  "rccms": {
+    "input_dir": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\CourtCases",
+    "survey_no": "117",
+    "hissa_no": "1"
+  },
+  "ecourtrisk": {
+    "screenshots_folder": "D:\\aasthiv2\\Aasthi\\wrappercode\\ecourtjson"
+  },
+  "ekhatarisk": null,
+  "rera_approval": null
+}

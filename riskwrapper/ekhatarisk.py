@@ -28,12 +28,12 @@ qwen_client = OpenAI(
 EXTRACTION_MODEL = "qwen2.5vl:7b"
 MODEL = "claude-opus-4-7"
 
-#api_key = os.getenv("ANTHROPIC_API_KEY")
+api_key = os.getenv("ANTHROPIC_API_KEY")
 
-#if not api_key:
-#       raise RuntimeError("Missing ANTHROPIC_API_KEY")
+if not api_key:
+       raise RuntimeError("Missing ANTHROPIC_API_KEY")
 
-#client = Anthropic(api_key=api_key)
+client = Anthropic(api_key=api_key)
 # ============================================================
 # JSON PARSER
 # ============================================================
@@ -426,7 +426,6 @@ Return ONLY valid JSON.
 
     return final_data
 
-'''
 def llm_khata_risk_score(khata_data):
     prompt = f"""
 # ROLE
@@ -590,7 +589,7 @@ Before returning:
             text += block.text
 
     return parse_json(text)
-'''
+
 
 # ============================================================
 # RISK ENGINE
@@ -727,9 +726,10 @@ def generate_report(
     """
 
     # ------------------------------------
-    # Extract document details (Claude)
+    # Extract document details
     # ------------------------------------
     khata_data = extract_khata_data(pdf_path)
+
     print("\n" + "=" * 90)
     print("🔍 QWEN eKHATA EXTRACTION RESULT")
     print("=" * 90)
@@ -743,6 +743,7 @@ def generate_report(
     )
 
     print("=" * 90)
+
     # ------------------------------------
     # Save evidence screenshot
     # ------------------------------------
@@ -762,36 +763,48 @@ def generate_report(
                 khata_data=khata_data
             )
 
-            print(f"DEBUG: Saved KHATA screenshot to {screenshot_path}")
+            print(
+                f"DEBUG: Saved KHATA screenshot to {screenshot_path}"
+            )
 
         except Exception as e:
-            print(f"DEBUG: Failed to save KHATA screenshot: {e}")
+            print(
+                f"DEBUG: Failed to save KHATA screenshot: {e}"
+            )
 
-    return {
-        "document_type": "KHATA",
-        "status": "QWEN_EXTRACTION_SUCCESS",
-        "pdf_path": pdf_path,
-        "facts": khata_data
-    }
     # ------------------------------------
     # Rule-based Risk
     # ------------------------------------
-    #rule_risk = calculate_khata_risk(khata_data)
+    rule_risk = calculate_khata_risk(khata_data)
+
+    print("\n" + "=" * 90)
+    print("📊 KHATA RULE-BASED RISK")
+    print("=" * 90)
+
+    print(
+        json.dumps(
+            rule_risk,
+            indent=2,
+            ensure_ascii=False
+        )
+    )
 
     # ------------------------------------
     # Claude Risk
     # ------------------------------------
-'''
     try:
+
         llm_risk = llm_khata_risk_score(khata_data)
 
         final_score = round(
-            0.7 * rule_risk["risk_score"] +
-            0.3 * llm_risk["risk_score"],
+            0.7 * rule_risk["risk_score"]
+            + 0.3 * llm_risk["risk_score"],
             2
         )
 
     except Exception as e:
+
+        print(f"Claude Khata Risk Error: {e}")
 
         llm_risk = {
             "error": str(e)
@@ -800,6 +813,9 @@ def generate_report(
         # Fallback to Python rule-based score
         final_score = rule_risk["risk_score"]
 
+    # ------------------------------------
+    # Final Risk Level
+    # ------------------------------------
     if final_score <= 25:
         final_level = "LOW"
 
@@ -810,10 +826,14 @@ def generate_report(
         final_level = "HIGH"
 
     # ------------------------------------
-    # Return Report
+    # Final Report
     # ------------------------------------
-    return {
-        "document_details": khata_data,
+    report = {
+        "document_type": "KHATA",
+        "status": "RISK_ANALYSIS_SUCCESS",
+        "pdf_path": pdf_path,
+
+        "facts": khata_data,
 
         "rule_based_risk": rule_risk,
 
@@ -824,8 +844,25 @@ def generate_report(
             "risk_level": final_level
         }
     }
-'''
-   
+
+    # ------------------------------------
+    # Print final result
+    # ------------------------------------
+    print("\n" + "=" * 90)
+    print("🚨 FINAL KHATA RISK")
+    print("=" * 90)
+
+    print(
+        json.dumps(
+            report,
+            indent=2,
+            ensure_ascii=False
+        )
+    )
+
+    print("=" * 90)
+
+    return report
 # ============================================================
 # MAIN
 # ============================================================

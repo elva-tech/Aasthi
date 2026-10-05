@@ -475,7 +475,7 @@ if __name__ == "__main__":
     parser.add_argument("--hissa-no", default=1, type=int)
     parser.add_argument("--surnoc", default="*")
     parser.add_argument("--output-dir",
-                        default=r"C:\Users\tarun\Aasthi\wrappercode\input\Map")
+                        default=r"D:\aasthiv2\Aasthi\wrappercode\input\Map")
     args = parser.parse_args()
 
     fetcher = MapFetcher(output_dir=args.output_dir)

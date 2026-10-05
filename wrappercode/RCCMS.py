@@ -331,7 +331,7 @@ if __name__ == "__main__":
     parser.add_argument("--village", required=True)
     parser.add_argument("--survey-no", required=True, type=int)
     parser.add_argument("--output-dir",
-                        default=r"C:\Users\tarun\Aasthi\wrappercode\input\CourtCases")
+                        default=r"D:\aasthiv2\Aasthi\wrappercode\input\CourtCases")
     args = parser.parse_args()
 
     fetcher = RCCMSFetcher(output_dir=args.output_dir)

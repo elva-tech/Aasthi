@@ -77,8 +77,8 @@ CONFIG = {
     # ---------------- Friend's modules ----------------
     "bescom": {
         "input_dir": os.path.join(INPUT_DIR, "bescom"),
-        "user_name": "",
-        "user_address": "",
+        "user_name": "G KRISHNA REDDY",
+        "user_address": "KAGADASPURAKAGADASPU RA, KARNATAKA, 583231",
     },
     "water": {
         "rr": "",
@@ -107,7 +107,7 @@ CONFIG = {
         "builder_name": "",
     },
     "ec": {
-        "input_dir": os.path.join(INPUT_DIR, "ec"),
+        "input_dir": os.path.join(INPUT_DIR, "kaveriec"),
         "tesseract_cmd": "tesseract",
     },
     "bankloan": {
@@ -116,9 +116,6 @@ CONFIG = {
     },
     "ecourtrisk": {
         "screenshots_folder": os.path.join(WRAPPERCODE_DIR, "ecourtjson"),
-    },
-    "kaveriecrisk": {
-        "input_dir": os.path.join(INPUT_DIR, "kaveriec"),
     },
     "ekhatarisk": {
         "input_dir": os.path.join(INPUT_DIR, "ekhata"),

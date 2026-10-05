@@ -1,0 +1,84 @@
+{
+  "doc_type": "MR",
+  "file": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\MR\\MR_117_3.png",
+  "target": {
+    "survey_no": "117",
+    "hissa_no": "3"
+  },
+  "data": {
+    "target_survey": "117",
+    "target_hissa": "3",
+    "target_found": "Yes",
+    "unique_survey_nos_in_mr": [
+      "117/*/3",
+      "117/*/5",
+      "118/*/1",
+      "119/*/*",
+      "120/*/*"
+    ],
+    "all_entries": [
+      {
+        "survey_no": "117/*/3, 117/*/5, 118/*/1, 119/*/*, 120/*/*",
+        "year": "2012-2013",
+        "mutation_no": "H6",
+        "mutation_type": "ಖಾತೆ ಬದಲಾವಣೆ",
+        "acquisition_type": "ಪೌತಿ",
+        "date": "11/09/2012"
+      }
+    ],
+    "caveat_present": "No",
+    "caveat_survey_nos": [],
+    "possession_entries_present": "No",
+    "recent_mutation_year": "2012-2013",
+    "current_owner": "ಹೆಚ್ ಸಿ ವೆಂಕಟೇಗೌಡ ಬಿನ್ ಲೇ ಚನ್ನೇಗೌಡ",
+    "previous_owner": "ಹುಚ್ಚೇಗೌಡ",
+    "title_chain_visible": "Yes",
+    "raw_notes": "Mutation entry MR No. H6, year 2012-2013, type ಖಾತೆ ಬದಲಾವಣೆ (Account change), acquisition ಪೌತಿ (inheritance/partition). Affects survey numbers 117/3, 117/5, 118/1, 119, 120. Previous owners include ಹುಚ್ಚೇಗೌಡ, ಕೆಂಪೇಗೌಡ, ದೇವೇಗೌಡ, ಚನ್ನೇಗೌಡ. Current owners (sons - ಮಗ relation) include ಹೆಚ್ ಸಿ ವೆಂಕಟೇಗೌಡ, ಹೆಚ್ ಸಿ ಲಿಂಗೇಗೌಡ, ಅಪ್ಪಾಜಿಗೌಡ, ರಾಮಕೃಷ್ಣ, ನಿಂಗೇಗೌಡ, ವೆಂಕಟೇಗೌಡ, ರಾಮೇಗೌಡ, ಕೆಂಚೇಗೌಡ, and ನಂಜಮ್ಮ (ಇತರೆ - other relation, likely wife). Tahsildar approval date 04/12/2012. Village: ಹರಿಹರ, Hobli: ಸಾತನೂರು, Taluk: ಕನಕಪುರ, District: ರಾಮನಗರ."
+  },
+  "rule_risk": {
+    "risk_score": 0,
+    "risk_level": "LOW",
+    "reasons": [
+      "No critical issues found in MR"
+    ]
+  },
+  "llm_risk": {
+    "risk_score": 25,
+    "risk_level": "LOW",
+    "confidence": 0.8,
+    "major_risks": [
+      "Only one mutation entry (H6, 2012-2013) visible — no subsequent mutations recorded for over a decade, which may indicate incomplete RTC/MR extract",
+      "Multiple legal heirs (sons and wife) involved in inheritance (ಪೌತಿ); consent/release deeds from all co-parceners required to establish exclusive title",
+      "Property is jointly held across survey numbers 117/3, 117/5, 118/1, 119, 120 — partition/share demarcation for 117/3 specifically must be verified"
+    ],
+    "positive_findings": [
+      "Target survey 117/3 is explicitly present in the MR entry",
+      "No caveat (ವೀರಸ್) recorded on target or adjacent sub-divisions",
+      "No possession disputes recorded",
+      "Clear title chain visible: previous owner ಹುಚ್ಚೇಗೌಡ → current owner ಹೆಚ್ ಸಿ ವೆಂಕಟೇಗೌಡ via inheritance (ಪೌತಿ)",
+      "Mutation duly approved by Tahsildar on 04/12/2012",
+      "Mutation is old (2012) — well beyond the 2-year recent-mutation risk window"
+    ],
+    "reasoning": [
+      "Target 117/3 found in MR with a clearly documented mutation, satisfying the LOW risk criteria",
+      "The ಪೌತಿ (inheritance) mutation shows legitimate succession from deceased ancestor ಚನ್ನೇಗೌಡ to his son ವೆಂಕಟೇಗೌಡ and co-heirs",
+      "Absence of caveat and possession entries removes the key HIGH risk triggers",
+      "However, since multiple heirs (sons + wife ನಂಜಮ್ಮ) jointly inherited, 117/3 is likely co-owned — a partition deed or NOC from all co-owners is essential before purchase",
+      "Only one MR entry over 10+ years is unusual; buyer should obtain the full 30-year EC and latest RTC to confirm no intervening transactions"
+    ],
+    "recommendations": [
+      "Obtain latest RTC (Pahani) for 117/3 to confirm current ownership status and extent",
+      "Procure 30-year Encumbrance Certificate (EC) from Sub-Registrar's office",
+      "Verify partition deed / family settlement among all legal heirs of ಚನ್ನೇಗೌಡ for Sy. No. 117/3",
+      "Obtain registered release deeds or NOCs from all co-heirs (ಲಿಂಗೇಗೌಡ, ಅಪ್ಪಾಜಿಗೌಡ, ರಾಮಕೃಷ್ಣ, ನಿಂಗೇಗೌಡ, ವೆಂಕಟೇಗೌಡ, ರಾಮೇಗೌಡ, ಕೆಂಚೇಗೌಡ, ನಂಜಮ್ಮ)",
+      "Conduct physical survey/boundary verification and obtain Tippani, Akarbandh, Podi extract for 117/3",
+      "Issue paper publication inviting claims/objections before executing sale",
+      "Verify no pending agricultural land ceiling or PTCL Act restrictions"
+    ],
+    "summary": "Target survey 117/3 is clearly present in the MR with a valid 2012 inheritance mutation (ಪೌತಿ) from ಚನ್ನೇಗೌಡ to his heirs. No caveat, no possession disputes, and the title chain is visible — placing this in the LOW risk band. The primary concern is joint inheritance by multiple co-heirs, requiring partition/release deeds and a full EC/RTC verification before purchase."
+  },
+  "final": {
+    "risk_score": 25,
+    "risk_level": "LOW"
+  }
+}

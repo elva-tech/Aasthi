@@ -61,11 +61,11 @@ TESSERACT_CMD = os.getenv("TESSERACT_CMD", "tesseract")
 if TESSERACT_CMD:
     pytesseract.pytesseract.tesseract_cmd = TESSERACT_CMD
 
-#MODEL_NAME = "claude-opus-4-7"
-MODEL_NAME="gemini-2.5-flash"
+MODEL_NAME = "claude-opus-4-7"
+
 
 # ================================ GEMINI =================================
-'''
+
 def _get_client() -> Anthropic:
 
     api_key = os.getenv("ANTHROPIC_API_KEY", "").strip()
@@ -74,31 +74,12 @@ def _get_client() -> Anthropic:
         raise RuntimeError("ANTHROPIC_API_KEY environment variable not set")
 
     return Anthropic(api_key=api_key)
-'''
-from google import genai
+
 import os
 
 import os
 import base64
-
-from google import genai
 from openai import OpenAI
-
-
-# ============================================================
-# GEMINI CLIENT
-# ============================================================
-
-def _get_client():
-
-    api_key = os.getenv("GEMINI_API_KEY5", "").strip()
-
-    if not api_key:
-        raise RuntimeError(
-            "GEMINI_API_KEY5 environment variable not set"
-        )
-
-    return genai.Client(api_key=api_key)
 
 
 # ============================================================
@@ -111,7 +92,7 @@ qwen_client = OpenAI(
 )
 
 EXTRACTION_MODEL = "gemma3:4b"
-RISK_MODEL = "gemini-2.5-flash"
+RISK_MODEL = "claude-opus-4-7"
 
 
 # ============================================================
@@ -196,6 +177,8 @@ class LLMClient:
 # GEMINI RISK ANALYSIS CLIENT
 # ============================================================
 
+# ================================ CLAUDE RISK ANALYSIS CLIENT ================================
+
 class ClaudeClient:
 
     def __init__(self):
@@ -203,12 +186,23 @@ class ClaudeClient:
 
     def generate(self, prompt: str) -> str:
 
-        response = self.client.models.generate_content(
+        response = self.client.messages.create(
             model=RISK_MODEL,
-            contents=prompt,
+            max_tokens=2000,
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
         )
 
-        return response.text
+        # Anthropic returns content as a list of blocks
+        for block in response.content:
+            if getattr(block, "type", None) == "text":
+                return block.text
+
+        return ""
 
 
 # ==================== DETERMINISM & CACHING HELPERS ======================
@@ -1064,15 +1058,6 @@ def calculate_risk(transactions):
 # ================================ AI RISK ================================
 def calculate_ai_risk(llm: ClaudeClient, transactions, rule_score):
     """Claude analysis restricted to EC/encumbrance patterns."""
-    if not transactions:
-        return {
-            "ai_risk_score": 0,
-            "risk_level": "LOW",
-            "risk_indicators": ["No transactions extracted from the EC"],
-            "pattern_analysis": "No EC transactions were available for analysis.",
-            "recommendation": "Verify the original EC because no transaction rows were extracted.",
-            "confidence": "LOW",
-        }
 
     summary = _ec_transaction_summary(transactions)
     encumbrance = _match_mortgages_to_releases(transactions)
@@ -1877,7 +1862,12 @@ def run_ec_wrapper(
 # ================================ OPTIONAL CLI ================================
 def main():
     parser = argparse.ArgumentParser(description="EC Fraud Detection Wrapper CLI")
-    parser.add_argument("pdf", nargs="?", default="input/ec.pdf", help="Path to EC PDF")
+    parser.add_argument(
+    "pdf",
+    nargs="?",
+    default=r"D:\aasthiv2\Aasthi\wrappercode\input\kaveriec\download.pdf",
+    help="Path to EC PDF"
+)
     parser.add_argument(
         "--force", action="store_true", help="Force regeneration ignoring cache"
     )

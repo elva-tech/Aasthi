@@ -1,0 +1,337 @@
+{
+  "_meta": {
+    "failed_modules": [
+      "akarband",
+      "rccms"
+    ],
+    "screenshot_dir": "D:\\aasthiv2\\Aasthi\\riskwrapper\\screenshots",
+    "session_id": "20261004_120507",
+    "success": false
+  },
+  "akarband": {
+    "error": "'Message' object has no attribute 'text'",
+    "status": "FAILED",
+    "traceback": "Traceback (most recent call last):\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 617, in run_all\n    res = _call_module(fn, session_id, screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 587, in _call_module\n    return fn(session_id=session_id, screenshot_dir=screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 507, in run_akarband\n    return analyze_akarband(\n    path,\n    ...<3 lines>...\n    screenshot_dir=screenshot_dir,\n    )\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\akarband.py\", line 290, in analyze_akarband\n    data = extract_akarband_details(image_path, survey, hissa)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\akarband.py\", line 157, in extract_akarband_details\n    return parse_json(response.text)\n                      ^^^^^^^^^^^^^\n  File \"D:\\aasthiv2\\Aasthi\\.venv\\Lib\\site-packages\\pydantic\\main.py\", line 1042, in __getattr__\n    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')\nAttributeError: 'Message' object has no attribute 'text'\n"
+  },
+  "ec": {
+    "ai_analysis": {
+      "confidence": "LOW",
+      "method": "Claude EC-specific analysis",
+      "pattern_analysis": "The supplied EC contains a single transaction of type 'OTHER' with all identifying fields blank or null. There are no recorded mortgages, releases, POA transactions, repeated parties, or rapid resales to analyze. No unresolved mortgage patterns are evident from the data provided. However, the complete absence of transaction details (date, parties, consideration, registration number) means no meaningful encumbrance pattern can be assessed. This may reflect OCR/extraction limitations rather than an actual anomaly in the EC itself.",
+      "recommendation": "Manually verify the original Encumbrance Certificate document to confirm the nature of the single 'OTHER' transaction and to ensure no mortgages, liens, or other encumbrances have been missed in extraction. Request a fresh EC covering an adequate time period (typically 13-30 years) from the Sub-Registrar's office if the current EC period is limited. Cross-check findings with the separate Title Check module before proceeding.",
+      "risk_indicators": [
+        "Only 1 transaction present in the EC data, classified as 'OTHER' with no identifiable sale, mortgage, release, or POA activity.",
+        "Transaction record is missing key fields: date, seller, buyer, consideration value is 0.0, and registration number is null.",
+        "Insufficient data to confirm presence or absence of encumbrances with confidence."
+      ],
+      "risk_level": "LOW",
+      "score": 20
+    },
+    "detailed_findings": {
+      "note": "This module analyzes EC/encumbrance information. It does not provide a standalone legal title opinion.",
+      "sample_transactions": [
+        {
+          "buyer_name": "",
+          "consideration_value": 0,
+          "registration_number": null,
+          "seller_name": "",
+          "transaction_date": "",
+          "transaction_type": "OTHER"
+        }
+      ],
+      "transaction_count": 1
+    },
+    "document_analysis": {
+      "duplicate_pages_removed": 0,
+      "ocr_characters": 1923,
+      "total_pages_processed": 2,
+      "unique_pages_after_deduplication": 2
+    },
+    "document_type": "EC",
+    "encumbrance_analysis": {
+      "mortgages": 0,
+      "potentially_released_mortgages": [],
+      "releases": 0,
+      "unresolved_mortgages": []
+    },
+    "evidence_pages": [
+      1,
+      2
+    ],
+    "executive_summary": {
+      "confidence": "LOW",
+      "recommendation": "Manually verify the original Encumbrance Certificate document to confirm the nature of the single 'OTHER' transaction and to ensure no mortgages, liens, or other encumbrances have been missed in extraction. Request a fresh EC covering an adequate time period (typically 13-30 years) from the Sub-Registrar's office if the current EC period is limited. Cross-check findings with the separate Title Check module before proceeding.",
+      "risk_level": "LOW",
+      "risk_score": 12,
+      "summary": "Analysis of 1 validated EC transactions resulted in LOW encumbrance/transaction risk."
+    },
+    "final_assessment": {
+      "action_required": "NO",
+      "combined_score": 12,
+      "next_steps": [
+        "Document appears to have low fraud indicators",
+        "Standard processing permitted",
+        "Maintain record for audit trail"
+      ],
+      "risk_classification": "LOW",
+      "scoring_methodology": {
+        "ai_weight": 0.6,
+        "formula": "AI >= 70: AI×0.8 + Rule×0.2; otherwise AI×0.6 + Rule×0.4; if AI unavailable: Rule score only",
+        "rule_based_weight": 0.4
+      }
+    },
+    "report_metadata": {
+      "analysis_scope": "EC transactions and encumbrance patterns only",
+      "extraction_model": "gemma3:4b",
+      "generated_date": "2026-10-04T11:33:57.398728",
+      "report_type": "Encumbrance Certificate Risk Report",
+      "risk_model": "claude-opus-4-7"
+    },
+    "rule_based_analysis": {
+      "flags_detected": [
+        "1 transaction(s) have no readable registration number; verify against the original EC."
+      ],
+      "scope": "EC/encumbrance patterns only",
+      "score": 0
+    },
+    "status": "SUCCESS",
+    "transaction_analysis": {
+      "breakdown_by_type": {
+        "OTHER": 1
+      },
+      "invalid_transactions": 1,
+      "total_consideration_value": 0,
+      "total_transactions_extracted": 2,
+      "valid_transactions": 1
+    },
+    "transaction_pattern_analysis": {
+      "poa_transactions": [],
+      "rapid_resales": [],
+      "repeated_buyers": [],
+      "repeated_sellers": []
+    }
+  },
+  "ecourtrisk": {
+    "case_count": 1,
+    "cases": [
+      {
+        "case_data": {
+          "act": "Indian penal code | 326,504r/w34OFIPC",
+          "case_status": "Case disposed",
+          "case_type": "C.C. - CRIMINAL CASES",
+          "cnr_number": "KABC030822072015 (Note the CNR number for future reference)",
+          "court_name": "CMM Court Complex, Bangalore",
+          "decision_date": "19th January 2017",
+          "filing_date": "",
+          "filing_number": "",
+          "first_hearing_date": "04th June 2016",
+          "nature_of_disposal": "Contested--SETTLED IN LOK ADALATH",
+          "pending": false,
+          "petitioner": "ADITYA H S",
+          "registration_date": "16-12-2015",
+          "registration_number": "29445/2015",
+          "respondent": "RAHUL BHOMIK 2) V M RAGHAVENDRA"
+        },
+        "case_id": "case_1.json",
+        "final_assessment": {
+          "risk_level": "LOW",
+          "risk_score": 5
+        },
+        "llm_risk": {
+          "confidence": 0.9,
+          "major_risks": [],
+          "positive_findings": [
+            "Case status is 'Case disposed' as on 19-01-2017, indicating no active litigation.",
+            "Nature of disposal is 'Contested--SETTLED IN LOK ADALATH', meaning the matter was amicably resolved and attains finality under the Legal Services Authorities Act.",
+            "The case is a criminal matter under IPC Sections 326, 504 r/w 34, which pertains to personal offences (voluntarily causing grievous hurt, intentional insult) and is unrelated to property title, possession, or ownership.",
+            "Court is a CMM (Chief Metropolitan Magistrate) criminal court, not a civil or revenue court dealing with property rights.",
+            "The 'pending' flag is explicitly false."
+          ],
+          "reasoning": [
+            "Case Status: Disposed on 19-01-2017 — no active proceedings exist that could restrain or encumber the property.",
+            "Nature of Litigation: Criminal case under IPC Sections 326 (grievous hurt), 504 (intentional insult), and 34 (common intention). These are personal/criminal offences and do not create any charge, lien, or claim on immovable property.",
+            "Court Level: CMM Court, Bangalore — a magistrate-level criminal court with no jurisdiction over title, partition, injunction, or specific performance of property.",
+            "Parties: Petitioner (Aditya H S) and Respondents (Rahul Bhomik, V M Raghavendra) are listed; however, the supplied data does not indicate any of them as the current owner or seller of the subject property.",
+            "Disposal: Settled through Lok Adalath, whose award is deemed a civil court decree and is final and non-appealable under Section 21 of the Legal Services Authorities Act, 1987 — minimal residual risk.",
+            "Overall Buyer Risk: Because the matter is (a) criminal in nature, (b) disposed, and (c) finally settled in Lok Adalath, there is no identifiable impact on marketable title or possession based on the supplied data."
+          ],
+          "recommendations": [
+            "Verify through independent title due diligence (30-year title search, encumbrance certificate, mutation records) that this criminal case does not relate to any dispute connected to the property or seller.",
+            "Confirm whether any of the parties (Aditya H S, Rahul Bhomik, V M Raghavendra) are part of the seller's chain of title; if yes, obtain a copy of the Lok Adalath award for records.",
+            "Obtain the certified copy of the Lok Adalath settlement order and the final disposal order to confirm closure.",
+            "Conduct a fresh CNR-based search (KABC030822072015) and a litigation search in the seller's name across civil, revenue, and High Court portals to rule out other proceedings.",
+            "Include an indemnity clause in the sale deed covering undisclosed litigation and seller's representations about clear title."
+          ],
+          "risk_level": "LOW",
+          "risk_score": 5,
+          "summary": "The supplied case is a disposed criminal matter under IPC Sections 326, 504 r/w 34, settled in Lok Adalath on 19-01-2017 before the CMM Court, Bangalore. It bears no apparent nexus to property title, possession, or ownership, and is finally concluded. Based solely on the supplied data, buyer legal risk arising from this case is very low."
+        },
+        "rule_based_risk": {
+          "reasons": [
+            "Case already disposed"
+          ],
+          "risk_level": "LOW",
+          "risk_score": 5
+        }
+      }
+    ],
+    "document_type": "ECOURT",
+    "overall_court_risk": {
+      "risk_level": "LOW",
+      "risk_score": 5
+    },
+    "status": "RISK_ANALYSIS_SUCCESS"
+  },
+  "map": {
+    "data": {
+      "boundary_measurements": "46.6, 24.6, 29.8, 72.9, 32.1",
+      "date_generated": "",
+      "district": "ಬೆಂಗಳೂರು ದಕ್ಷಿಣ",
+      "extent": "0.24.00.00",
+      "hissa_no": "1",
+      "hobli": "ಸಾತನೂರು",
+      "latitude": "",
+      "longitude": "",
+      "olc_code": "7J4VC75R+9G",
+      "overlay_present": "Yes",
+      "owner_name": "ಕುಳ್ಳೇಗೌಡ - ಬಿನ್ ಚನ್ನ",
+      "road_access": "Yes",
+      "sketch_present": "Yes",
+      "survey_no": "117",
+      "taluk": "ಕನಕಪುರ",
+      "village": "ಹರಿಹರ"
+    },
+    "doc_type": "MAP",
+    "file": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\Map\\Map_117_1.pdf",
+    "final": {
+      "risk_level": "LOW",
+      "risk_score": 10
+    },
+    "llm_risk": {
+      "error": "All Claude attempts failed. Last: Unsupported content type: <class 'module'>"
+    },
+    "rule_risk": {
+      "reasons": [
+        "GPS coordinates missing"
+      ],
+      "risk_level": "LOW",
+      "risk_score": 10
+    },
+    "target": {
+      "hissa_no": "1",
+      "survey_no": "117"
+    }
+  },
+  "mr": {
+    "data": {
+      "all_entries": [
+        {
+          "acquisition_type": "ಪೌತಿ",
+          "date": "11/09/2012",
+          "mutation_no": "H6",
+          "mutation_type": "ಖಾತೆ ಬದಲಾವಣೆ",
+          "survey_no": "117/*/3, 117/*/5, 118/*/1, 119/*/*, 120/*/*",
+          "year": "2012-2013"
+        }
+      ],
+      "caveat_present": "No",
+      "caveat_survey_nos": [],
+      "current_owner": "ಹೆಚ್ ಸಿ ವೆಂಕಟೇಗೌಡ ಬಿನ್ ಲೇ ಚನ್ನೇಗೌಡ",
+      "possession_entries_present": "No",
+      "previous_owner": "ಹುಚ್ಚೇಗೌಡ",
+      "raw_notes": "Mutation Register Namune-12, Rule 46. District: Ramanagara, Taluk: Kanakapura, Hobli: Sathanur, Village: Harihara. MR Number H6, year 2012-2013. Mutation type: ಖಾತೆ ಬದಲಾವಣೆ (Account change) via ಪೌತಿ (inheritance/partition). Original entry (ಹಕ್ಕು ಬದಲಾವಣೆ ಮಾಡಿದವರು) lists Huchchegowda, Kempegowda, Devegowda, Channegowda as previous holders. New holders (ಹಕ್ಕು ಬದಲಾವಣೆ ಪಡೆದವರು) include H C Venkategowda, H C Lingegowda, Appajigowda, Ramakrishna, Ningegowda, Venkategowda, Ramegowda, Kenchegowda (sons of Channegowda/Kempegowda/Devegowda) and Nanjamma w/o Huchchegowda. Multiple extents: 0.37.00, 0.09.00, 2.01.00, 3.36.00, 6.00.00. Tahsildar order date: 04/12/2012. Place: Kanakapura. Reference IHC1/12-13.",
+      "recent_mutation_year": "2012-2013",
+      "target_found": "Yes",
+      "target_hissa": "3",
+      "target_survey": "117",
+      "title_chain_visible": "Yes",
+      "unique_survey_nos_in_mr": [
+        "117/*/3",
+        "117/*/5",
+        "118/*/1",
+        "119/*/*",
+        "120/*/*"
+      ]
+    },
+    "doc_type": "MR",
+    "file": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\MR\\MR_117_3.png",
+    "final": {
+      "risk_level": "LOW",
+      "risk_score": 0
+    },
+    "llm_risk": {
+      "error": "All Claude attempts failed. Last: Unsupported content type: <class 'module'>"
+    },
+    "rule_risk": {
+      "reasons": [
+        "No critical issues found in MR"
+      ],
+      "risk_level": "LOW",
+      "risk_score": 0
+    },
+    "target": {
+      "hissa_no": "3",
+      "survey_no": "117"
+    }
+  },
+  "rccms": {
+    "error": "All Claude attempts failed. Last: Object of type PngImageFile is not JSON serializable",
+    "status": "FAILED",
+    "traceback": "Traceback (most recent call last):\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 617, in run_all\n    res = _call_module(fn, session_id, screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 587, in _call_module\n    return fn(session_id=session_id, screenshot_dir=screenshot_dir)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\main.py\", line 543, in run_rccms\n    return analyze_court(\n    path,\n    ...<3 lines>...\n    screenshot_dir=screenshot_dir,\n    )\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\RCCMS.py\", line 233, in analyze_court\n    data = extract_court_details(path, survey, hissa)\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\RCCMS.py\", line 108, in extract_court_details\n    response = call_claude_with_retry([prompt, image])\n  File \"D:\\aasthiv2\\Aasthi\\riskwrapper\\RCCMS.py\", line 54, in call_claude_with_retry\n    raise RuntimeError(f\"All Claude attempts failed. Last: {last_error}\")\nRuntimeError: All Claude attempts failed. Last: Object of type PngImageFile is not JSON serializable\n"
+  },
+  "rtc": {
+    "data": {
+      "acquisition_type": "RR-829 ಪಿತ್ರಾಜಿತ",
+      "alienated": "No",
+      "court_stay": "No",
+      "district": "",
+      "gov_restriction": "No",
+      "government_category_visible": "Yes",
+      "hissa_no": "1",
+      "hobli": "ಸಾತನೂರು",
+      "kharab_extent": "0.01.00.00",
+      "land_revenue": "0.64",
+      "net_extent": "0.24.00.00",
+      "ongoing_mutation": "No",
+      "owner_category": "Government / ಸರ್ಕಾರಿ",
+      "owner_name": "ಕುಳ್ಳೇಗೌಡ - ಬಿನ್ ಚನ್ನ",
+      "period": "28-11-2001 To Till Date",
+      "ptcl_mentioned": "No",
+      "saguvali_chit_mentioned": "No",
+      "soil_type": "ಮರಳುಮಿಶ್ರ",
+      "survey_no": "117",
+      "taluk": "ಕನಕಪುರ",
+      "total_extent": "0.25.00.00",
+      "village": "ಹರಿಹರ"
+    },
+    "doc_type": "RTC",
+    "file": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\RTC\\RTC_117_1.pdf",
+    "final": {
+      "risk_level": "HIGH",
+      "risk_score": 75
+    },
+    "llm_risk": {
+      "error": "All Claude attempts failed. Last: Unsupported content type: <class 'module'>"
+    },
+    "rule_risk": {
+      "reasons": [
+        "Government (ಸರ್ಕಾರಿ) land WITHOUT Saguvali Chit — severe title risk"
+      ],
+      "risk_level": "HIGH",
+      "risk_score": 75
+    },
+    "target": {
+      "hissa_no": "1",
+      "survey_no": "117"
+    }
+  },
+  "checks": [
+    {
+      "title": "EC Document Check",
+      "status": "NOT_APPLICABLE",
+      "score": null,
+      "impact_weight": 0,
+      "findings": "EC PDF was not available for deep wrapper verification."
+    }
+  ]
+}

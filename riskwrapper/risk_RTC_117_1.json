@@ -1,0 +1,81 @@
+{
+  "doc_type": "RTC",
+  "file": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\RTC\\RTC_117_1.pdf",
+  "target": {
+    "survey_no": "117",
+    "hissa_no": "1"
+  },
+  "data": {
+    "survey_no": "117",
+    "hissa_no": "1",
+    "village": "ಹರಿಹರ",
+    "hobli": "ಸಾತನೂರು",
+    "taluk": "ಕನಕಪುರ",
+    "district": "",
+    "owner_name": "ಕುಳ್ಳೇಗೌಡ - ಬಿನ್ ಚನ್ನ",
+    "owner_category": "Government / ಸರ್ಕಾರಿ",
+    "gov_restriction": "No",
+    "court_stay": "No",
+    "alienated": "No",
+    "ongoing_mutation": "No",
+    "acquisition_type": "RR-829 ಪಿತ್ರಾಜಿತ",
+    "total_extent": "0.25.00.00",
+    "kharab_extent": "0.01.00.00",
+    "net_extent": "0.24.00.00",
+    "land_revenue": "0.64",
+    "soil_type": "ಮರಳುಮಿಶ್ರ",
+    "period": "28-11-2001 To Till Date",
+    "government_category_visible": "Yes",
+    "saguvali_chit_mentioned": "No",
+    "ptcl_mentioned": "No"
+  },
+  "rule_risk": {
+    "risk_score": 75,
+    "risk_level": "HIGH",
+    "reasons": [
+      "Government (ಸರ್ಕಾರಿ) land WITHOUT Saguvali Chit — severe title risk"
+    ]
+  },
+  "llm_risk": {
+    "risk_score": 78,
+    "risk_level": "HIGH",
+    "confidence": 0.85,
+    "major_risks": [
+      "Owner category marked as 'Government / ಸರ್ಕಾರಿ' without any Saguvali Chit (grant certificate) mentioned, indicating the land may still be classified as government land",
+      "Acquisition type shows 'RR-829 ಪಿತ್ರಾಜಿತ' (ancestral) which conflicts with Government ownership category, creating title ambiguity",
+      "Absence of Saguvali Chit means the recorded cultivator/occupant has no documented title transfer from the government",
+      "District field is blank in the RTC record, indicating incomplete land records"
+    ],
+    "positive_findings": [
+      "No court stay or injunction on the property",
+      "No government restriction (alienation bar) explicitly recorded",
+      "Property is not marked as alienated",
+      "No ongoing mutation proceedings",
+      "No PTCL (Prohibition of Transfer of Certain Lands) Act applicability mentioned",
+      "Low kharab extent (~4% of total), with net cultivable extent of 0.24.00.00",
+      "Long and continuous period of record (since 28-11-2001)"
+    ],
+    "reasoning": [
+      "Per guidelines, Owner category = 'Government/ಸರ್ಕಾರಿ' without Saguvali Chit automatically triggers HIGH risk (70+)",
+      "The contradiction between 'Government' ownership category and 'ಪಿತ್ರಾಜಿತ' (ancestral/inherited) acquisition raises serious doubts about the chain of title",
+      "Without a Saguvali Chit (land grant certificate), the occupant cannot legally transfer/sell the property, as title still vests with the Government",
+      "Any sale by Kulle Gowda bin Channa would be void/voidable and subject to resumption by Government",
+      "Absence of PTCL, court stay, and mutation provide some comfort but do not override the fundamental title defect"
+    ],
+    "recommendations": [
+      "Do NOT proceed with purchase until Saguvali Chit / Grant Certificate is produced and verified",
+      "Obtain certified copy of Mutation Register (MR) extracts and trace title from original grant",
+      "Verify with Tahsildar, Kanakapura, whether the land has been granted to the recorded occupant and under what Government Order",
+      "Check if the land falls under any PTCL/Inams Abolition/Land Reforms restrictions requiring prior Government permission for sale",
+      "Obtain Form 7A/7B and Record of Rights history for last 30 years",
+      "If granted land, verify the non-alienation period (usually 15 years) under Karnataka Land Grant Rules has expired",
+      "Insist on a 'No Objection Certificate' from the Deputy Commissioner before registration",
+      "Engage a local advocate to inspect village records (Pahani, Index of Lands, Tippani) at the Taluk office"
+    ],
+    "summary": "HIGH RISK property. Although there is no court stay, PTCL endorsement, or ongoing mutation, the RTC classifies the owner category as 'Government' with NO Saguvali Chit (grant certificate), meaning the title still legally vests with the State. The contradictory 'ancestral acquisition' entry further muddies the chain of title. Purchase is strongly inadvisable without producing the grant certificate and verifying alienation permissions from revenue authorities."
+  },
+  "final": {
+    "risk_score": 83,
+    "risk_level": "HIGH"
+  }
+}

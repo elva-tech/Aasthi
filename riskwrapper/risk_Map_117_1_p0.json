@@ -1,0 +1,72 @@
+{
+  "doc_type": "MAP",
+  "file": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\Map\\Map_117_1_p0.png",
+  "target": {
+    "survey_no": "117",
+    "hissa_no": "1"
+  },
+  "data": {
+    "survey_no": "117",
+    "hissa_no": "1",
+    "village": "ಹರಿಹರ",
+    "hobli": "ಸಾತನೂರು",
+    "taluk": "ಕನಕಪುರ",
+    "district": "ಬೆಂಗಳೂರು ದಕ್ಷಿಣ",
+    "olc_code": "7J4VC75R+9G",
+    "latitude": "",
+    "longitude": "",
+    "owner_name": "ಕುಳ್ಳೇಗೌಡ.- ಬಿನ್ ಚನ್ನ",
+    "extent": "0.24.00.00",
+    "sketch_present": "Yes",
+    "overlay_present": "Yes",
+    "boundary_measurements": "46.6, 24.6, 29.8, 72.9, 32.1",
+    "road_access": "Yes",
+    "date_generated": ""
+  },
+  "rule_risk": {
+    "risk_score": 10,
+    "risk_level": "LOW",
+    "reasons": [
+      "GPS coordinates missing"
+    ]
+  },
+  "llm_risk": {
+    "risk_score": 20,
+    "risk_level": "LOW",
+    "confidence": 0.85,
+    "major_risks": [
+      "GPS coordinates (latitude/longitude) missing, limiting precise geolocation verification",
+      "Date of map generation not available, making it difficult to confirm currency of the data"
+    ],
+    "positive_findings": [
+      "Digitized sketch is present",
+      "Overlay map is present, allowing cross-verification with cadastral records",
+      "Road access confirmed, eliminating landlocked risk",
+      "Boundary measurements provided on all five sides (46.6, 24.6, 29.8, 72.9, 32.1)",
+      "OLC (Open Location Code) code available as an alternative geo-reference (7J4VC75R+9G)",
+      "Clear identification of village, hobli, taluk, and district",
+      "Owner name recorded",
+      "Extent clearly mentioned (0.24.00.00)"
+    ],
+    "reasoning": [
+      "Per guidelines, complete sketch + overlay + road access typically indicates LOW risk",
+      "Although GPS lat/long is missing, OLC code (Plus Code) provides equivalent geo-referencing, reducing the impact",
+      "Boundary measurements are complete, supporting physical verification on ground",
+      "Absence of date of generation is a minor concern but does not materially affect boundary/legal integrity",
+      "No landlocked risk since road access is confirmed"
+    ],
+    "recommendations": [
+      "Obtain GPS coordinates from Bhoomi/Dishaank portal to supplement OLC code",
+      "Conduct physical ground verification using the provided boundary measurements",
+      "Verify overlay against the latest RTC and Mutation Register (MR) extracts",
+      "Confirm the date of sketch generation from the issuing authority (Survey Department)",
+      "Cross-check owner name 'ಕುಳ್ಳೇಗೌಡ ಬಿನ್ ಚನ್ನ' with RTC, encumbrance certificate, and mutation records",
+      "Engage a licensed surveyor to re-measure and confirm boundaries match the sketch"
+    ],
+    "summary": "The map data for Survey No. 117, Hissa No. 1, Harihara village, Kanakapura taluk shows LOW buyer legal risk. Digitized sketch, overlay map, boundary measurements on all sides, OLC code, and confirmed road access collectively provide strong due-diligence support. Minor gaps include missing GPS latitude/longitude and date of generation, which can be easily addressed through supplementary verification. Overall, the map-based legal risk profile is favorable for the buyer, subject to independent verification of RTC, mutation, and encumbrance records."
+  },
+  "final": {
+    "risk_score": 20,
+    "risk_level": "LOW"
+  }
+}

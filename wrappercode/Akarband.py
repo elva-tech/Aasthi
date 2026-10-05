@@ -241,7 +241,7 @@ if __name__ == "__main__":
     parser.add_argument("--hissa-no", required=True, type=int, default=1)
     parser.add_argument("--surnoc", default="*")
 
-    default_output = r"C:\Users\tarun\Aasthi\wrappercode\input\Akarband"
+    default_output = r"D:\aasthiv2\Aasthi\wrappercode\input\Akarband"
     parser.add_argument("--output-dir", default=default_output)
     args = parser.parse_args()
 

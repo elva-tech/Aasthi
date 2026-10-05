@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 BANK LOAN (CERSAI) WRAPPER - Buyer Risk Scoring
 ==============================================
@@ -165,8 +164,60 @@ from openai import OpenAI
 
 qwen_client = OpenAI(
     base_url="http://localhost:11434/v1",
-    api_key="ollama"
+    api_key="ollama",
+    timeout=600.0
 )
+
+def _parse_qwen_json(raw_text: str) -> Dict[str, Any]:
+    if raw_text is None:
+        raise ValueError("Qwen returned None")
+
+    text = str(raw_text).strip()
+
+    if not text:
+        raise ValueError("Qwen returned an empty response")
+
+    text = re.sub(
+        r"<think>.*?</think>",
+        "",
+        text,
+        flags=re.I | re.S
+    ).strip()
+
+    text = re.sub(r"^\s*```(?:json)?\s*", "", text, flags=re.I)
+    text = re.sub(r"\s*```\s*$", "", text).strip()
+
+    try:
+        parsed = json.loads(text)
+        if isinstance(parsed, dict):
+            return parsed
+    except json.JSONDecodeError:
+        pass
+
+    start = text.find("{")
+    end = text.rfind("}")
+
+    if start != -1 and end > start:
+        candidate = text[start:end + 1]
+
+        try:
+            parsed = json.loads(candidate)
+
+            if isinstance(parsed, dict):
+                return parsed
+
+        except json.JSONDecodeError as exc:
+            raise ValueError(
+                "Qwen returned non-JSON content and the JSON portion "
+                f"could not be parsed: {exc}. "
+                f"Response preview: {text[:1000]!r}"
+            ) from exc
+
+    raise ValueError(
+        "Qwen did not return a valid JSON object. "
+        f"Response preview: {text[:1000]!r}"
+    )
+
 
 def analyze_loan_with_qwen(pdf_text: str) -> LoanDetails:
     prompt = f"""
@@ -424,7 +475,7 @@ Return exactly this JSON structure:
 
 # CERSAI REPORT
 
-\"\"\"{pdf_text[:22000]}\"\"\"
+\"\"\"{pdf_text[:14000]}\"\"\"
 
 # FINAL VALIDATION
 
@@ -445,21 +496,46 @@ Before returning the JSON, verify:
 
     try:
         response = qwen_client.chat.completions.create(
-            model="qwen3:8b",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are an information extraction engine. Return ONLY valid JSON."
-                },
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ],
-            temperature=0
-        )
+        model=EXTRACTION_MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a JSON extraction engine. "
+                    "Do not output analysis. "
+                    "Do not output reasoning. "
+                    "Do not output <think> blocks. "
+                    "Return ONLY the requested JSON object."
+                )
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=0,
+        max_tokens=6000,
+    )
 
-        data = json.loads(response.choices[0].message.content)
+        message = response.choices[0].message
+        raw_response = message.content or ""
+
+        if not raw_response.strip():
+            print("\n" + "=" * 90)
+            print("⚠️ QWEN DID NOT PRODUCE FINAL JSON")
+            print("=" * 90)
+            print(f"finish_reason: {response.choices[0].finish_reason}")
+            print(f"completion_tokens: {response.usage.completion_tokens}")
+            print(f"reasoning: {getattr(message, 'reasoning', None)}")
+            print("=" * 90)
+
+            raise ValueError(
+                "Qwen did not produce final JSON. "
+                f"finish_reason={response.choices[0].finish_reason}"
+            )
+
+        data = _parse_qwen_json(raw_response)
+        
 
         # Normalize values
         data["registration_status"] = _normalize_status(
@@ -941,60 +1017,6 @@ def create_bankloan_evidence_screenshot(
     img.save(output_path)
 
     doc.close()
-
-def create_bankloan_evidence_screenshot(
-    pdf_path,
-    output_path,
-    dpi=220
-):
-    """
-    Capture the page containing the CERSAI charge details.
-    """
-
-    keywords = [
-        "charge",
-        "satisfied",
-        "not satisfied",
-        "debtor",
-        "secured creditor",
-        "registration",
-        "security interest",
-        "property",
-        "loan"
-    ]
-
-    doc = fitz.open(pdf_path)
-
-    best_page = 0
-    best_score = -1
-
-    for page_no in range(len(doc)):
-
-        text = doc[page_no].get_text().lower()
-
-        score = sum(
-            1
-            for k in keywords
-            if k in text
-        )
-
-        if score > best_score:
-            best_score = score
-            best_page = page_no
-
-    page = doc.load_page(best_page)
-
-    pix = page.get_pixmap(dpi=dpi)
-
-    img = Image.frombytes(
-        "RGB",
-        (pix.width, pix.height),
-        pix.samples
-    )
-
-    img.save(output_path)
-
-    doc.close()
 # =========================
 # MAIN WRAPPER
 # =========================
@@ -1022,9 +1044,6 @@ def print_qwen_extraction_debug(
 
     print("=" * 90 + "\n")
 
-#def run_bankloan(pdf_path: str, out_path: str = DEFAULT_OUT, session_id: str = None, screenshot_dir: str = None) -> Dict[str, Any]:
-#    load_dotenv()
-#    api_key = _load_env_key()
 def run_bankloan(
     pdf_path: str,
     out_path: str = DEFAULT_OUT,
@@ -1033,7 +1052,7 @@ def run_bankloan(
 ) -> Dict[str, Any]:
 
     load_dotenv()
-
+    api_key = _load_env_key()
     if not Path(pdf_path).exists():
         raise FileNotFoundError(f"PDF not found: {pdf_path}")
 
@@ -1068,7 +1087,7 @@ def run_bankloan(
             )
 
     pdf_text = extract_pdf_text(pdf_path)
- #   client = Anthropic(api_key=api_key)
+    client = Anthropic(api_key=api_key)
     try:
         # ============================================================
         # QWEN EXTRACTION
@@ -1090,9 +1109,9 @@ def run_bankloan(
         # ============================================================
         # SCORING
         # ============================================================
- #       det = deterministic_score(loan_details)
-#      llm = llm_risk_score(client, loan_details, pdf_text)
-#        final = blend_scores(det, llm)
+        det = deterministic_score(loan_details)
+        llm = llm_risk_score(client, loan_details, pdf_text)
+        final = blend_scores(det, llm)
 
     except Exception as e:
         return {
@@ -1124,7 +1143,7 @@ def run_bankloan(
             "pdf_path": str(pdf_path),
         },
         "loan_details": loan_details.model_dump(),
-       # "risk": final.model_dump(),
+        "risk": final.model_dump(),
     }
 
     _ensure_dirs(out_path)

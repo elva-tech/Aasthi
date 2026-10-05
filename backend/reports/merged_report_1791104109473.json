@@ -1,0 +1,479 @@
+{
+  "_meta": {
+    "failed_modules": [],
+    "screenshot_dir": "D:\\aasthiv2\\Aasthi\\riskwrapper\\screenshots",
+    "session_id": "20261004_142256",
+    "success": true
+  },
+  "akarband": {
+    "data": {
+      "assessment": "",
+      "classification": "Dry / ಖುಷ್ಕಿ",
+      "cultivable_extent": "",
+      "district": "ರಾಮನಗರ",
+      "hissa_no": "1",
+      "hobli": "ಸಾತನೂರು",
+      "kharab_extent": "",
+      "owner_name": "",
+      "survey_no": "117",
+      "taluk": "ಕನಕಪುರ",
+      "total_extent": "",
+      "village": "ಹುಪುಹ"
+    },
+    "doc_type": "AKARBAND",
+    "file": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\Akarband\\Akarband_117_1_p0.png",
+    "final": {
+      "risk_level": "MEDIUM",
+      "risk_score": 65
+    },
+    "llm_risk": {
+      "confidence": 0.75,
+      "major_risks": [
+        "Total extent of the land is missing — cannot verify actual area of Survey No. 117, Hissa No. 1",
+        "Cultivable extent is not recorded — unable to determine productive portion",
+        "Kharab (uncultivable) extent is missing — potential undisclosed unusable land",
+        "Assessment (land revenue) value is blank — raises doubts about record completeness",
+        "Owner name is not mentioned — ownership cannot be verified from Akarband alone"
+      ],
+      "positive_findings": [
+        "Land classification is 'Dry / ಖುಷ್ಕಿ' (private agricultural), not government or forest land",
+        "Property is clearly identified by village (ಹುಪುಹ), hobli (ಸಾತನೂರು), taluk (ಕನಕಪುರ), and district (ರಾಮನಗರ)"
+      ],
+      "reasoning": [
+        "Akarband is a foundational revenue record; missing extent, assessment, and owner fields significantly reduce its evidentiary value.",
+        "While the Dry classification suggests private cultivable land (not government), the absence of extent and kharab details prevents verification of the saleable area.",
+        "Missing owner name means buyer must rely entirely on RTC/Mutation records for ownership proof — a documentation gap.",
+        "Per guidelines: missing total extent → MEDIUM; missing assessment → LOW-MEDIUM; combined gaps elevate overall risk to upper MEDIUM."
+      ],
+      "recommendations": [
+        "Obtain the latest RTC (Pahani) to confirm actual extent, kharab area, and current cultivation status",
+        "Cross-verify ownership through Mutation Register (MR), Index of Lands, and 15-year RTC history",
+        "Request a Tippani and Hissa Phodi sketch to confirm the physical boundaries of Hissa No. 1",
+        "Conduct a survey department verification to reconcile missing Akarband fields",
+        "Obtain an Encumbrance Certificate (EC) for at least 30 years before purchase",
+        "Engage a licensed surveyor for on-ground measurement before executing a sale deed"
+      ],
+      "risk_level": "MEDIUM",
+      "risk_score": 65,
+      "summary": "Survey No. 117/1 in Hupuha village is classified as Dry (private agricultural) land, which is favorable. However, critical Akarband fields — total extent, cultivable area, kharab, assessment, and owner name — are all blank. This incomplete record creates MEDIUM buyer risk due to the inability to verify area, ownership, and revenue liability. Proceed only after corroborating with RTC, Mutation, EC, and a physical survey."
+    },
+    "rule_risk": {
+      "reasons": [
+        "Total extent missing",
+        "Assessment value missing"
+      ],
+      "risk_level": "LOW",
+      "risk_score": 30
+    },
+    "target": {
+      "hissa_no": "1",
+      "survey_no": "117"
+    }
+  },
+  "ec": {
+    "ai_analysis": {
+      "confidence": "LOW",
+      "method": "Claude EC-specific analysis",
+      "pattern_analysis": "The supplied EC contains a single transaction of type 'OTHER' with all identifying fields blank or null. There are no recorded mortgages, releases, POA transactions, repeated parties, or rapid resales to analyze. No unresolved mortgage patterns are evident from the data provided. However, the complete absence of transaction details (date, parties, consideration, registration number) means no meaningful encumbrance pattern can be assessed. This may reflect OCR/extraction limitations rather than an actual anomaly in the EC itself.",
+      "recommendation": "Manually verify the original Encumbrance Certificate document to confirm the nature of the single 'OTHER' transaction and to ensure no mortgages, liens, or other encumbrances have been missed in extraction. Request a fresh EC covering an adequate time period (typically 13-30 years) from the Sub-Registrar's office if the current EC period is limited. Cross-check findings with the separate Title Check module before proceeding.",
+      "risk_indicators": [
+        "Only 1 transaction present in the EC data, classified as 'OTHER' with no identifiable sale, mortgage, release, or POA activity.",
+        "Transaction record is missing key fields: date, seller, buyer, consideration value is 0.0, and registration number is null.",
+        "Insufficient data to confirm presence or absence of encumbrances with confidence."
+      ],
+      "risk_level": "LOW",
+      "score": 20
+    },
+    "detailed_findings": {
+      "note": "This module analyzes EC/encumbrance information. It does not provide a standalone legal title opinion.",
+      "sample_transactions": [
+        {
+          "buyer_name": "",
+          "consideration_value": 0,
+          "registration_number": null,
+          "seller_name": "",
+          "transaction_date": "",
+          "transaction_type": "OTHER"
+        }
+      ],
+      "transaction_count": 1
+    },
+    "document_analysis": {
+      "duplicate_pages_removed": 0,
+      "ocr_characters": 1923,
+      "total_pages_processed": 2,
+      "unique_pages_after_deduplication": 2
+    },
+    "document_type": "EC",
+    "encumbrance_analysis": {
+      "mortgages": 0,
+      "potentially_released_mortgages": [],
+      "releases": 0,
+      "unresolved_mortgages": []
+    },
+    "evidence_pages": [
+      1,
+      2
+    ],
+    "executive_summary": {
+      "confidence": "LOW",
+      "recommendation": "Manually verify the original Encumbrance Certificate document to confirm the nature of the single 'OTHER' transaction and to ensure no mortgages, liens, or other encumbrances have been missed in extraction. Request a fresh EC covering an adequate time period (typically 13-30 years) from the Sub-Registrar's office if the current EC period is limited. Cross-check findings with the separate Title Check module before proceeding.",
+      "risk_level": "LOW",
+      "risk_score": 12,
+      "summary": "Analysis of 1 validated EC transactions resulted in LOW encumbrance/transaction risk."
+    },
+    "final_assessment": {
+      "action_required": "NO",
+      "combined_score": 12,
+      "next_steps": [
+        "Document appears to have low fraud indicators",
+        "Standard processing permitted",
+        "Maintain record for audit trail"
+      ],
+      "risk_classification": "LOW",
+      "scoring_methodology": {
+        "ai_weight": 0.6,
+        "formula": "AI >= 70: AI×0.8 + Rule×0.2; otherwise AI×0.6 + Rule×0.4; if AI unavailable: Rule score only",
+        "rule_based_weight": 0.4
+      }
+    },
+    "report_metadata": {
+      "analysis_scope": "EC transactions and encumbrance patterns only",
+      "extraction_model": "gemma3:4b",
+      "generated_date": "2026-10-04T11:33:57.398728",
+      "report_type": "Encumbrance Certificate Risk Report",
+      "risk_model": "claude-opus-4-7"
+    },
+    "rule_based_analysis": {
+      "flags_detected": [
+        "1 transaction(s) have no readable registration number; verify against the original EC."
+      ],
+      "scope": "EC/encumbrance patterns only",
+      "score": 0
+    },
+    "status": "SUCCESS",
+    "transaction_analysis": {
+      "breakdown_by_type": {
+        "OTHER": 1
+      },
+      "invalid_transactions": 1,
+      "total_consideration_value": 0,
+      "total_transactions_extracted": 2,
+      "valid_transactions": 1
+    },
+    "transaction_pattern_analysis": {
+      "poa_transactions": [],
+      "rapid_resales": [],
+      "repeated_buyers": [],
+      "repeated_sellers": []
+    }
+  },
+  "map": {
+    "data": {
+      "boundary_measurements": "46.6, 24.6, 29.8, 72.9, 32.1",
+      "date_generated": "",
+      "district": "ಬೆಂಗಳೂರು ದಕ್ಷಿಣ",
+      "extent": "0.24.00.00",
+      "hissa_no": "1",
+      "hobli": "ಸಾತನೂರು",
+      "latitude": "",
+      "longitude": "",
+      "olc_code": "7J4VC75R+9G",
+      "overlay_present": "Yes",
+      "owner_name": "ಕುಳ್ಳೇಗೌಡ.- ಬಿನ್ ಚನ್ನ",
+      "road_access": "Yes",
+      "sketch_present": "Yes",
+      "survey_no": "117",
+      "taluk": "ಕನಕಪುರ",
+      "village": "ಹರಿಹರ"
+    },
+    "doc_type": "MAP",
+    "file": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\Map\\Map_117_1_p0.png",
+    "final": {
+      "risk_level": "LOW",
+      "risk_score": 20
+    },
+    "llm_risk": {
+      "confidence": 0.85,
+      "major_risks": [
+        "GPS coordinates (latitude/longitude) missing, limiting precise geolocation verification",
+        "Date of map generation not available, making it difficult to confirm currency of the data"
+      ],
+      "positive_findings": [
+        "Digitized sketch is present",
+        "Overlay map is present, allowing cross-verification with cadastral records",
+        "Road access confirmed, eliminating landlocked risk",
+        "Boundary measurements provided on all five sides (46.6, 24.6, 29.8, 72.9, 32.1)",
+        "OLC (Open Location Code) code available as an alternative geo-reference (7J4VC75R+9G)",
+        "Clear identification of village, hobli, taluk, and district",
+        "Owner name recorded",
+        "Extent clearly mentioned (0.24.00.00)"
+      ],
+      "reasoning": [
+        "Per guidelines, complete sketch + overlay + road access typically indicates LOW risk",
+        "Although GPS lat/long is missing, OLC code (Plus Code) provides equivalent geo-referencing, reducing the impact",
+        "Boundary measurements are complete, supporting physical verification on ground",
+        "Absence of date of generation is a minor concern but does not materially affect boundary/legal integrity",
+        "No landlocked risk since road access is confirmed"
+      ],
+      "recommendations": [
+        "Obtain GPS coordinates from Bhoomi/Dishaank portal to supplement OLC code",
+        "Conduct physical ground verification using the provided boundary measurements",
+        "Verify overlay against the latest RTC and Mutation Register (MR) extracts",
+        "Confirm the date of sketch generation from the issuing authority (Survey Department)",
+        "Cross-check owner name 'ಕುಳ್ಳೇಗೌಡ ಬಿನ್ ಚನ್ನ' with RTC, encumbrance certificate, and mutation records",
+        "Engage a licensed surveyor to re-measure and confirm boundaries match the sketch"
+      ],
+      "risk_level": "LOW",
+      "risk_score": 20,
+      "summary": "The map data for Survey No. 117, Hissa No. 1, Harihara village, Kanakapura taluk shows LOW buyer legal risk. Digitized sketch, overlay map, boundary measurements on all sides, OLC code, and confirmed road access collectively provide strong due-diligence support. Minor gaps include missing GPS latitude/longitude and date of generation, which can be easily addressed through supplementary verification. Overall, the map-based legal risk profile is favorable for the buyer, subject to independent verification of RTC, mutation, and encumbrance records."
+    },
+    "rule_risk": {
+      "reasons": [
+        "GPS coordinates missing"
+      ],
+      "risk_level": "LOW",
+      "risk_score": 10
+    },
+    "target": {
+      "hissa_no": "1",
+      "survey_no": "117"
+    }
+  },
+  "mr": {
+    "data": {
+      "all_entries": [
+        {
+          "acquisition_type": "ಪೌತಿ",
+          "date": "11/09/2012",
+          "mutation_no": "H6",
+          "mutation_type": "ಖಾತೆ ಬದಲಾವಣೆ",
+          "survey_no": "117/*/3, 117/*/5, 118/*/1, 119/*/*, 120/*/*",
+          "year": "2012-2013"
+        }
+      ],
+      "caveat_present": "No",
+      "caveat_survey_nos": [],
+      "current_owner": "ಹೆಚ್ ಸಿ ವೆಂಕಟೇಗೌಡ ಬಿನ್ ಲೇ ಚನ್ನೇಗೌಡ",
+      "possession_entries_present": "No",
+      "previous_owner": "ಹುಚ್ಚೇಗೌಡ",
+      "raw_notes": "Mutation entry MR No. H6, year 2012-2013, type ಖಾತೆ ಬದಲಾವಣೆ (Account change), acquisition ಪೌತಿ (inheritance/partition). Affects survey numbers 117/3, 117/5, 118/1, 119, 120. Previous owners include ಹುಚ್ಚೇಗೌಡ, ಕೆಂಪೇಗೌಡ, ದೇವೇಗೌಡ, ಚನ್ನೇಗೌಡ. Current owners (sons - ಮಗ relation) include ಹೆಚ್ ಸಿ ವೆಂಕಟೇಗೌಡ, ಹೆಚ್ ಸಿ ಲಿಂಗೇಗೌಡ, ಅಪ್ಪಾಜಿಗೌಡ, ರಾಮಕೃಷ್ಣ, ನಿಂಗೇಗೌಡ, ವೆಂಕಟೇಗೌಡ, ರಾಮೇಗೌಡ, ಕೆಂಚೇಗೌಡ, and ನಂಜಮ್ಮ (ಇತರೆ - other relation, likely wife). Tahsildar approval date 04/12/2012. Village: ಹರಿಹರ, Hobli: ಸಾತನೂರು, Taluk: ಕನಕಪುರ, District: ರಾಮನಗರ.",
+      "recent_mutation_year": "2012-2013",
+      "target_found": "Yes",
+      "target_hissa": "3",
+      "target_survey": "117",
+      "title_chain_visible": "Yes",
+      "unique_survey_nos_in_mr": [
+        "117/*/3",
+        "117/*/5",
+        "118/*/1",
+        "119/*/*",
+        "120/*/*"
+      ]
+    },
+    "doc_type": "MR",
+    "file": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\MR\\MR_117_3.png",
+    "final": {
+      "risk_level": "LOW",
+      "risk_score": 25
+    },
+    "llm_risk": {
+      "confidence": 0.8,
+      "major_risks": [
+        "Only one mutation entry (H6, 2012-2013) visible — no subsequent mutations recorded for over a decade, which may indicate incomplete RTC/MR extract",
+        "Multiple legal heirs (sons and wife) involved in inheritance (ಪೌತಿ); consent/release deeds from all co-parceners required to establish exclusive title",
+        "Property is jointly held across survey numbers 117/3, 117/5, 118/1, 119, 120 — partition/share demarcation for 117/3 specifically must be verified"
+      ],
+      "positive_findings": [
+        "Target survey 117/3 is explicitly present in the MR entry",
+        "No caveat (ವೀರಸ್) recorded on target or adjacent sub-divisions",
+        "No possession disputes recorded",
+        "Clear title chain visible: previous owner ಹುಚ್ಚೇಗೌಡ → current owner ಹೆಚ್ ಸಿ ವೆಂಕಟೇಗೌಡ via inheritance (ಪೌತಿ)",
+        "Mutation duly approved by Tahsildar on 04/12/2012",
+        "Mutation is old (2012) — well beyond the 2-year recent-mutation risk window"
+      ],
+      "reasoning": [
+        "Target 117/3 found in MR with a clearly documented mutation, satisfying the LOW risk criteria",
+        "The ಪೌತಿ (inheritance) mutation shows legitimate succession from deceased ancestor ಚನ್ನೇಗೌಡ to his son ವೆಂಕಟೇಗೌಡ and co-heirs",
+        "Absence of caveat and possession entries removes the key HIGH risk triggers",
+        "However, since multiple heirs (sons + wife ನಂಜಮ್ಮ) jointly inherited, 117/3 is likely co-owned — a partition deed or NOC from all co-owners is essential before purchase",
+        "Only one MR entry over 10+ years is unusual; buyer should obtain the full 30-year EC and latest RTC to confirm no intervening transactions"
+      ],
+      "recommendations": [
+        "Obtain latest RTC (Pahani) for 117/3 to confirm current ownership status and extent",
+        "Procure 30-year Encumbrance Certificate (EC) from Sub-Registrar's office",
+        "Verify partition deed / family settlement among all legal heirs of ಚನ್ನೇಗೌಡ for Sy. No. 117/3",
+        "Obtain registered release deeds or NOCs from all co-heirs (ಲಿಂಗೇಗೌಡ, ಅಪ್ಪಾಜಿಗೌಡ, ರಾಮಕೃಷ್ಣ, ನಿಂಗೇಗೌಡ, ವೆಂಕಟೇಗೌಡ, ರಾಮೇಗೌಡ, ಕೆಂಚೇಗೌಡ, ನಂಜಮ್ಮ)",
+        "Conduct physical survey/boundary verification and obtain Tippani, Akarbandh, Podi extract for 117/3",
+        "Issue paper publication inviting claims/objections before executing sale",
+        "Verify no pending agricultural land ceiling or PTCL Act restrictions"
+      ],
+      "risk_level": "LOW",
+      "risk_score": 25,
+      "summary": "Target survey 117/3 is clearly present in the MR with a valid 2012 inheritance mutation (ಪೌತಿ) from ಚನ್ನೇಗೌಡ to his heirs. No caveat, no possession disputes, and the title chain is visible — placing this in the LOW risk band. The primary concern is joint inheritance by multiple co-heirs, requiring partition/release deeds and a full EC/RTC verification before purchase."
+    },
+    "rule_risk": {
+      "reasons": [
+        "No critical issues found in MR"
+      ],
+      "risk_level": "LOW",
+      "risk_score": 0
+    },
+    "target": {
+      "hissa_no": "3",
+      "survey_no": "117"
+    }
+  },
+  "rccms": {
+    "data": {
+      "act": "",
+      "case_status": "",
+      "case_type": "",
+      "cnr_number": "",
+      "court_name": "",
+      "decision_date": "",
+      "filing_date": "",
+      "filing_number": "",
+      "first_hearing_date": "",
+      "nature_of_disposal": "",
+      "no_cases_message": "There are no Revenue Court Cases.",
+      "pending": false,
+      "petitioner": "",
+      "registration_date": "",
+      "registration_number": "",
+      "respondent": ""
+    },
+    "doc_type": "COURT",
+    "file": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\CourtCases\\RCCMS_117.png",
+    "final": {
+      "risk_level": "LOW",
+      "risk_score": 5
+    },
+    "llm_risk": {
+      "confidence": 0.9,
+      "major_risks": [],
+      "positive_findings": [
+        "No Revenue Court Cases found against the target property (Survey No: 117, Hissa No: 1)",
+        "No pending litigation disclosed in the case data",
+        "No disputes, injunctions, or partition suits reported"
+      ],
+      "reasoning": [
+        "The 'no_cases_message' field explicitly states 'There are no Revenue Court Cases', which per guidelines indicates LOW risk (0-15 range)",
+        "All case-specific fields (case_type, filing_number, court_name, parties, etc.) are empty, confirming absence of litigation",
+        "The 'pending' flag is set to false, reinforcing that no active proceedings exist",
+        "Absence of revenue court litigation reduces the risk of title disputes, boundary issues, or tenancy claims from a revenue law perspective"
+      ],
+      "recommendations": [
+        "Independently verify by conducting a search in Civil Court records, District Court, High Court, and Supreme Court portals, as this data only covers Revenue Courts",
+        "Obtain a 30-year title search report and encumbrance certificate (EC) from the Sub-Registrar's office",
+        "Verify current 7/12 extract, mutation entries, and Record of Rights for Survey No. 117, Hissa No. 1",
+        "Issue a public notice in local newspapers inviting objections before completing the purchase",
+        "Check for any pending notices under Land Acquisition Act, Urban Land Ceiling, or local municipal/planning authorities",
+        "Confirm absence of tenancy claims under relevant state tenancy legislation"
+      ],
+      "risk_level": "LOW",
+      "risk_score": 5,
+      "summary": "No Revenue Court Cases are reported against Survey No. 117, Hissa No. 1, indicating LOW litigation risk from a revenue law standpoint. However, buyer should supplement this with independent due diligence covering civil courts, title history, and encumbrances before proceeding with the transaction."
+    },
+    "rule_risk": {
+      "reasons": [
+        "Explicit no-case message: 'There are no Revenue Court Cases.'"
+      ],
+      "risk_level": "LOW",
+      "risk_score": 5
+    },
+    "target": {
+      "hissa_no": "1",
+      "survey_no": "117"
+    }
+  },
+  "rtc": {
+    "data": {
+      "acquisition_type": "RR-829 ಪಿತ್ರಾಜಿತ",
+      "alienated": "No",
+      "court_stay": "No",
+      "district": "",
+      "gov_restriction": "No",
+      "government_category_visible": "Yes",
+      "hissa_no": "1",
+      "hobli": "ಸಾತನೂರು",
+      "kharab_extent": "0.01.00.00",
+      "land_revenue": "0.64",
+      "net_extent": "0.24.00.00",
+      "ongoing_mutation": "No",
+      "owner_category": "Government / ಸರ್ಕಾರಿ",
+      "owner_name": "ಕುಳ್ಳೇಗೌಡ - ಬಿನ್ ಚನ್ನ",
+      "period": "28-11-2001 To Till Date",
+      "ptcl_mentioned": "No",
+      "saguvali_chit_mentioned": "No",
+      "soil_type": "ಮರಳುಮಿಶ್ರ",
+      "survey_no": "117",
+      "taluk": "ಕನಕಪುರ",
+      "total_extent": "0.25.00.00",
+      "village": "ಹರಿಹರ"
+    },
+    "doc_type": "RTC",
+    "file": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\RTC\\RTC_117_1_p0.png",
+    "final": {
+      "risk_level": "HIGH",
+      "risk_score": 83
+    },
+    "llm_risk": {
+      "confidence": 0.85,
+      "major_risks": [
+        "Owner category classified as 'Government/ಸರ್ಕಾರಿ' without any Saguvali Chit (grant certificate) mentioned, indicating the land may still vest with the Government",
+        "Absence of Saguvali Chit raises serious doubt on the private alienability of the land",
+        "Acquisition shown as 'RR-829 ಪಿತ್ರಾಜಿತ' (ancestral) which conflicts with Government owner category — ambiguity in title",
+        "District field is blank in RTC — incomplete record"
+      ],
+      "positive_findings": [
+        "No court stay recorded",
+        "No government restriction recorded",
+        "No alienation entry",
+        "No ongoing mutation (MR) pending",
+        "No PTCL applicability noted",
+        "Kharab extent is low (~4%)",
+        "Named individual cultivator/occupant (ಕುಳ್ಳೇಗೌಡ ಬಿನ್ ಚನ್ನ) is recorded with long continuous possession period (since 28-11-2001)"
+      ],
+      "reasoning": [
+        "Per the guideline matrix, 'Government' owner category without a Saguvali Chit is a HIGH risk indicator (70+).",
+        "Without a Saguvali/Grant Certificate, the occupant has no transferable title; any sale could be void and attract resumption by the Government.",
+        "The contradictory acquisition type ('ಪಿತ್ರಾಜಿತ' — ancestral) alongside Government ownership suggests either an unresolved grant, encroachment entry, or a Darkhast case that is not yet regularised.",
+        "Although there is no court stay, mutation or PTCL flag — which otherwise would push risk higher — the fundamental title defect (Government land, no grant) itself keeps the score in the HIGH band.",
+        "Blank district and the small holding size (25 guntas) further reduce verifiability."
+      ],
+      "recommendations": [
+        "Obtain and verify the Saguvali Chit / Grant Certificate; if unavailable, treat the land as non-transferable Government land.",
+        "Procure Mutation Register (MR) extracts and the full Index of Lands to trace how occupancy was recorded.",
+        "Check for any Darkhast grant order, conditions of grant, and non-alienation period from the Tahsildar's office.",
+        "Verify PTCL applicability independently from the Assistant Commissioner, as RTC entries can miss SC/ST grant history.",
+        "Obtain Form 10 (RR Register), Akarband, Tippani, and Village Map to confirm identity and extent.",
+        "Insist on 30-year Encumbrance Certificate (Form 15) and family tree certificate from the Revenue authorities.",
+        "Do NOT proceed with any advance/token payment until Government ownership classification is resolved through a Khatha regularisation or confirmed Saguvali grant."
+      ],
+      "risk_level": "HIGH",
+      "risk_score": 78,
+      "summary": "The RTC reflects Government ownership category without any Saguvali Chit, which is a fundamental title defect making the land presumptively non-transferable despite the occupant's long possession. While there are no court stays, restrictions, PTCL flags, or pending mutations, the Government classification alone warrants a HIGH risk rating. Buyer should not proceed until grant/regularisation documents are produced and verified."
+    },
+    "rule_risk": {
+      "reasons": [
+        "Government (ಸರ್ಕಾರಿ) land WITHOUT Saguvali Chit — severe title risk"
+      ],
+      "risk_level": "HIGH",
+      "risk_score": 75
+    },
+    "target": {
+      "hissa_no": "1",
+      "survey_no": "117"
+    }
+  },
+  "checks": [
+    {
+      "title": "EC Document Check",
+      "status": "NOT_APPLICABLE",
+      "score": null,
+      "impact_weight": 0,
+      "findings": "EC PDF was not available for deep wrapper verification."
+    }
+  ]
+}

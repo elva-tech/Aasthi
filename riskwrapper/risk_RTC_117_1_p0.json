@@ -1,0 +1,80 @@
+{
+  "doc_type": "RTC",
+  "file": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\RTC\\RTC_117_1_p0.png",
+  "target": {
+    "survey_no": "117",
+    "hissa_no": "1"
+  },
+  "data": {
+    "survey_no": "117",
+    "hissa_no": "1",
+    "village": "ಹರಿಹರ",
+    "hobli": "ಸಾತನೂರು",
+    "taluk": "ಕನಕಪುರ",
+    "district": "",
+    "owner_name": "ಕುಳ್ಳೇಗೌಡ - ಬಿನ್ ಚನ್ನ",
+    "owner_category": "Government / ಸರ್ಕಾರಿ",
+    "gov_restriction": "No",
+    "court_stay": "No",
+    "alienated": "No",
+    "ongoing_mutation": "No",
+    "acquisition_type": "RR-829 ಪಿತ್ರಾಜಿತ",
+    "total_extent": "0.25.00.00",
+    "kharab_extent": "0.01.00.00",
+    "net_extent": "0.24.00.00",
+    "land_revenue": "0.64",
+    "soil_type": "ಮರಳುಮಿಶ್ರ",
+    "period": "28-11-2001 To Till Date",
+    "government_category_visible": "Yes",
+    "saguvali_chit_mentioned": "No",
+    "ptcl_mentioned": "No"
+  },
+  "rule_risk": {
+    "risk_score": 75,
+    "risk_level": "HIGH",
+    "reasons": [
+      "Government (ಸರ್ಕಾರಿ) land WITHOUT Saguvali Chit — severe title risk"
+    ]
+  },
+  "llm_risk": {
+    "risk_score": 78,
+    "risk_level": "HIGH",
+    "confidence": 0.85,
+    "major_risks": [
+      "Owner category classified as 'Government/ಸರ್ಕಾರಿ' without any Saguvali Chit (grant certificate) mentioned, indicating the land may still vest with the Government",
+      "Absence of Saguvali Chit raises serious doubt on the private alienability of the land",
+      "Acquisition shown as 'RR-829 ಪಿತ್ರಾಜಿತ' (ancestral) which conflicts with Government owner category — ambiguity in title",
+      "District field is blank in RTC — incomplete record"
+    ],
+    "positive_findings": [
+      "No court stay recorded",
+      "No government restriction recorded",
+      "No alienation entry",
+      "No ongoing mutation (MR) pending",
+      "No PTCL applicability noted",
+      "Kharab extent is low (~4%)",
+      "Named individual cultivator/occupant (ಕುಳ್ಳೇಗೌಡ ಬಿನ್ ಚನ್ನ) is recorded with long continuous possession period (since 28-11-2001)"
+    ],
+    "reasoning": [
+      "Per the guideline matrix, 'Government' owner category without a Saguvali Chit is a HIGH risk indicator (70+).",
+      "Without a Saguvali/Grant Certificate, the occupant has no transferable title; any sale could be void and attract resumption by the Government.",
+      "The contradictory acquisition type ('ಪಿತ್ರಾಜಿತ' — ancestral) alongside Government ownership suggests either an unresolved grant, encroachment entry, or a Darkhast case that is not yet regularised.",
+      "Although there is no court stay, mutation or PTCL flag — which otherwise would push risk higher — the fundamental title defect (Government land, no grant) itself keeps the score in the HIGH band.",
+      "Blank district and the small holding size (25 guntas) further reduce verifiability."
+    ],
+    "recommendations": [
+      "Obtain and verify the Saguvali Chit / Grant Certificate; if unavailable, treat the land as non-transferable Government land.",
+      "Procure Mutation Register (MR) extracts and the full Index of Lands to trace how occupancy was recorded.",
+      "Check for any Darkhast grant order, conditions of grant, and non-alienation period from the Tahsildar's office.",
+      "Verify PTCL applicability independently from the Assistant Commissioner, as RTC entries can miss SC/ST grant history.",
+      "Obtain Form 10 (RR Register), Akarband, Tippani, and Village Map to confirm identity and extent.",
+      "Insist on 30-year Encumbrance Certificate (Form 15) and family tree certificate from the Revenue authorities.",
+      "Do NOT proceed with any advance/token payment until Government ownership classification is resolved through a Khatha regularisation or confirmed Saguvali grant."
+    ],
+    "summary": "The RTC reflects Government ownership category without any Saguvali Chit, which is a fundamental title defect making the land presumptively non-transferable despite the occupant's long possession. While there are no court stays, restrictions, PTCL flags, or pending mutations, the Government classification alone warrants a HIGH risk rating. Buyer should not proceed until grant/regularisation documents are produced and verified."
+  },
+  "final": {
+    "risk_score": 83,
+    "risk_level": "HIGH"
+  }
+}

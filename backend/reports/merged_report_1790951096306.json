@@ -1,0 +1,504 @@
+{
+  "_meta": {
+    "failed_modules": [],
+    "screenshot_dir": "D:\\aasthiv2\\Aasthi\\riskwrapper\\screenshots",
+    "session_id": "20261002_193955",
+    "success": true
+  },
+  "bankloan": {
+    "document_type": "BANK_LOAN",
+    "input": {
+      "pdf_path": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\bankloan\\CERSAI_Search_Report_200417498632_For_Debtor_Based_Search_10_02_2026_18_03_08_480.pdf"
+    },
+    "loan_details": {
+      "charge_status": "Not Satisfied",
+      "debtor_name": "Gopinatha B M",
+      "land_type": null,
+      "loan_amount": "6934403.00",
+      "ltv_ratio": null,
+      "mortgaged_property": null,
+      "no_of_charges": null,
+      "occupancy_type": null,
+      "property_age_years": null,
+      "property_value": null,
+      "registration_status": null,
+      "security_details": null,
+      "title_disputes": null
+    },
+    "models": {
+      "extract": "qwen3:8b",
+      "risk": "claude-opus-4-7"
+    },
+    "risk": {
+      "blend_weights": {
+        "deterministic": 0.55,
+        "llm": 0.45
+      },
+      "cersai_charges_risk": 100,
+      "deterministic_overall": 100,
+      "key_findings": [
+        "❌ DEAL BREAKER: CERSAI shows 'Not Satisfied' (active charge) – property is encumbered.",
+        "❌ DEAL BREAKER: Active loan/charge exists with 'Not Satisfied' status.",
+        "Property is encumbered; clear title transfer is not possible until charge is satisfied.",
+        "High fraud risk if seller asks for payment before clearance.",
+        "Buyer should treat this as automatic rejection unless updated proof is provided."
+      ],
+      "land_type_risk": 0,
+      "llm_overall": 100,
+      "ltv_risk": 100,
+      "occupancy_risk": 0,
+      "overall_risk_score": 100,
+      "recommendations": [
+        "Reject unless seller clears the loan and CERSAI updates to 'Satisfied'.",
+        "Reject the property unless the seller clears the charge and updates CERSAI.",
+        "Ask for lender NOC and Letter of Satisfaction.",
+        "Re-check a fresh CERSAI report after clearance.",
+        "Proceed only after an advocate confirms charge removal and clear title."
+      ],
+      "registration_risk": 100,
+      "risk_factor_breakdown": {
+        "buyer_rule": "Active charge => DO_NOT_BUY",
+        "charge_status": "CRITICAL: Not Satisfied",
+        "deterministic_breakdown": {
+          "no_of_charges": null,
+          "normalized_status": "Not Satisfied",
+          "title_disputes": false
+        }
+      },
+      "risk_level": "DO_NOT_BUY",
+      "security_risk": 100,
+      "title_quality_risk": 0
+    },
+    "status": "QWEN_EXTRACTION_SUCCESS"
+  },
+  "bbmp_property_tax": {
+    "claude": {
+      "enabled": true,
+      "error": null,
+      "output": {
+        "confidence": 0.85,
+        "flags": {
+          "address_complete": true,
+          "area_consistent": false,
+          "construction_info_available": true,
+          "ownership_verified": true,
+          "property_identified": true,
+          "tax_compliant": false,
+          "usage_verified": true
+        },
+        "reasons": [
+          "All property identifiers present: SAS number, new application number, khata number, and property number.",
+          "Owner name 'A.RAMAKRISHNA' is clearly recorded.",
+          "Tax compliance cannot be confirmed: 'latest_year_paid' and 'expired_challans' are null.",
+          "Usage ('Self Occupied') and nature of property ('RCC/Madras Terrace Buildings') are available.",
+          "Address fields including zone, ward, door number, locality, and PIN code are complete.",
+          "Construction year (2015) and occupancy details (self-occupied 1203 sqft) are available.",
+          "Area inconsistency: Built-up area (1203) differs substantially from Plinth area (180)."
+        ],
+        "risk_level": "MEDIUM",
+        "risk_score": 32,
+        "score": 68
+      }
+    },
+    "document_type": "BBMP_PROPERTY_TAX",
+    "facts": {
+      "builtup_area": "1203",
+      "construction_year": "2015",
+      "door_number": "C-108",
+      "khata_number": "366/87/54/1/FLAT NO.C-108",
+      "locality": "Yehalanka",
+      "nature_of_property": "I - RCC/Madras Terrace Buildings",
+      "new_application_number": "1500082907",
+      "owner_name": "A.RAMAKRISHNA",
+      "pin_code": "560064",
+      "plinth_area": "180",
+      "property_number": "NO.366/87/54/1/FLAT NO.C-108",
+      "sas_application_number": "1500082907",
+      "self_occupied_area": "1203",
+      "tenanted_area": "0",
+      "usage": "Self Occupied",
+      "ward": "Attur-3",
+      "zone": "C"
+    },
+    "final": {
+      "components": {
+        "llm_risk_score": 32,
+        "llm_score": 68,
+        "python_risk_score": 25,
+        "python_score": 75
+      },
+      "risk_level": "MEDIUM-LOW",
+      "risk_score": 27,
+      "score": 73,
+      "weights": {
+        "llm": 0.3,
+        "python": 0.7
+      }
+    },
+    "image_count": 5,
+    "images": [
+      "D:\\aasthiv2\\Aasthi\\wrappercode\\tax_screenshots\\tax_page_1.png",
+      "D:\\aasthiv2\\Aasthi\\wrappercode\\tax_screenshots\\tax_page_2.png",
+      "D:\\aasthiv2\\Aasthi\\wrappercode\\tax_screenshots\\tax_page_3.png",
+      "D:\\aasthiv2\\Aasthi\\wrappercode\\tax_screenshots\\tax_page_4.png",
+      "D:\\aasthiv2\\Aasthi\\wrappercode\\tax_screenshots\\tax_page_5.png"
+    ],
+    "python": {
+      "breakdown": [
+        {
+          "category": "Property Identification",
+          "max_points": 20,
+          "observations": [
+            "Property identifiers verified"
+          ],
+          "points": 20
+        },
+        {
+          "category": "Ownership Verification",
+          "max_points": 20,
+          "observations": [
+            "Owner detected: A.RAMAKRISHNA"
+          ],
+          "points": 20
+        },
+        {
+          "category": "Tax Compliance",
+          "max_points": 25,
+          "observations": [
+            "No expired challans"
+          ],
+          "points": 5
+        },
+        {
+          "category": "Usage & Property Type",
+          "max_points": 10,
+          "observations": [
+            "Usage: SELF OCCUPIED",
+            "Nature: I - RCC/MADRAS TERRACE BUILDINGS"
+          ],
+          "points": 10
+        },
+        {
+          "category": "Address Completeness",
+          "max_points": 10,
+          "observations": [
+            "5/5 address fields present"
+          ],
+          "points": 10
+        },
+        {
+          "category": "Construction & Occupancy",
+          "max_points": 10,
+          "observations": [
+            "Construction Year: 2015"
+          ],
+          "points": 10
+        },
+        {
+          "category": "Area Consistency",
+          "max_points": 5,
+          "observations": [
+            "Builtup=1203",
+            "Plinth=180"
+          ],
+          "points": 0
+        }
+      ],
+      "risk_level": "MEDIUM-LOW",
+      "risk_score": 25,
+      "score": 75
+    }
+  },
+  "bescom": {
+    "document_type": "BESCOM",
+    "match_score": 20.41,
+    "pdf_path": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\bescom\\7220755000.pdf",
+    "risk_score": 79.59,
+    "system_data": {
+      "address": "KAGADASPURAKAGADASPU RA, KAR -560016",
+      "name": "G KRISHNA REDDY"
+    },
+    "user_data": {
+      "address": "Bangalore",
+      "name": "RAM"
+    }
+  },
+  "ec": {
+    "ai_analysis": {
+      "confidence": "LOW",
+      "method": "Claude EC-specific analysis",
+      "pattern_analysis": "",
+      "recommendation": "Manual EC review recommended.",
+      "risk_indicators": [],
+      "risk_level": "UNKNOWN",
+      "score": null
+    },
+    "detailed_findings": {
+      "note": "This module analyzes EC/encumbrance information. It does not provide a standalone legal title opinion.",
+      "sample_transactions": [
+        {
+          "buyer_name": "",
+          "consideration_value": 0,
+          "registration_number": null,
+          "seller_name": "",
+          "transaction_date": "",
+          "transaction_type": "OTHER"
+        },
+        {
+          "buyer_name": "Sri. K.R. Appaiah S/o SRJD500",
+          "consideration_value": 2600000,
+          "registration_number": "SRJ-1-04401-2019-20",
+          "seller_name": "Sri. M. Vasanth Kumar",
+          "transaction_date": "01-01-2004",
+          "transaction_type": "AGREEMENT_TO_SELL"
+        },
+        {
+          "buyer_name": "N- Siddaraju/S Late Sri.N- Siddaraju/S Late",
+          "consideration_value": 1500000,
+          "registration_number": "ANK4-1-02130-2018-19",
+          "seller_name": "Syndicate Bank of S 65",
+          "transaction_date": "17-07-2018",
+          "transaction_type": "OTHER"
+        },
+        {
+          "buyer_name": "Sri.Vasanthkumar S/o Sri.Mulliyappa...",
+          "consideration_value": 760000,
+          "registration_number": "SRJ-1-04686-2017-18",
+          "seller_name": "Hema D/o Late Jayarama",
+          "transaction_date": "23-02-2018",
+          "transaction_type": "SALE"
+        },
+        {
+          "buyer_name": "Sri. Ramachandr Muniyellappa",
+          "consideration_value": 1000000,
+          "registration_number": "SRJ-1-00937-2018-19",
+          "seller_name": "Sri. M. Vasanth Kumar",
+          "transaction_date": "31-05-2018",
+          "transaction_type": "OTHER"
+        }
+      ],
+      "transaction_count": 5
+    },
+    "document_analysis": {
+      "duplicate_pages_removed": 0,
+      "ocr_characters": 5581,
+      "total_pages_processed": 4,
+      "unique_pages_after_deduplication": 4
+    },
+    "document_type": "EC",
+    "encumbrance_analysis": {
+      "mortgages": 0,
+      "potentially_released_mortgages": [],
+      "releases": 0,
+      "unresolved_mortgages": []
+    },
+    "evidence_pages": [
+      1,
+      2
+    ],
+    "executive_summary": {
+      "confidence": "LOW",
+      "recommendation": "Manual EC review recommended.",
+      "risk_level": "LOW",
+      "risk_score": 0,
+      "summary": "Analysis of 5 validated EC transactions resulted in LOW encumbrance/transaction risk."
+    },
+    "final_assessment": {
+      "action_required": "NO",
+      "combined_score": 0,
+      "next_steps": [
+        "Document appears to have low fraud indicators",
+        "Standard processing permitted",
+        "Maintain record for audit trail"
+      ],
+      "risk_classification": "LOW",
+      "scoring_methodology": {
+        "ai_weight": 0,
+        "formula": "AI >= 70: AI×0.8 + Rule×0.2; otherwise AI×0.6 + Rule×0.4; if AI unavailable: Rule score only",
+        "rule_based_weight": 1
+      }
+    },
+    "report_metadata": {
+      "analysis_scope": "EC transactions and encumbrance patterns only",
+      "extraction_model": "gemma3:4b",
+      "generated_date": "2026-10-02T18:24:03.881650",
+      "report_type": "Encumbrance Certificate Risk Report",
+      "risk_model": "gemini-2.5-flash"
+    },
+    "rule_based_analysis": {
+      "flags_detected": [
+        "1 transaction(s) have no readable registration number; verify against the original EC."
+      ],
+      "scope": "EC/encumbrance patterns only",
+      "score": 0
+    },
+    "status": "SUCCESS",
+    "transaction_analysis": {
+      "breakdown_by_type": {
+        "AGREEMENT_TO_SELL": 1,
+        "OTHER": 3,
+        "SALE": 1
+      },
+      "invalid_transactions": 0,
+      "total_consideration_value": 3360000,
+      "total_transactions_extracted": 5,
+      "valid_transactions": 5
+    },
+    "transaction_pattern_analysis": {
+      "poa_transactions": [],
+      "rapid_resales": [],
+      "repeated_buyers": [],
+      "repeated_sellers": []
+    }
+  },
+  "ecourtrisk": {
+    "case_count": 1,
+    "cases": [
+      {
+        "case_data": {
+          "act": "Indian penal code | 326,504r/w34OFIPC",
+          "case_status": "Case disposed",
+          "case_type": "C.C. - CRIMINAL CASES",
+          "cnr_number": "KABC030822072015 (Note the CNR number for future reference)",
+          "court_name": "CMM Court Complex, Bangalore",
+          "decision_date": "19th January 2017",
+          "filing_date": "",
+          "filing_number": "",
+          "first_hearing_date": "04th June 2016",
+          "nature_of_disposal": "Contested--SETTLED IN LOK ADALATH",
+          "pending": false,
+          "petitioner": "ADITYA H S",
+          "registration_date": "16-12-2015",
+          "registration_number": "29445/2015",
+          "respondent": "RAHUL BHOMIK 2) V M RAGHAVENDRA"
+        },
+        "case_id": "case_1.json",
+        "final_assessment": {
+          "risk_level": "LOW",
+          "risk_score": 5
+        },
+        "llm_risk": {
+          "confidence": 0.9,
+          "major_risks": [],
+          "positive_findings": [
+            "Case status is 'Case disposed' with pending=false, indicating no active litigation.",
+            "Nature of disposal is 'Contested--SETTLED IN LOK ADALATH', signifying a binding settlement that is non-appealable under the Legal Services Authorities Act.",
+            "The case is a criminal matter under IPC Sections 326, 504 r/w 34 (grievous hurt, intentional insult, common intention), which pertains to personal conduct between individuals and not to property title, possession, or ownership.",
+            "No property-related acts (e.g., Transfer of Property Act, Specific Relief Act, Partition, Land Acquisition) are invoked.",
+            "Matter was before the CMM Court (Chief Metropolitan Magistrate) — a criminal forum, not a civil/revenue court dealing with property rights."
+          ],
+          "reasoning": [
+            "Case Status: Disposed on 19-01-2017 via Lok Adalat settlement — Lok Adalat awards are final and binding with no appeal, eliminating revival risk.",
+            "Nature of Litigation: Purely criminal (IPC 326/504/34) with no bearing on immovable property title, possession, or encumbrance.",
+            "Court Level: Magistrate-level criminal court; no injunction, attachment, or decree affecting property can arise from this forum in this case type.",
+            "Parties: Petitioner ADITYA H S vs. RAHUL BHOMIK and V M RAGHAVENDRA — the supplied data does not establish any link between these parties and the subject property being purchased.",
+            "Disposal: Settled in Lok Adalath — the lowest-risk form of closure.",
+            "Overall Buyer Risk: Minimal, as the case neither pertains to property disputes nor is pending."
+          ],
+          "recommendations": [
+            "Independently verify through title documents and encumbrance certificate (EC) for the past 30 years that neither the vendor nor the parties named have any property-related claim registered against the subject property.",
+            "Confirm that the seller of the property is not a party linked to this criminal case; if the seller is one of the named parties, obtain the Lok Adalat award copy to confirm no property-related terms were included.",
+            "Obtain the certified copy of the Lok Adalat award and final order dated 19-01-2017 for record.",
+            "Conduct standard due diligence: title search, EC, mutation records, khata, tax paid receipts, and litigation search in civil courts for the property and vendor.",
+            "Record the CNR number (KABC030822072015) in buyer's due diligence file for future reference."
+          ],
+          "risk_level": "LOW",
+          "risk_score": 5,
+          "summary": "The supplied case is a disposed criminal matter (IPC 326/504/34) settled in Lok Adalat on 19-01-2017, with no pendency and no connection to property title or possession. Based solely on the data provided, buyer legal risk arising from this case is very low. Standard independent title due diligence is still advised."
+        },
+        "rule_based_risk": {
+          "reasons": [
+            "Case already disposed"
+          ],
+          "risk_level": "LOW",
+          "risk_score": 5
+        }
+      }
+    ],
+    "document_type": "ECOURT",
+    "overall_court_risk": {
+      "risk_level": "LOW",
+      "risk_score": 5
+    },
+    "status": "RISK_ANALYSIS_SUCCESS"
+  },
+  "ekhatarisk": {
+    "document_type": "KHATA",
+    "facts": {
+      "application_number": "57/14/10/13/A1-004",
+      "area_sqft": "82.87",
+      "document_status": "UNKNOWN",
+      "document_type": "BBMP e-Khata",
+      "khata_type": "E-KHATA",
+      "owner_name": "A RAMAKRUSHNA",
+      "pid_number": "2737828078",
+      "property_address": "Multistorey Flats",
+      "survey_number": "3 - 11",
+      "ward_number": "3 - 11"
+    },
+    "final_assessment": {
+      "risk_level": "LOW",
+      "risk_score": 20.5
+    },
+    "llm_risk": {
+      "confidence": 0.6,
+      "major_risks": [
+        "Document status is UNKNOWN — cannot confirm whether this is a Final or Draft e-Khata, which affects legal reliability.",
+        "Property address is vague ('Multistorey Flats') with no street, locality, flat number, or landmark — insufficient for unique property identification.",
+        "Survey number ('3 - 11') and ward number ('3 - 11') are identical, which is unusual and suggests possible data entry error or field mismapping.",
+        "Area is recorded as 82.87 sqft, which is implausibly small for a residential flat and likely a unit error (possibly sqm instead of sqft) — internal inconsistency."
+      ],
+      "reasoning": [
+        "Khata type is E-KHATA, which is generally favorable and sits in the lower-risk category per guidelines.",
+        "Owner name 'A RAMAKRUSHNA', PID number '2737828078', and application number '57/14/10/13/A1-004' are present, providing baseline identifiers.",
+        "However, document_status is explicitly UNKNOWN, which per guidelines pushes risk toward moderate.",
+        "Survey number and ward number being the exact same value ('3 - 11') raises an internal consistency concern.",
+        "The property address field only contains 'Multistorey Flats' without specific unit, building name, street, or locality — this undermines uniquely tying the Khata to a specific unit.",
+        "Area of 82.87 sqft is not realistic for a flat; this likely reflects a measurement-unit inconsistency within the document."
+      ],
+      "risk_level": "MEDIUM",
+      "risk_score": 45,
+      "summary": "The property is on an E-Khata with core identifiers (owner, PID, application number) present, which is positive. However, UNKNOWN document status, a vague property address, duplicated survey/ward values, and an implausible area figure introduce meaningful internal inconsistencies. Overall risk is MEDIUM; buyer should verify the Final e-Khata extract, confirm the exact flat/address, and reconcile survey number, ward number, and area with BBMP records before proceeding."
+    },
+    "pdf_path": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\ekhata\\ekhata_2737828078_1790950176.pdf",
+    "rule_based_risk": {
+      "reasons": [
+        "E-Khata detected",
+        "Document status could not be verified"
+      ],
+      "risk_level": "LOW",
+      "risk_score": 10
+    },
+    "status": "RISK_ANALYSIS_SUCCESS"
+  },
+  "water": {
+    "document_type": "WATER_BILL",
+    "match_score": 95.8,
+    "risk_score": 4.2,
+    "rr_number": "N-435608",
+    "system_data": {
+      "Consumer Address": "12, Whitefield Main Road, Bengaluru, Karnataka - 560066",
+      "Consumer Name": "Ramesh Kumar"
+    },
+    "user_data": {
+      "Consumer Address": "Bangalore",
+      "Consumer Name": "RAM"
+    }
+  },
+  "checks": [
+    {
+      "title": "EC Document Check",
+      "status": "NOT_APPLICABLE",
+      "score": null,
+      "impact_weight": 0,
+      "findings": "EC PDF was not available for deep wrapper verification."
+    },
+    {
+      "title": "Existing Bank Loans",
+      "status": "NOT_APPLICABLE",
+      "score": null,
+      "impact_weight": 0,
+      "findings": "CERSAI/bank loan report was not uploaded or downloaded."
+    }
+  ]
+}

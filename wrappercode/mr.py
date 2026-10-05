@@ -448,7 +448,7 @@ if __name__ == "__main__":
     parser.add_argument("--hissa-no", required=True, type=int,
                         help="Target hissa number (e.g., 1)")
 
-    default_output = r"C:\Users\tarun\Aasthi\wrappercode\input\MR"
+    default_output = r"D:\aasthiv2\Aasthi\wrappercode\input\MR"
     parser.add_argument("--output-dir", default=default_output)
     args = parser.parse_args()
 

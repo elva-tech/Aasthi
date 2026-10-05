@@ -1,21 +1,30 @@
 import os
 import json
+from dotenv import load_dotenv
 from anthropic import Anthropic
 
 # ============================================================
 # CONFIG
 # ============================================================
 
-API_KEY = os.getenv("ANTHROPIC_API_KEY")
+load_dotenv()
+
+API_KEY = os.getenv("ANTHROPIC_API_KEY", "").strip()
+
+if not API_KEY:
+    raise RuntimeError(
+        "ANTHROPIC_API_KEY is missing. "
+        "Make sure it is present in your .env file."
+    )
 
 client = Anthropic(
     api_key=API_KEY
 )
 
 MODEL = os.getenv(
+    "ANTHROPIC_MODEL",
     "claude-opus-4-7"
 )
-
 
 # ============================================================
 # JSON PARSER

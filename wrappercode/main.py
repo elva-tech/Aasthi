@@ -22,7 +22,7 @@ from bescom_wrapper import BESCOMBillScraper
 from water_bill_wrapper import WaterBillScraper
 from property_tax_wrapper import BBMPPropertyTaxScraper
 from kaveri import KaveriBot
-from ekhata import EKhataBot
+from ekhata import DynamicEKhataBot
 from ecourt import ECourtAutomation
 
 
@@ -295,22 +295,26 @@ class PropertyDocumentsWrapper:
     def run_ekhata(self):
         print("🗂️ [6] eKhata Automation")
         bot = None
+
         try:
-            bot = EKhataBot()
+            bot = DynamicEKhataBot()
+
             pdf_path = bot.run(
                 search_type="epid",
                 search_value=self.epid_number,
-                wait_seconds=30,
             )
+
             print("eKhata PDF:", pdf_path)
+
         except Exception as e:
             print(f"eKhata failed: {e}")
+
         finally:
             if bot:
                 try:
                     bot.close()
                 except:
-                    pass
+                    pass                
 
     def run_ecourt(self):
         print("⚖️ [7] eCourt Automation")
@@ -341,25 +345,6 @@ class PropertyDocumentsWrapper:
     # ------------------------------------------------------------------
     # Registry for --only
     # ------------------------------------------------------------------
-    MODULE_MAP = {
-        "rera":          "run_rera",
-        "bescom":        "run_bescom",
-        "water":         "run_water",
-        "waterbill":     "run_water",
-        "tax":           "run_property_tax",
-        "property_tax":  "run_property_tax",
-        "bbmp":          "run_property_tax",
-        "kaveri":        "run_kaveri",
-        "ec":            "run_kaveri",
-        "ekhata":        "run_ekhata",
-        "ecourt":        "run_ecourt",
-        "akarband":      "run_land_records_akarband",
-        "court_cases":   "run_land_records_court_cases",
-        "rccms":         "run_land_records_court_cases",
-        "map":           "run_land_records_map",
-        "mr":            "run_land_records_mr",
-        "rtc":           "run_land_records_rtc",
-    }
 
     # small per-module runners for --only
     def run_land_records_akarband(self):
@@ -421,7 +406,25 @@ class PropertyDocumentsWrapper:
             "--hissa-no",    str(self.hissa_no),
             "--surnoc",      "*",
         ])
-
+    MODULE_MAP = {
+            "rera":          "run_rera",
+            "bescom":        "run_bescom",
+            "water":         "run_water",
+            "waterbill":     "run_water",
+            "tax":           "run_property_tax",
+            "property_tax":  "run_property_tax",
+            "bbmp":          "run_property_tax",
+            "kaveri":        "run_kaveri",
+            "ec":            "run_kaveri",
+            "ekhata":        "run_ekhata",
+            "ecourt":        "run_ecourt",
+            "akarband":      "run_land_records_akarband",
+            "court_cases":   "run_land_records_court_cases",
+            "rccms":         "run_land_records_court_cases",
+            "map":           "run_land_records_map",
+            "mr":            "run_land_records_mr",
+            "rtc":           "run_land_records_rtc",
+        }
     def run_only(self, name):
         key = name.strip().lower()
         method_name = self.MODULE_MAP.get(key)
@@ -498,9 +501,9 @@ def build_parser():
     p.add_argument("--court-year")
 
     # land-record overrides
-    p.add_argument("--survey-no", type=int)
-    p.add_argument("--hissa-no", type=int)
-    p.add_argument("--mr-hissa-no", type=int)
+    p.add_argument("--survey-no")
+    p.add_argument("--hissa-no")
+    p.add_argument("--mr-hissa-no")
     p.add_argument("--search-text")
     p.add_argument("--akarband-district")
     p.add_argument("--akarband-taluk")

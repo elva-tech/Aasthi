@@ -1,0 +1,203 @@
+============================================================
+RCCMS (Revenue Court Case) CHECK REPORT
+============================================================
+Survey No    : 117
+Date         : 2026-10-04 11:21:00
+Source       : Bhoomi Maps – Ongoing RCCMS tab
+============================================================
+
+RESULT: No ongoing Revenue Court Cases found.
+
+============================================================
+FULL PAGE TEXT (for reference)
+============================================================
+
+0/*/*
+0/*/*
+92/*/9
+92/*/10
+96/*/1
+97/*/4
+97/*/3
+97/*/2
+97/*/5
+97/*/1
+98/*/6
+98/*/8
+98/*/3
+98/*/4
+98/*/7
+98/*/2
+98/*/1
+98/*/5
+99/*/4
+99/*/1
+99/*/2
+100/*/3
+100/*/2
+102/*/1
+102/*/2
+102/*/3
+102/*/6
+102/*/4
+103/*/1
+105/*/2
+113/*/5
+113/*/8
+113/*/4
+114/*/*
+115/*/2A
+115/*/7
+115/*/6
+115/*/1
+115/*/2B
+115/*/4
+115/*/5
+115/*/3
+116/*/*
+117/*/4
+117/*/6
+117/*/3
+117/*/5
+117/*/2
+117/*/1
+118/*/1
+118/*/2
+118/*/3
+119/*/*
+123/*/5
+123/*/1
+123/*/2
+117/*/2
+117/*/1
+117/*/6
+117/*/3
+117/*/4
+117/*/5
+ವಿಸ್ತೃತ ಹುಡುಕಾಟ/Advanced Search
+ಜಿಲ್ಲೆ/District
+Select District
+Bagalkote/ಬಾಗಲಕೋಟೆ
+BALLARI/ಬಳ್ಳಾರಿ
+Bangalore Rural/ಬೆ೦ಗಳೂರು ಗ್ರಾಮಾ೦ತರ
+BELAGAVI/ಬೆಳಗಾವಿ
+BENGALURU/ಬೆ೦ಗಳೂರು
+Bengaluru South/ಬೆಂಗಳೂರು ದಕ್ಷಿಣ
+Bidar/ಬೀದರ್
+Chamarajanagara/ಚಾಮರಾಜನಗರ
+Chikkaballapur/ಚಿಕ್ಕಬಳ್ಳಾಪುರ
+CHIKKAMAGALURU/ಚಿಕ್ಕಮಗಳೂರು
+chitradurga/ಚಿತ್ರದುರ್ಗ
+Dakshina Kannada/ದಕ್ಷಿಣ ಕನ್ನಡ
+Davanagere/ದಾವಣಗೆರೆ
+DHARWAD/ಧಾರವಾಡ
+Gadag/ಗದಗ್
+Hassan/ಹಾಸನ
+Haveri/ಹಾವೇರಿ
+KALABURAGI/ಕಲಬುರಗಿ
+Kodagu/ಕೊಡಗು
+KOLAR/ಕೋಲಾರ
+koppal/ಕೊಪ್ಪಳ
+mandya/ಮಂಡ್ಯ
+Mysore/ಮೈಸೂರು
+Raichur/ರಾಯಚೂರು
+SHIVAMOGGA/ಶಿವಮೊಗ್ಗ
+TUMAKURU/ತುಮಕೂರು
+UDUPI/ಉಡುಪಿ
+Uttar Kannada/ಉತ್ತರ ಕನ್ನಡ
+VIJAYANAGARA/ವಿಜಯನಗರ
+VIJAYAPURA/ವಿಜಯಪುರ
+Yadagir/ಯಾದಗಿರಿ
+ತಾಲೂಕು/Taluk
+Select Taluk
+Channapatna/ಚನ್ನಪಟ್ಟಣ
+HAROHALLI/ಹಾರೋಹಳ್ಳಿ
+Kanakpura/ಕನಕಪುರ
+Magadi/ಮಾಗಡಿ
+Ramanagar/ರಾಮನಗರ
+ಹೋಬಳಿ/Hobli
+Select Hobli
+KASABA/ಕಸಬಾ
+KODIHALLI/ಕೋಡಿಹಳ್ಳಿ
+SATANURU/ಸಾತನೂರು
+UYYAMBALLI/ಉಯ್ಯಂಬಳ್ಳಿ
+ಗ್ರಾಮ/Village
+Select Village
+ACHCHALU/ಅಚ್ಚಲು
+ALURU/ಆಲೂರು
+ANAMANAHALLI/ಆನಮಾನಹಳ್ಳಿ
+AREHOSAHALLI/ಅರೆಹೊಸಹಳ್ಳಿ
+ATTIHALLI/ಅತ್ತಿಹಳ್ಳಿ
+BANNANI/ಬನ್ನಣಿ
+BHUHALLI/ಭೂಹಳ್ಳಿ
+BOMMANAHALLI/ಬೊಮ್ಮನಹಳ್ಳಿ
+CHIKKALAHALLI/ಚಿಕ್ಕಆಲಹಳ್ಳಿ
+CHUDAHALLI/ಚೂಡಹಳ್ಳಿ
+DALIMBA/ದಾಳಿಂಬ
+DESHUVALLI/ದೇಶುವಳ್ಳಿ
+DUNTURU/ದೂಂತೂರು
+GERAHALLI/ಗೇರಹಳ್ಳಿ
+GURUVINAPURA/ಗುರುವಿನಪುರ
+HALASINAMARADADODDI/ಹಲಸಿನಮರದದೊಡ್ಡಿ
+HALASURU/ಹಲಸೂರು
+HARIHARA/ಹರಿಹರ
+HONNAHALLI/ಹೊನ್ನಹಳ್ಳಿ
+HONNIGANAHALLI/ಹೊನ್ನಿಗನಹಳ್ಳಿ
+HOSAHALLI/ಹೊಸಹಳ್ಳಿ
+KABBALU/ಕಬ್ಬಾಳು
+KABBALU FAREST/ಕಬ್ಬಾಳು ಫಾರೇಸ್ಟ್
+KACHUVANAHALLI/ಕಚುವನಹಳ್ಳಿ
+KADAHALLI/ಕಾಡಹಳ್ಳಿ
+KANCHANAHALLI/ಕಂಚನಹಳ್ಳಿ
+KANSAGARA/ಕಂಸಾಗರ
+KEMMALE/ಕೆಮ್ಮಾಳೆ
+KONANAGUNDI/ಕೋಣನಗುಂದಿ
+MALLAPURA/ಮಲ್ಲಾಪುರ
+MARADEVANAHALLI/ಮಾರದೇವನಹಳ್ಳಿ
+MEDANAHALLI/ಮೇಡನಹಳ್ಳಿ
+MUDALASVAMIKUPPE/ಮೂಡಲಸ್ವಾಮಿಕುಪ್ಪೆ
+NAGARASANAKOTE/ನಾಗರಸನಕೋಟೆ
+NAREEPURA/ನರೀಪುರ
+SAMBHAPURA/ಸಂಭಾಪುರ
+SASALAPURA/ಸಾಸಲಾಪುರ
+SATANURU/ಸಾತನೂರು
+SOMANATHAPURA/ಸೋಮನಾಥಪುರ
+SULIGERE/ಸೂಲಿಗೆರೆ
+SURANAHALLI/ಸೂರನಹಳ್ಳಿ
+TAILURU FAREST/ತೈಲೂರು ಫಾರೇಸ್ಟ್
+TENGANAYKANAHALLI/ತೆಂಗನಾಯ್ಕನಹಳ್ಳಿ
+TOTAHALLI/ತೋಟಹಳ್ಳಿ
+VIRUPASANDRA/ವಿರುಪಸಂದ್ರ
+YADAGOWDANAHALLI/ಯಡಗೌಡನಹಳ್ಳಿ
+YALAVALLIBE/ಯಳವಳ್ಳಿ(ಬೆ)
+ಸರ್ವೆ ನಂ/Survey No
+ಹುಡುಕಿ/Search
+ತೆರವು/Clear
+ಮಾಹಿತಿ/Information
+RTC
+Ongoing Mutations
+Ongoing RCCMS
+Ongoing Land Conversions
+There are no Revenue Court Cases.
+
+
+50 m
+100 ft
+🖥️🚶🏻⋮ 3405892
+Draw a polyline
+Draw a polygon
+Delete layers
++
+−
+Legends
+District : Ramanagara
+Taluk : Kanakpura
+Hobli : SATANURU
+Village : Harihara
+Note:This information is only for viewing purpose and not for legal purpose.
+ಸೂಚನೆ:ಈ ಮಾಹಿತಿಯು ವೀಕ್ಷಣೆಯ ಉದ್ದೇಶಕ್ಕಾಗಿ ಮಾತ್ರವೇ ಹೊರತು ಕಾನೂನು ಉದ್ದೇಶಕ್ಕಾಗಿ ಅಲ್ಲ.
+Bhoomi Monitoring Cell | © GoogleMaps
+
+
+
+© 2026 Copyright Bhoomi Monitoring Cell

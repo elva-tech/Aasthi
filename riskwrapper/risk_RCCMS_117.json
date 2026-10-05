@@ -1,0 +1,63 @@
+{
+  "doc_type": "COURT",
+  "file": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\CourtCases\\RCCMS_117.png",
+  "target": {
+    "survey_no": "117",
+    "hissa_no": "1"
+  },
+  "data": {
+    "no_cases_message": "There are no Revenue Court Cases.",
+    "case_type": "",
+    "filing_number": "",
+    "registration_number": "",
+    "cnr_number": "",
+    "filing_date": "",
+    "registration_date": "",
+    "first_hearing_date": "",
+    "decision_date": "",
+    "case_status": "",
+    "nature_of_disposal": "",
+    "court_name": "",
+    "petitioner": "",
+    "respondent": "",
+    "act": "",
+    "pending": false
+  },
+  "rule_risk": {
+    "risk_score": 5,
+    "risk_level": "LOW",
+    "reasons": [
+      "Explicit no-case message: 'There are no Revenue Court Cases.'"
+    ]
+  },
+  "llm_risk": {
+    "risk_score": 5,
+    "risk_level": "LOW",
+    "confidence": 0.9,
+    "major_risks": [],
+    "positive_findings": [
+      "No Revenue Court Cases found against the target property (Survey No: 117, Hissa No: 1)",
+      "No pending litigation disclosed in the case data",
+      "No disputes, injunctions, or partition suits reported"
+    ],
+    "reasoning": [
+      "The 'no_cases_message' field explicitly states 'There are no Revenue Court Cases', which per guidelines indicates LOW risk (0-15 range)",
+      "All case-specific fields (case_type, filing_number, court_name, parties, etc.) are empty, confirming absence of litigation",
+      "The 'pending' flag is set to false, reinforcing that no active proceedings exist",
+      "Absence of revenue court litigation reduces the risk of title disputes, boundary issues, or tenancy claims from a revenue law perspective"
+    ],
+    "recommendations": [
+      "Independently verify by conducting a search in Civil Court records, District Court, High Court, and Supreme Court portals, as this data only covers Revenue Courts",
+      "Obtain a 30-year title search report and encumbrance certificate (EC) from the Sub-Registrar's office",
+      "Verify current 7/12 extract, mutation entries, and Record of Rights for Survey No. 117, Hissa No. 1",
+      "Issue a public notice in local newspapers inviting objections before completing the purchase",
+      "Check for any pending notices under Land Acquisition Act, Urban Land Ceiling, or local municipal/planning authorities",
+      "Confirm absence of tenancy claims under relevant state tenancy legislation"
+    ],
+    "summary": "No Revenue Court Cases are reported against Survey No. 117, Hissa No. 1, indicating LOW litigation risk from a revenue law standpoint. However, buyer should supplement this with independent due diligence covering civil courts, title history, and encumbrances before proceeding with the transaction."
+  },
+  "final": {
+    "risk_score": 5,
+    "risk_level": "LOW"
+  }
+}

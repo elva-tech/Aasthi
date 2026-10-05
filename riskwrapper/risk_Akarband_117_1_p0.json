@@ -1,0 +1,65 @@
+{
+  "doc_type": "AKARBAND",
+  "file": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\Akarband\\Akarband_117_1_p0.png",
+  "target": {
+    "survey_no": "117",
+    "hissa_no": "1"
+  },
+  "data": {
+    "survey_no": "117",
+    "hissa_no": "1",
+    "village": "ಹುಪುಹ",
+    "hobli": "ಸಾತನೂರು",
+    "taluk": "ಕನಕಪುರ",
+    "district": "ರಾಮನಗರ",
+    "total_extent": "",
+    "cultivable_extent": "",
+    "kharab_extent": "",
+    "classification": "Dry / ಖುಷ್ಕಿ",
+    "assessment": "",
+    "owner_name": ""
+  },
+  "rule_risk": {
+    "risk_score": 30,
+    "risk_level": "LOW",
+    "reasons": [
+      "Total extent missing",
+      "Assessment value missing"
+    ]
+  },
+  "llm_risk": {
+    "risk_score": 65,
+    "risk_level": "MEDIUM",
+    "confidence": 0.75,
+    "major_risks": [
+      "Total extent of the land is missing — cannot verify actual area of Survey No. 117, Hissa No. 1",
+      "Cultivable extent is not recorded — unable to determine productive portion",
+      "Kharab (uncultivable) extent is missing — potential undisclosed unusable land",
+      "Assessment (land revenue) value is blank — raises doubts about record completeness",
+      "Owner name is not mentioned — ownership cannot be verified from Akarband alone"
+    ],
+    "positive_findings": [
+      "Land classification is 'Dry / ಖುಷ್ಕಿ' (private agricultural), not government or forest land",
+      "Property is clearly identified by village (ಹುಪುಹ), hobli (ಸಾತನೂರು), taluk (ಕನಕಪುರ), and district (ರಾಮನಗರ)"
+    ],
+    "reasoning": [
+      "Akarband is a foundational revenue record; missing extent, assessment, and owner fields significantly reduce its evidentiary value.",
+      "While the Dry classification suggests private cultivable land (not government), the absence of extent and kharab details prevents verification of the saleable area.",
+      "Missing owner name means buyer must rely entirely on RTC/Mutation records for ownership proof — a documentation gap.",
+      "Per guidelines: missing total extent → MEDIUM; missing assessment → LOW-MEDIUM; combined gaps elevate overall risk to upper MEDIUM."
+    ],
+    "recommendations": [
+      "Obtain the latest RTC (Pahani) to confirm actual extent, kharab area, and current cultivation status",
+      "Cross-verify ownership through Mutation Register (MR), Index of Lands, and 15-year RTC history",
+      "Request a Tippani and Hissa Phodi sketch to confirm the physical boundaries of Hissa No. 1",
+      "Conduct a survey department verification to reconcile missing Akarband fields",
+      "Obtain an Encumbrance Certificate (EC) for at least 30 years before purchase",
+      "Engage a licensed surveyor for on-ground measurement before executing a sale deed"
+    ],
+    "summary": "Survey No. 117/1 in Hupuha village is classified as Dry (private agricultural) land, which is favorable. However, critical Akarband fields — total extent, cultivable area, kharab, assessment, and owner name — are all blank. This incomplete record creates MEDIUM buyer risk due to the inability to verify area, ownership, and revenue liability. Proceed only after corroborating with RTC, Mutation, EC, and a physical survey."
+  },
+  "final": {
+    "risk_score": 65,
+    "risk_level": "MEDIUM"
+  }
+}

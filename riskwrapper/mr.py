@@ -4,45 +4,111 @@ Usage: python mr.py --file "path.png" --survey-no 117 --hissa-no 1
 Safety-first blend: final = MAX(rule, LLM)
 """
 
+import base64
+from email.mime import image
+import io
 import os, json, re, time, argparse
 from PIL import Image
 import pymupdf
 
-API_KEY = os.getenv("GEMINI_API_KEY")
-MODELS_TO_TRY = ["gemini-3.6-flash", "gemini-3.7-flash", "gemini-3.5-flash",
-                 "gemini-3.8-flash", "gemini-3.5-flash-lite"]
+from anthropic import Anthropic
+from dotenv import load_dotenv
+load_dotenv()
+
+API_KEY = os.getenv("ANTHROPIC_API_KEY")
+CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-opus-4-7")
 
 if not API_KEY:
-    raise RuntimeError('GEMINI_API_KEY not found.')
+    raise RuntimeError("ANTHROPIC_API_KEY not found.")
 
-from google import genai
-client = genai.Client(api_key=API_KEY)
+client = Anthropic(api_key=API_KEY)
 
 
-def call_gemini_with_retry(contents, max_retries_per_model=4):
+def call_claude_with_retry(contents, max_retries=4):
+
     last_error = None
-    for model_name in MODELS_TO_TRY:
-        for attempt in range(max_retries_per_model):
-            try:
-                response = client.models.generate_content(model=model_name, contents=contents)
-                if model_name != MODELS_TO_TRY[0]:
-                    print(f"  ℹ️ Used fallback model: {model_name}")
-                return response
-            except Exception as e:
-                last_error = e
-                err_str = str(e)
-                if "503" in err_str or "UNAVAILABLE" in err_str or "high demand" in err_str:
-                    wait = 5 * (2 ** attempt)
-                    print(f"  ⚠️ {model_name} overloaded, retry in {wait}s...")
-                    time.sleep(wait)
-                elif "404" in err_str or "NOT_FOUND" in err_str:
-                    print(f"  ⚠️ {model_name} unavailable, trying next...")
-                    break
-                else:
-                    print(f"  ⚠️ {model_name} error: {e}")
-                    break
-    raise RuntimeError(f"All models failed. Last: {last_error}")
 
+    for attempt in range(max_retries):
+
+        try:
+            claude_content = []
+
+            items = contents if isinstance(contents, list) else [contents]
+
+            for item in items:
+
+                # Text
+                if isinstance(item, str):
+                    claude_content.append({
+                        "type": "text",
+                        "text": item
+                    })
+
+                # PIL Image
+                elif isinstance(item, Image.Image):
+
+                    buffer = io.BytesIO()
+                    item.save(buffer, format="PNG")
+
+                    image_base64 = base64.b64encode(
+                        buffer.getvalue()
+                    ).decode("utf-8")
+
+                    claude_content.append({
+                        "type": "image",
+                        "source": {
+                            "type": "base64",
+                            "media_type": "image/png",
+                            "data": image_base64
+                        }
+                    })
+
+                else:
+                    raise TypeError(
+                        f"Unsupported content type: {type(item)}"
+                    )
+
+            response = client.messages.create(
+                model=CLAUDE_MODEL,
+                max_tokens=4096,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": claude_content
+                    }
+                ]
+            )
+
+            return response
+
+        except Exception as e:
+
+            last_error = e
+            err_str = str(e).lower()
+
+            if (
+                "429" in err_str
+                or "529" in err_str
+                or "overloaded" in err_str
+                or "rate limit" in err_str
+                or "temporarily unavailable" in err_str
+            ):
+                wait = 5 * (2 ** attempt)
+
+                print(
+                    f"  ⚠️ Claude temporarily unavailable, "
+                    f"retry in {wait}s..."
+                )
+
+                time.sleep(wait)
+
+            else:
+                print(f"  ⚠️ Claude error: {e}")
+                break
+
+    raise RuntimeError(
+        f"All Claude attempts failed. Last: {last_error}"
+    )
 
 def ensure_png(path, page=0):
     if not path.lower().endswith(".pdf"):
@@ -125,8 +191,15 @@ CRITICAL RULES:
 5. Preserve Kannada text as-is.
 6. Return ONLY the JSON object."""
 
-    response = call_gemini_with_retry([prompt, image])
-    return parse_json(response.text)
+    response = call_claude_with_retry([prompt, image])
+
+    response_text = "".join(
+        block.text
+        for block in response.content
+        if hasattr(block, "text")
+    )
+
+    return parse_json(response_text)
 
 
 def llm_mr_risk(data, survey, hissa):
@@ -181,9 +254,15 @@ long ago. This is a TITLE CHAIN GAP and MUST be flagged HIGH risk.
 }}
 
 Return ONLY valid JSON."""
-    response = call_gemini_with_retry(prompt)
-    return parse_json(response.text)
+    response = call_claude_with_retry(prompt)
 
+    response_text = "".join(
+        block.text
+        for block in response.content
+        if hasattr(block, "text")
+    )
+
+    return parse_json(response_text)
 
 def yes(s):
     return str(s).strip().lower() in ("yes", "y", "true", "1", "ಹೌದು", "present")

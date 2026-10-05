@@ -1,0 +1,59 @@
+{
+  "_meta": {
+    "propertyType": "Individual House",
+    "excludedChecks": [
+      "Parking Certificate",
+      "Association By Laws",
+      "Title Check",
+      "Builder/Developer Reputation",
+      "RERA / BDA / Buda / Tuda / NA Registration Check",
+      "NOCs from Various Departments",
+      "Occupancy Certificate",
+      "AKARBAND",
+      "MAP",
+      "MR",
+      "RCCMS",
+      "RTC"
+    ]
+  },
+  "bescom": {
+    "pdf": null,
+    "user_name": "RAM",
+    "user_address": "Bangalore"
+  },
+  "water": {
+    "rr": "N-435608",
+    "user_name": "RAM",
+    "user_address": "Bangalore"
+  },
+  "bbmp_property_tax": {
+    "pid_number": "1500082907",
+    "owner_name": "RAM",
+    "application_number": ""
+  },
+  "oc": null,
+  "noc": null,
+  "parking": null,
+  "bylaws": null,
+  "ec": {
+    "pdf": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\kaveriec\\download.pdf",
+    "tesseract_cmd": "D:\\ocr\\tesseract.exe"
+  },
+  "bankloan": {
+    "pdf": null,
+    "out": "D:\\aasthiv2\\Aasthi\\riskwrapper\\output\\bankloan_result.json"
+  },
+  "builder": null,
+  "akarband": null,
+  "rtc": null,
+  "map": null,
+  "mr": null,
+  "rccms": null,
+  "ecourtrisk": {
+    "screenshots_folder": "D:\\aasthiv2\\Aasthi\\wrappercode\\ecourtjson"
+  },
+  "ekhatarisk": {
+    "pdf": "D:\\aasthiv2\\Aasthi\\wrappercode\\input\\ekhata"
+  },
+  "rera_approval": null
+}

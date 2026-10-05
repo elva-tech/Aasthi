@@ -30,18 +30,6 @@ class BBMPPropertyTaxScraper:
         )
         self.wait = WebDriverWait(self.driver, timeout)
 
-    def clear_old_screenshots(self):
-        screenshot_dir = "tax_screenshots"
-
-        os.makedirs(screenshot_dir, exist_ok=True)
-
-        for file in glob.glob(os.path.join(screenshot_dir, "*.png")):
-            try:
-                os.remove(file)
-                print(f"Deleted old screenshot: {os.path.basename(file)}")
-            except Exception as e:
-                print(f"Could not delete {file}: {e}")
-
     # ---------------- OPEN SITE ---------------- #
     def open_site(self):
         print("Opening BBMP Property Tax portal...")
@@ -160,7 +148,6 @@ class BBMPPropertyTaxScraper:
     def run(self):
 
         try:
-            self.clear_old_screenshots()
             self.open_site()
 
             self.retrieve_property()

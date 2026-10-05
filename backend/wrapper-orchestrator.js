@@ -108,9 +108,19 @@ function isCheckApplicable(
       "Association By Laws",
     ],
 
-    "Individual House": [
+    "Individual House":[
       "Parking Certificate",
       "Association By Laws",
+      "Title Check",
+      "Builder/Developer Reputation",
+      "RERA / BDA / Buda / Tuda / NA Registration Check",
+      "NOCs from Various Departments",
+      "Occupancy Certificate",
+      "AKARBAND",
+      "MAP",
+      "MR",
+      "RCCMS",
+      "RTC",
     ],
 
     Agricultural: [
@@ -120,6 +130,13 @@ function isCheckApplicable(
       "Builder/Developer Reputation",
       "RERA / BDA / Buda / Tuda / NA Registration Check",
       "NOCs from Various Departments",
+      "Title Check",
+      "Electricity Bill",
+      "Water Bill",
+      "Property Tax Paid Receipts",
+      "Existing Bank Loans",
+      "Khata/Mutation Type Verification",
+      "Court Case",
     ],
   };
 
@@ -908,7 +925,7 @@ export async function runCompletePropertyAnalysis(
   // PROPERTY TAX
   // ============================================================
 
-  bbmp_property_tax:
+  bbmp:
     isCheckApplicable(
       "Property Tax Paid Receipts",
       params.propertyType,
@@ -1015,8 +1032,12 @@ export async function runCompletePropertyAnalysis(
       excludedChecks
     )
       ? {
-          pdf:
-            getPath(["ec"]),
+          pdf: path.join(
+            wrappercodeDir,
+            "input",
+            "kaveriec",
+            "download.pdf"
+          ),
 
           tesseract_cmd:
             tesseractPath,
@@ -1071,74 +1092,129 @@ export async function runCompletePropertyAnalysis(
   // ============================================================
   // AKARBAND RISK
   // ============================================================
-  akarband: {
-    input_dir: path.join(wrappercodeDir, "input", "Akarband"),
-    survey_no: params.surveyNo || "117",
-    hissa_no: params.hissaNo || "1",
-  },
-
-  // ============================================================
-  // RTC RISK
-  // ============================================================
-  rtc: {
-    input_dir: path.join(wrappercodeDir, "input", "RTC"),
-    survey_no: params.surveyNo || "117",
-    hissa_no: params.hissaNo || "1",
-  },
-
-  // ============================================================
-  // MAP RISK
-  // ============================================================
-  map: {
-    input_dir: path.join(wrappercodeDir, "input", "Map"),
-    survey_no: params.surveyNo || "117",
-    hissa_no: params.hissaNo || "1",
-  },
-
-  // ============================================================
-  // MR RISK
-  // ============================================================
-  mr: {
-  input_dir: path.join(wrappercodeDir, "input", "MR"),
-  survey_no: params.surveyNo || "117",
-  hissa_no: params.mrHissaNo || "3",
-  },
-
-  // ============================================================
-  // RCCMS RISK
-  // ============================================================
-  rccms: {
-  input_dir: path.join(wrappercodeDir, "input", "CourtCases"),
-  survey_no: params.surveyNo || "117",
-  hissa_no: params.hissaNo || "1",
-  },
-
-  // ============================================================
-  // COURT
-  // ============================================================     
-  ecourtrisk: {
-    screenshots_folder:
-      path.join(
-        wrappercodeDir,
-        "ecourtjson"
-      ),
-  },
-
-  // ============================================================
-  // TITLE CHECK
-  // ============================================================
-
-  kaveriecrisk:
+  akarband:
     isCheckApplicable(
-      "Title Check",
+      "AKARBAND",
       params.propertyType,
       excludedChecks
     )
       ? {
-          pdf:
-            getPath(["ec"]),
+          input_dir: path.join(
+            wrappercodeDir,
+            "input",
+            "Akarband"
+          ),
+          survey_no:
+            params.surveyNo || "117",
+          hissa_no:
+            params.hissaNo || "1",
         }
       : null,
+
+  // ============================================================
+  // RTC RISK
+  // ============================================================
+  rtc:
+    isCheckApplicable(
+      "RTC",
+      params.propertyType,
+      excludedChecks
+    )
+      ? {
+          input_dir: path.join(
+            wrappercodeDir,
+            "input",
+            "RTC"
+          ),
+          survey_no:
+            params.surveyNo || "117",
+          hissa_no:
+            params.hissaNo || "1",
+        }
+      : null,
+
+  // ============================================================
+  // MAP RISK
+  // ============================================================
+  map:
+    isCheckApplicable(
+      "MAP",
+      params.propertyType,
+      excludedChecks
+    )
+      ? {
+          input_dir: path.join(
+            wrappercodeDir,
+            "input",
+            "Map"
+          ),
+          survey_no:
+            params.surveyNo || "117",
+          hissa_no:
+            params.hissaNo || "1",
+        }
+      : null,
+
+  // ============================================================
+  // MR RISK
+  // ============================================================
+  mr:
+    isCheckApplicable(
+      "MR",
+      params.propertyType,
+      excludedChecks
+    )
+      ? {
+          input_dir: path.join(
+            wrappercodeDir,
+            "input",
+            "MR"
+          ),
+          survey_no:
+            params.surveyNo || "117",
+          hissa_no:
+            params.mrHissaNo || "3",
+        }
+      : null,
+
+  // ============================================================
+  // RCCMS RISK
+  // ============================================================
+  rccms:
+    isCheckApplicable(
+      "RCCMS",
+      params.propertyType,
+      excludedChecks
+    )
+      ? {
+          input_dir: path.join(
+            wrappercodeDir,
+            "input",
+            "CourtCases"
+          ),
+          survey_no:
+            params.surveyNo || "117",
+          hissa_no:
+            params.hissaNo || "1",
+        }
+      : null,
+  // ============================================================
+  // COURT
+  // ============================================================     
+  ecourtrisk:
+    isCheckApplicable(
+      "Court Case",
+      params.propertyType,
+      excludedChecks
+    )
+      ? {
+          screenshots_folder: path.join(
+            wrappercodeDir,
+            "ecourtjson"
+          ),
+        }
+      : null,
+
 
   // ============================================================
   // KHATA
@@ -1255,7 +1331,40 @@ export async function runCompletePropertyAnalysis(
       ? "ENABLED"
       : "EXCLUDED"
   );
+  console.log(
+    "AKARBAND:",
+    applicable("AKARBAND")
+      ? "ENABLED"
+      : "EXCLUDED"
+  );
 
+  console.log(
+    "RTC:",
+    applicable("RTC")
+      ? "ENABLED"
+      : "EXCLUDED"
+  );
+
+  console.log(
+    "MAP:",
+    applicable("MAP")
+      ? "ENABLED"
+      : "EXCLUDED"
+  );
+
+  console.log(
+    "MR:",
+    applicable("MR")
+      ? "ENABLED"
+      : "EXCLUDED"
+  );
+
+  console.log(
+    "RCCMS:",
+    applicable("RCCMS")
+      ? "ENABLED"
+      : "EXCLUDED"
+  );
   console.log(
     "------------------------------------------------"
   );
@@ -1375,7 +1484,7 @@ export async function runCompletePropertyAnalysis(
 
     ecPdf:
       getPath([
-        "ec",
+        "download",
       ]),
 
     bankloanPdf:
